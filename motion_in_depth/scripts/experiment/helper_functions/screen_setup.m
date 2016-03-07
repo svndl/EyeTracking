@@ -39,6 +39,6 @@ if strcmp(scr.name,'planar')
     res=Screen('Resolution', scr.screenNumber);
     
     if res.width ~= 1600 || res.height ~= 1200 || res.pixelSize ~= 32 || res.hz ~= 60
-        error('Planar not in native resolution');
+        warning('Planar not in native resolution');
     end
 end

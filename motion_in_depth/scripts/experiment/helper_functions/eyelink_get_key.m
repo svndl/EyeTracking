@@ -67,13 +67,15 @@ function [key, el]=EyelinkGetKey(el)
 	%resp1_2 = Gamepad('GetButton', 1, 15);
 	%resp2_1 = Gamepad('GetButton', 1, 12);
 	%resp2_2 = Gamepad('GetButton', 1, 13);
-	
-	gp(1) = Gamepad('GetButton', 1, 14);
-	gp(2) = Gamepad('GetButton', 1, 15);
-	gp(3) = Gamepad('GetButton', 1, 12);
-	gp(4) = Gamepad('GetButton', 1, 13);
+	gp = 0;
+	try
+		gp(1) = Gamepad('GetButton', 1, 14);
+		gp(2) = Gamepad('GetButton', 1, 15);
+		gp(3) = Gamepad('GetButton', 1, 12);
+		gp(4) = Gamepad('GetButton', 1, 13);
 % 	gp5 = Gamepad('GetButton', 1, 5);
-	
+	catch 
+	end
 	if sum(gp) > 0
 		
 		keyCodes(el.space)=1;

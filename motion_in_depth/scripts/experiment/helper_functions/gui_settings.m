@@ -27,7 +27,7 @@ end
 % don't start experiment until all settings are selected
 go      = 0;
 subj    = 'XX';
-ipd     = 0;
+ipd     = 6.5;
 exp_mod = 0;
 num_trials = 0;
 update_num_trials(0);
@@ -223,7 +223,7 @@ end
         
         if exp_mod == 1
             set(warn_me,'String','WARNING: Exp modified, rename it','BackgroundColor',ColorIt('r'));
-            error('cannot run experiment without changing name')
+            warning('consider changing the name of the experiment')
         end
         
         close all;
@@ -687,13 +687,5 @@ end
         rectangle('Position',[box(1)-0.01,box(4),box(3) - box(1),box(2) + text_ht + 0.01 - box(4)])
         
         
-    end
-
-
-
-
-
-
-
-
+	end
 end

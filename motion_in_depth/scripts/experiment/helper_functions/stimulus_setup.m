@@ -50,11 +50,11 @@ switch scr.name
     
     case {'planar','laptopRB','LG3DRB','CinemaDisplayRB'}       % planar uses blue-left, red-right
         
-        stm.LEwhite = [stm.glevel stm.glevel stm.wlevel];
-        stm.LEblack = [stm.glevel stm.glevel stm.blevel];
+        stm.REwhite = [stm.glevel stm.glevel stm.wlevel];
+        stm.REblack = [stm.glevel stm.glevel stm.blevel];
         
-        stm.REwhite = [stm.wlevel stm.glevel stm.glevel];
-        stm.REblack = [stm.blevel stm.glevel stm.glevel];
+        stm.LEwhite = [stm.wlevel stm.glevel stm.glevel];
+        stm.LEblack = [stm.blevel stm.glevel stm.glevel];
         
     otherwise                                                   % other displays just use white/black
         
@@ -123,7 +123,7 @@ for d = 1:length(dat.dynamics)
 end
 
 if(isTooBigForRamp || isTooBigForStep || isTooBigForStepRamp)
-	error('need to increase calibration area in order to run this condition');
+	warning('need to increase calibration area in order to run this condition');
 end
 
 %  FIXATION  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

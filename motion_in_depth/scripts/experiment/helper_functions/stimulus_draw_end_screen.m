@@ -8,5 +8,5 @@ WaitSecs(0.1);
 
 % ask for response
 %Screen('DrawText', w, 'Respond now', scr.x_center_pix_right - 25, scr.y_center_pix_right - 50, stm.REwhite);
-Screen('DrawText', w, 'Respond now', scr.x_center_pix_left - 25, scr.y_center_pix_left - 50, stm.LEwhite);
+Screen('DrawText', w, 'Respond now', scr.x_center_pix_left - 25, scr.y_center_pix_left, stm.LEwhite);
 Screen('Flip', w);
