@@ -20,7 +20,7 @@ function result=eyelink_do_cali_steps(el, sendkey)
 % Emily renamed and cleaned up this PTB code
 
 
-result = -1;
+result  =   -1;
 if nargin < 1
 	error( 'USAGE: result=EyelinkDoTrackerSetup(el [,sendkey])' );
 end

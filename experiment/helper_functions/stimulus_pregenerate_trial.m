@@ -1,4 +1,4 @@
-function [dotsLEcr, dotsREcr] = stimulus_pregenerate_trial(scr, stm, condition, dynamics, direction, delay)
+function [dotsLEcr,dotsREcr] = stimulus_pregenerate_trial(scr,stm,condition,dynamics,direction,delay)
 %
 % pre-generate stimulus frames for this trial
 % if stimType is delay, this is for a radnom delay period with no motion
@@ -43,7 +43,7 @@ for x = 1:length(disparities)
 			
 		case {'Mixed','MixedIncons','MixedCons'}
 			
-			[dots] = stimulus_make_random_dots(stm.dotSizePix,stm.xmax,stm.ymax,round(stm.numDots/2));
+			[dots] = stimulus_make_random_dots(stm.xmax,stm.ymax,round(stm.numDots/2));
 			
 			dotsLE(:,1:round(stm.numDots/2))      = dots;
 			dotsRE(:,1:round(stm.numDots/2))      = dots;

@@ -1,15 +1,10 @@
-function eyelink_init_connection(rec)
-%
-% connect to Eyelink eyetracker
+function elConnStatus = eyelink_init_connection
+	elConnStatus = 0;
 
-if rec
-    
-    if ~EyelinkInit(0, 1)                       % try to initialize eyelink connection
+    if (~EyelinkInit(0, 1))                       
         fprintf('Eyelink Init aborted.\n');
-        cleanup;
-        return;
-    end
-    
-    % make sure that we get href data from the Eyelink
-    Eyelink('Command', 'link_sample_data = LEFT,RIGHT,HREF,AREA');
+	else
+		Eyelink('Command', 'link_sample_data = LEFT,RIGHT,HREF,AREA');
+		elConnStatus = 1;			
+	end
 end

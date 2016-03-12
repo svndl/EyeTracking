@@ -1,20 +1,18 @@
-function pathData = make_data_dirs(dirData, experiment_subj, experiment_name)
+function dat = make_data_dirs(dat)
 
 %make data dirs
-    pathData.dirTrack = fullfile(dirData, 'tracking', experiment_subj, experiment_name);
-    pathData.dirStim  = fullfile(dirData, 'stimulus', experiment_subj, experiment_name);
-    pathData.dirTrain = fullfile(dirData, 'training', experiment_subj, experiment_name);
+dat.data_track_dir  = ['../../data/tracking/' dat.subj '/' dat.exp_name '/'];
+dat.data_stim_dir   = ['../../data/stimulus/' dat.subj '/' dat.exp_name '/'];
+dat.data_train_dir  = ['../../data/training/' dat.subj '/' dat.exp_name '/'];
 
-    if ~exist(pathData.dirTrack, 'dir')
-        mkdir(pathData.dirTrack);
-    end
+if ~exist(dat.data_track_dir, 'dir')
+    mkdir(dat.data_track_dir);
+end
 
-    if ~exist(pathData.dirStim, 'dir')
-        mkdir(pathData.dirStim);
-    end
+if ~exist(dat.data_stim_dir, 'dir')
+    mkdir(dat.data_stim_dir);
+end
 
-    if ~exist(pathData.dirTrain, 'dir')
-        mkdir(pathData.dirTrain);
-    end
-    
+if ~exist(dat.data_train_dir, 'dir')
+    mkdir(dat.data_train_dir);
 end
