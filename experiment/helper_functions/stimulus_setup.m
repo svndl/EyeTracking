@@ -5,37 +5,10 @@ function [dat,scr,stm] = stimulus_setup(dat, scr)
 
 %  SCREEN  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-scr.cm2pix              = scr.width_pix/scr.width_cm;                           % conversion for cm to pixels
-scr.pix2arcmin          = 2*60*atand(0.5/(scr.viewDistCm*scr.cm2pix));          % conversion from pixels to arcminutes
+	if dat.dispArcmin < scr.pix2arcmin; 
+		warning('disparity requested is less than 1 pixel'); 
+	end
 
-display(['1 pixel = ' num2str(scr.pix2arcmin,2) ' arcmin']);
-if dat.dispArcmin < scr.pix2arcmin; error('disparity requested is less than 1 pixel'); end
-
-scr.x_center_pix        = scr.width_pix/2;                                      % l/r screen center
-scr.y_center_pix        = scr.height_pix/2 - (scr.stimCenterYCm*scr.cm2pix);    % u/d screen center
-
-scr.y_center_pix_left   = scr.y_center_pix;                                     % left eye right eye centers...
-scr.y_center_pix_right  = scr.y_center_pix;
-
-scr.x_center_pix_left   = scr.x_center_pix - (scr.prismShiftCm*scr.cm2pix);
-scr.x_center_pix_right  = scr.x_center_pix + (scr.prismShiftCm*scr.cm2pix);
-
-% handle calibration screen brightness
-if sum(ismember(dat.conditions,'SingleDot')) > 0        % if there is a single dot condition      
-   
-    if numel(dat.conditions) == 1                       % if this is the only condition
-        scr.calicolor = [0 0 0];                        % make the calibration screen black
-    else
-        scr.calicolor = [26 26 26];                     % otherwise just a little brighter as a compromise
-    end
-    
-else                                                    % if there is no single dot condition
-	scr.calicolor = [52 52 52];                         % brighten the screen to try to match multidot display
-end
-
-scr.caliRadiusDeg		= 8;			% this is the region of the screen that will be covered by calibration dots
-scr.caliRadiusPixX       = ceil(scr.caliRadiusDeg*60*(1/scr.pix2arcmin)); % converted to pixels
-scr.caliRadiusPixY       = scr.caliRadiusPixX/2; % y radius is half the size
 
 %  STIMULUS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

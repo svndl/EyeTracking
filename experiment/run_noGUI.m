@@ -26,6 +26,14 @@ function run_noGUI
 	[scr, w, ~]   = screen_setup(videoMode);     
 	[session, keys]   = keys_setup(session);
 	
+	%mkdir
+	
+	paradigmStr = fullfile(session.directories.data, session.paradigmStr);
+	
+	if (~exist(paradigmStr, 'dir'))
+		mkdir(paradigmStr);
+	end
+	
 
 	
 	if (session.recording)

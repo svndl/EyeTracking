@@ -19,8 +19,12 @@ function eyelink_transfer_file(dat, edfFile, fileStr)
     
 		%move and convert file
 	
-		filename = fullfile(dat.directories, dat.paradigmStr, dat.subj, [fileStr dat.timeStamp '.edf']);
-		movefile(edfFile, filename);
+		filename = fullfile(dat.directories.data, dat.paradigmStr, [dat.subj fileStr dat.timeStamp '.edf']);
+		try
+			movefile(edfFile, filename);
+		catch
+			movefile(edfFile, [dat.subj fileStr dat.timeStamp '.edf']);
+		end
 		command = ['/Applications/EyeLink/edfapi\ universal/edf2asc -sh ' filename];
 		[~, ~] = system(command);
 	end
