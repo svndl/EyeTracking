@@ -1,8 +1,10 @@
 function [scr, w, winRect] = screen_setup(inputScr)
-%
 % open and set up PTB screen window
+% get running videosystem parameters (resolution, framerate)
+% update screen info structure 
 
 	scr = inputScr;
+	
 	scr.screenNumber = max(Screen('Screens'));      % Use max screen number
 	PsychImaging('PrepareConfiguration');       % Prepare pipeline for configuration.
 
@@ -44,15 +46,16 @@ function [scr, w, winRect] = screen_setup(inputScr)
 		end
 	end
 
-	scr.cm2pix              = scr.width_pix/scr.width_cm;                           % conversion for cm to pixels
-	scr.pix2arcmin          = 2*60*atand(0.5/(scr.viewDistCm*scr.cm2pix));          % conversion from pixels to arcminutes
+	
+	scr.cm2pix              = scr.width_pix/scr.width_cm;                           
+	scr.pix2arcmin          = 2*60*atand(0.5/(scr.viewDistCm*scr.cm2pix));          
 
 	display(['1 pixel = ' num2str(scr.pix2arcmin,2) ' arcmin']);
 
-	scr.x_center_pix        = scr.width_pix/2;                                      % l/r screen center
-	scr.y_center_pix        = scr.height_pix/2 - (scr.stimCenterYCm*scr.cm2pix);    % u/d screen center
+	scr.x_center_pix        = scr.width_pix/2;                                      
+	scr.y_center_pix        = scr.height_pix/2 - (scr.stimCenterYCm*scr.cm2pix);    
 
-	scr.y_center_pix_left   = scr.y_center_pix;                                     % left eye right eye centers...
+	scr.y_center_pix_left   = scr.y_center_pix;                                     
 	scr.y_center_pix_right  = scr.y_center_pix;
 
 	scr.x_center_pix_left   = scr.x_center_pix - (scr.prismShiftCm*scr.cm2pix);
@@ -61,6 +64,12 @@ function [scr, w, winRect] = screen_setup(inputScr)
     scr.calicolor = [0 0 0];                      
 
 	scr.caliRadiusDeg		= 8;
-	scr.caliRadiusPixX       = ceil(scr.caliRadiusDeg*60*(1/scr.pix2arcmin));
-	scr.caliRadiusPixY       = scr.caliRadiusPixX/2; 
+	scr.caliRadiusPixX      = ceil(scr.caliRadiusDeg*60*(1/scr.pix2arcmin));
+	scr.caliRadiusPixY      = scr.caliRadiusPixX/2;
+	
+	scr.Yscale = 1;
+	
+	if scr.topbottom == 1
+		scr.Yscale = 0.5;
+	end
 end

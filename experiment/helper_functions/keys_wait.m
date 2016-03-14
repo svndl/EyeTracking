@@ -1,7 +1,7 @@
-function keys_wait(keys,dat)
+function keys_wait(keys, stm)
 
 %check for space bar or A gamepad button
-[keyIsDown, secs, keyCode] = KbCheck();
+[keyIsDown, ~, keyCode] = KbCheck();
 
 if ~isempty(GetGamepadIndices)
 	goBn(1) = Gamepad('GetButton', 1, keys.goGP1);
@@ -14,7 +14,7 @@ end
 
 while ~keyCode(keys.esc) && ~keyCode(keys.space) && ~sum(goBn)
 	
-	[keyIsDown, secs, keyCode] = KbCheck();
+	[keyIsDown, ~, keyCode] = KbCheck();
 	
 	if ~isempty(GetGamepadIndices)
 		goBn(1) = Gamepad('GetButton', 1, keys.goGP1);
@@ -25,14 +25,12 @@ while ~keyCode(keys.esc) && ~keyCode(keys.space) && ~sum(goBn)
 	
 end
 
-if keyCode(keys.esc)
-	
-	cleanup(1,dat);
-	
+if keyCode(keys.esc)	
+	cleanup(1, stm);
 end
 
 while keyIsDown || sum(goBn) == 1
-	[keyIsDown, secs, keyCode] = KbCheck();
+	[keyIsDown, ~, ~] = KbCheck();
 	if ~isempty(GetGamepadIndices)
 		goBn(1) = Gamepad('GetButton', 1, keys.goGP1);
 		goBn(2) = Gamepad('GetButton', 1, keys.goGP2);

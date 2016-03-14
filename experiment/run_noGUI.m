@@ -8,9 +8,9 @@ function run_noGUI
 	videoMode = getVideoMode(videoDisplay);
 		
 		% experiment params
-	conditions.cues = {'CDOT', 'IOVD'};
-	conditions.directions = {'left', 'right'};
-	conditions.dynamics = {'ramp'};
+	conditions.cues = {'SingleDot'};
+	conditions.directions = {'right'};
+	conditions.dynamics = {'stepramp'};
 		
 	subj.name = 'Tester';
 	subj.ipd = 6.5;
@@ -66,39 +66,35 @@ function run_noGUI
 	for s = 1:numel(dataCombs)
 		dat = dataCombs{s};
 		dat.timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
-
-		
 		% RUN TRIALS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-		[dat, scr, stm] = stimulus_setup(dat, scr);   % stimulus properties
-
-		for t = 1:length(dat.trials.trialnum)                   % for each trial
+		stm = stimulus_setup(dat, scr);   % stimulus properties		
+		stm.recording = dat.recording;
+		
+		for t = 1:length(stm.trials.trialnum)                   % for each trial
     
 			% trial info
-			trial           = dat.trials.trialnum(t);           % which stimulus index to take
-			condition       = dat.trials.condition{trial};      % condition
-			dynamics        = dat.trials.dynamics{trial};       % dynamics
-			direction       = dat.trials.direction{trial};      % towards, away, left, right
-			delay           = dat.trials.delayUpdates(trial);   % number of dot updates to delay before prelude
-			display(['trial ' num2str(t) '/' num2str(length(dat.trials.trialnum)) ' ' ...
-				condition ' ' dynamics ' ... direction = ' direction ...
-				'params = ' dat.paradigmParamsStr]);
-    
+			trial           = stm.trials.trialnum(t);           % which stimulus index to take
+			condition       = stm.trials.condition{trial};      % condition
+			dynamics        = stm.trials.dynamics{trial};       % dynamics
+			direction       = stm.trials.direction{trial};      % towards, away, left, right
+			delay           = stm.trials.delayUpdates(trial);   % number of dot updates to delay before prelude
+			display(['trial ' num2str(t) '/' num2str(length(stm.trials.trialnum)) ' ' ...
+				condition ' ' dynamics ' ... direction = ' direction])    
     
 			% pre-generate stimulus frames for this trial (and for the random delay period)
 			[dotsLE, dotsRE]   = stimulus_pregenerate_trial(scr, stm, condition, dynamics, direction, delay);
     
     
 			% initialize trial
-			stimulus_draw_fixation(w,scr,dat,stm,1);                % static fixation pattern before stimulus
-			keys_wait(keys,dat)                                     % subject starts trials
+			stimulus_draw_fixation(w, scr, stm, 1);                % static fixation pattern before stimulus
+			keys_wait(keys, stm)                                     % subject starts trials
 		
 		
-			if (dat.recording) 
+			if (stm.recording) 
 				Eyelink('StartRecording');  
 			end       
 			% show trial (with random delay first)
-			dat = stimulus_draw_trial(w, trial, dotsLE, dotsRE, dat, stm, scr, condition, dynamics, direction, delay);
+			stm = stimulus_draw_trial(w, trial, dotsLE, dotsRE, dat, stm, scr, condition, dynamics, direction, delay);
     
     
 			% clear screen at end
@@ -107,31 +103,32 @@ function run_noGUI
     
 			% get subject responses
 			while keys.isDown == 0
-				[dat,keys] = keys_get_response(keys,dat,stm,trial,direction);
+				[stm,keys] = keys_get_response(keys, stm, trial, direction);
 			end
 			keys.isDown = 0;
     
 		end
 
 		% aggregate and save data structures
-		dat.keys            = keys;
-		dat.display_info    = scr;
-		dat.stim_info       = stm;
+		stm.keys            = keys;
+		stm.display_info    = scr;
+		
+		stm.paradigmDir = fullfile(dat.directories.data, dat.paradigmStr, [dat.subj dat.timeStamp]);
+		
 		try
-			store_results(dat);
+			store_results(stm);
 		catch
 			saveStr = strcat(dat.subj, '_', dat.timeStamp);
 			display(['Could not save the session in requested folder, saving here as ' saveStr]);
-			save([saveStr '.mat'], 'dat');
+			save([saveStr '.mat'], 'stm');
 		end
 		% exit
-		%Screen('DrawText', w, 'Done', scr.x_center_pix_right - 25, scr.y_center_pix_right - 50, dat.stim_info.REwhite);
 		Screen('DrawText', w, ['Done block' num2str(s) ' of' num2str(numel(dataCombs)) ' '], ...
 			scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
 		Screen('Flip', w);
 		WaitSecs(2);
 	end
-	cleanup(0, dat);	
+	cleanup(0, stm);	
 end
 
 function scr = getVideoMode(displayName)

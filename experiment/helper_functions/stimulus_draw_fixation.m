@@ -1,4 +1,4 @@
-function stimulus_draw_fixation(w,scr,dat,stm,flipIt)
+function stimulus_draw_fixation(w, scr, stm, flipIt)
 %
 % draws binocular fixation nonius to the screen, if flipIt is 1, then draw
 % full nonius and flip, if flipIt is 0, draw only verticals and wait to
