@@ -9,8 +9,8 @@ function run_noGUI
 		
 		% experiment params
 	conditions.cues = {'SingleDot'};
-	conditions.directions = {'right'};
-	conditions.dynamics = {'stepramp'};
+	conditions.directions = {'right sine'};
+	conditions.dynamics = {'ramp'};
 		
 	subj.name = 'Tester';
 	subj.ipd = 6.5;

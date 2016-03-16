@@ -19,6 +19,8 @@ switch dynamics
 		
 	case 'stepramp'
 		disparities = stm.dynamics.stepramp;
+	case 'stepramp_same'
+		disparities = stm.dynamics.stepramp_same;
 		
 	otherwise
 		error('not a valid experiment type');
@@ -47,7 +49,7 @@ for x = 1:length(disparities)
 			
 			dotsLE(:,1:round(stm.numDots/2))      = dots;
 			dotsRE(:,1:round(stm.numDots/2))      = dots;
-			
+						
 	end
 	
 	% generate LE and RE shifts for this frame
@@ -79,10 +81,23 @@ for x = 1:length(disparities)
 			dotsLEall = dotsLE - shiftLE;
 			dotsREall = dotsRE - shiftRE;
 			
-		case 'right'
+		case 'right sine'
 			
-			dotsLEall = dotsLE + shiftLE;
-			dotsREall = dotsRE + shiftRE;
+			
+			dotsLEall(1) = dotsLE(1) + shiftLE(1);
+			dotsREall(1) = dotsRE(1) + shiftRE(1);
+			
+			dotsLEall(2) = stm.amplitudePix*sin(stm.freqHz*dotsLEall(1));
+			dotsREall(2) = stm.amplitudePix*sin(stm.freqHz*dotsREall(1));
+
+			
+		case 'left sine'			
+			dotsLEall = dotsLE(1) - shiftLE(1);
+			dotsREall = dotsRE(1) - shiftRE(1);
+			
+			dotsLEall(2) = stm.amplitudePix*sin(stm.freqHz*dotsLEall(1));
+			dotsREall(2) = stm.amplitudePix*sin(stm.freqHz*dotsREall(1));
+
 			
 		otherwise
 			

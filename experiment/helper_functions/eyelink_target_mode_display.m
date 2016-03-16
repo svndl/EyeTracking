@@ -1,4 +1,4 @@
-function result=eyelink_target_mode_display(el)
+function result = EyelinkTargetDisplay(el)
 
 % USAGE: result=EyelinkTargetModeDisplay(el)
 %
@@ -10,27 +10,28 @@ function result=eyelink_target_mode_display(el)
 %   22-06-06    fwc OSX-ed
 
 
-result=-1; % initialize
-if nargin < 1
-	error( 'USAGE: result=EyelinkTargetModeDisplay(el)' );
-end
+	result=-1; % initialize
+	if nargin < 1
+		error( 'USAGE: result=EyelinkTargetModeDisplay(el)' );
+	end
 
-targetvisible = 0;	% target currently drawn
-targetrectL=[0 0 0 0];
-targetrectR=[0 0 0 0];
+	targetvisible = 0;	% target currently drawn
+	targetrectL = zeros(1, 4);
+	targetrectR = zeros(1, 4);
 
-tx=el.MISSING;
-ty=el.MISSING;
+	targetX = el.MISSING;
+	targetY = el.MISSING;
 
-otx=el.MISSING;    % current target position
-oty=el.MISSING;
+	otx = el.MISSING;    
+	oty = el.MISSING;
 
-EyelinkClearCalDisplay(el);	% setup_cal_display()
+	EyelinkClearCalDisplay(el);	% setup_cal_display()
 
-key=1;
-while key~= 0
-	[key, el]=EyelinkGetKey(el);		% dump old keys
-end
+	key = 1;
+	
+	while key~= 0
+		[key, el] = EyelinkGetKey(el);		% dump old keys
+	end
 				% LOOP WHILE WE ARE DISPLAYING TARGETS
 stop=0;
 
@@ -72,46 +73,46 @@ while stop==0 && bitand(Eyelink('CurrentMode'), el.IN_TARGET_MODE)
 
 
 				% HANDLE TARGET CHANGES
-	[result, tx, ty]= Eyelink( 'TargetCheck');
+	[result, targetX, targetY]= Eyelink( 'TargetCheck');
 	
 	%tx
     %ty
 	% erased or moved: erase target
-	if (targetvisible==1 && result==0) || tx~=otx || ty~=oty
+	if (targetvisible==1 && result==0) || targetX~=otx || targetY~=oty
 		EyelinkEraseCalTarget(el, targetrectL);
         EyelinkEraseCalTarget(el, targetrectR);
 		targetvisible = 0;
 	end
 	% redraw if invisible
 	if targetvisible==0 && result==1
- 		fprintf( 'Target drawn at: x=%d, y=%d\n', tx, ty );
+ 		fprintf( 'Target drawn at: x=%d, y=%d\n', targetX, targetY );
 		
-		[targetrectL, targetrectR]=eyelink_draw_cal_target(el, tx, ty);
+		[targetrectL, targetrectR]=eyelink_draw_cal_target(el, targetX, targetY);
 		targetvisible = 1;
-		otx = tx;		% record position for future tests
-		oty = ty;
+		otx = targetX;		% record position for future tests
+		oty = targetY;
 		if el.targetbeep==1
 			EyelinkCalTargetBeep(el);	% optional beep to alert subject
 		end
 	end
 	
-end % while IN_TARGET_MODE
+	end % while IN_TARGET_MODE
 
 
-% exit:					% CLEAN UP ON EXIT
-if el.targetbeep==1
-	if Eyelink('CalResult')==1  % does 1 signal success?
-		EyelinkCalDoneBeep(el, 1);
-	else
-	  	EyelinkCalDoneBeep(el, -1);
+	% exit:					% CLEAN UP ON EXIT
+	if el.targetbeep == 1
+		if Eyelink('CalResult') == 1
+			EyelinkCalDoneBeep(el, 1);
+		else
+			EyelinkCalDoneBeep(el, -1);
+		end
 	end
-end
   
-if targetvisible==1
-	%EyelinkEraseCalTarget(el, targetrectL);   % erase target on exit, bit superfluous actually
-    %EyelinkEraseCalTarget(el, targetrectR);   % erase target on exit, bit superfluous actually
-end
-EyelinkClearCalDisplay(el); % clear_cal_display();
+% 	if targetvisible==1
+% 	%EyelinkEraseCalTarget(el, targetrectL);   % erase target on exit, bit superfluous actually
+%     %EyelinkEraseCalTarget(el, targetrectR);   % erase target on exit, bit superfluous actually
+% 	end
+	EyelinkClearCalDisplay(el); % clear_cal_display();
 
-result=0;
-return;
+	result = 0;
+end

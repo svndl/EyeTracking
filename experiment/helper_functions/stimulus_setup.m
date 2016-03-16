@@ -8,7 +8,9 @@ function stim_session = stimulus_setup(stimset, videoMode)
 
 
 	%%  STIMULUS
-
+	stim_session.amplitudePix    = 60*stimset.amplitudeDeg/videoMode.pix2arcmin;
+	stim_session.freqHz              = stimset.freqHz;
+	
 	stim_session.dispPix         = stimset.dispArcmin/videoMode.pix2arcmin;
 	
 	% end full disparity of ramp in degrees/pixels relative to start position
@@ -46,19 +48,27 @@ function stim_session = stimulus_setup(stimset, videoMode)
 	rampDisparity = linspace(stim_session.rampEndDispPix/stim_session.numUpdates, ...
 		stim_session.rampEndDispPix, stim_session.numUpdates);
 	
+	%% linear motion
 	% set up step, ramp, stepramp updates
 	stim_session.dynamics.step     = [ preludeDisparity repmat(stim_session.dispPix, 1, stim_session.numUpdates)];   
 	stim_session.dynamics.ramp     = [ preludeDisparity rampDisparity];
-	stim_session.dynamics.stepramp = [ preludeDisparity stim_session.dispPix - linspace(0, stim_session.rampEndDispPix - ...
-		(stim_session.rampEndDispPix/stim_session.numUpdates), stim_session.numUpdates)];
-
+	
+	steprampDisparity = linspace(0, stim_session.rampEndDispPix - ...
+		(stim_session.rampEndDispPix/stim_session.numUpdates), stim_session.numUpdates);
+	
+	
+	%opposite direction ramp
+	stim_session.dynamics.stepramp = [ preludeDisparity stim_session.dispPix - steprampDisparity];
+	
+	%same direction ramp
+	stim_session.dynamics.stepramp_same = [ preludeDisparity stim_session.dispPix + steprampDisparity];
 
 	% conditions should not don't exceed calibration area
 	isTooBigForRamp = max(stim_session.dynamics.ramp/2) > videoMode.caliRadiusPixX;
 	isTooBigForStep = max(stim_session.dynamics.step/2) > videoMode.caliRadiusPixX;
 	isTooBigForStepRamp = max(stim_session.dynamics.stepramp/2) > videoMode.caliRadiusPixX;
 
-
+	
 	if(isTooBigForRamp || isTooBigForStep || isTooBigForStepRamp)
 		warning('need to increase calibration area in order to run this condition');
 	end
