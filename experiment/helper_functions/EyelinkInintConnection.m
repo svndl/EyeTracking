@@ -1,4 +1,4 @@
-function elConnStatus = eyelink_init_connection
+function elConnStatus = EyelinkInitConnection
 	elConnStatus = 0;
 
     if (~EyelinkInit(0, 1))                       

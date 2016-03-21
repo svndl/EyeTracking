@@ -1,4 +1,4 @@
-function eyelink_set_targets(scr)
+function EyelinkSetTargets(scr)
 %
 % set target locations and adjust screen size for planar
 

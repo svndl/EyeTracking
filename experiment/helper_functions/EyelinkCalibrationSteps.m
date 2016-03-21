@@ -1,4 +1,4 @@
-function result=eyelink_do_cali_steps(el, sendkey)
+function result = EyelinkCalibrationSteps(el, sendkey)
 
 % USAGE: result=EyelinkDoTrackerSetup(el [, sendkey])
 %

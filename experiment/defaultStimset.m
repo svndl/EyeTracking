@@ -14,7 +14,7 @@ function dat = defaultStimset
 	% timing
 	dat.preludeSec      = 0.25;      % delay before motion onset
 	dat.cycleSec        = 2;      % duration of stimulus after prelude
-	dat.cond_repeats    = 1;      % number of repeats per condition
+	dat.trialRepeats    = 1;      % number of repeats per condition
 	
 	dat.amplitudeDeg    = 0.2;
 	dat.freqHz          = 0.5;

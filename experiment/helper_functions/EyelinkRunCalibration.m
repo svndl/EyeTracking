@@ -1,4 +1,4 @@
-function eyelink_run_calibration(dat, scr, el)
+function EyelinkRunCalibration(stm, scr, el)
   
     eyelink_set_targets(scr)                     % setup target locations on screen
     
@@ -8,12 +8,12 @@ function eyelink_run_calibration(dat, scr, el)
     %%%%% CALIBRATE EYETRACKER %%%%%
     %pressing v will start validation
     %press esc when finished
-    eyelink_do_cali_steps(el, 'c');
+    EyelinkCalibrationSteps(el, 'c');
     
     % transfer file
     Eyelink('CloseFile');
 	try
-		eyelink_transfer_file(dat, 'tmp.edf','_calibration_')
+		EyelinkTransferFile(stm, 'tmp.edf','_calibration_')
 	catch
 		disp('Could not transfer file, consider restarting ET session');
 	end

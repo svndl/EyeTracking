@@ -7,10 +7,7 @@ function stim_session = setupStimSession(stimset, videoMode)
 	end
 
 
-	%%  STIMULUS
-	stim_session.amplitudePix    = 60*stimset.amplitudeDeg/videoMode.pix2arcmin;
-	stim_session.freqHz              = stimset.freqHz;
-	
+	%%  STIMULUS	
 	stim_session.dispPix         = stimset.dispArcmin/videoMode.pix2arcmin;
 	
 	% end full disparity of ramp in degrees/pixels relative to start position
@@ -50,59 +47,65 @@ function stim_session = setupStimSession(stimset, videoMode)
 	
 	%% linear motion
 	% set up step, ramp, stepramp updates
-	stim_session.dynamics.step     = [ preludeDisparity repmat(stim_session.dispPix, 1, stim_session.numUpdates)];   
-	stim_session.dynamics.ramp     = [ preludeDisparity rampDisparity];	
+	stim_session.step     = [ preludeDisparity repmat(stim_session.dispPix, 1, stim_session.numUpdates)];   
+	stim_session.ramp     = [ preludeDisparity rampDisparity];	
 	
 
 	% conditions should not don't exceed calibration area
-	isTooBigForRamp = max(stim_session.dynamics.ramp/2) > videoMode.caliRadiusPixX;
-	isTooBigForStep = max(stim_session.dynamics.step/2) > videoMode.caliRadiusPixX;
+	isTooBigForRamp = max(stim_session.ramp/2) > videoMode.caliRadiusPixX;
+	isTooBigForStep = max(stim_session.step/2) > videoMode.caliRadiusPixX;
 
 	
-	if(isTooBigForRamp || isTooBigForStep ||)
+	if(isTooBigForRamp || isTooBigForStep)
 		warning('need to increase calibration area in order to run this condition');
 	end
+	
+	stim_session.dynamics = stimset.dynamics;
+	stim_session.directions = stimset.directions;
+	stim_session.motiontype = stimset.motiontype;
+	stim_session.nTrials = stimset.trialRepeats;
+	stim_session.condition = stimset.conditions;
 
-	%%  TRIAL STRUCTURE 
-	combTrials = allcombs(stimset.conditions, stimset.dynamics, stimset.directions);
-	
-	
-% 	trials.condition        = {};	
-% 	trials.dynamics         = {};
-% 	trials.direction        = {};
-% 	% 
+% 	%%  TRIAL STRUCTURE 
+% 	combTrials = allcombs(stimset.conditions, stimset.dynamics, stimset.directions);
 % 	
-% 	trials.repeat           = [];	
+% 	
+% % 	trials.condition        = {};	
+% % 	trials.dynamics         = {};
+% % 	trials.direction        = {};
+% % 	% 
+% % 	
+% % 	trials.repeat           = [];	
+% % 
+% % 	for c = 1:length(stimset.conditions)
+% %     
+% % 		for d = 1:length(stimset.dynamics)
+% %         
+% % 			for n = 1:length(stimset.directions)
+% %             
+% % 				for r = 1:stimset.cond_repeats
+% %                 
+% % 					trials.condition    = [stim_session.trials.condition ; stimset.conditions{c}];
+% % 					trials.dynamics     = [stim_session.trials.dynamics ; stimset.dynamics{d}];
+% % 					trials.direction    = [stim_session.trials.direction ; stimset.directions{n}];
+% % 					trials.repeat       = [stim_session.trials.repeat ; r];
+% %                 
+% % 				end
+% % 			end     
+% % 		end
+% % 	end
+% 	
+% 	% randomize trial order
+% 	trials.trialnum = randperm(length(combTrials));
 % 
-% 	for c = 1:length(stimset.conditions)
-%     
-% 		for d = 1:length(stimset.dynamics)
-%         
-% 			for n = 1:length(stimset.directions)
-%             
-% 				for r = 1:stimset.cond_repeats
-%                 
-% 					trials.condition    = [stim_session.trials.condition ; stimset.conditions{c}];
-% 					trials.dynamics     = [stim_session.trials.dynamics ; stimset.dynamics{d}];
-% 					trials.direction    = [stim_session.trials.direction ; stimset.directions{n}];
-% 					trials.repeat       = [stim_session.trials.repeat ; r];
-%                 
-% 				end
-% 			end     
-% 		end
-% 	end
-	
-	% randomize trial order
-	trials.trialnum = randperm(length(combTrials));
-
-	% emptry response arrays
-	trials.resp         = cell(1, length(trials.condition));
-	trials.respCode     = NaN*ones(1, length(trials.condition));
-	trials.isCorrect    = zeros(1, length(trials.condition));
-
-	% generate random delay period for each trial
-	trials.delayTimeSec = randi([250 750], 1, length(trials.condition))./1000;
-	trials.delayUpdates = round(stimset.dotUpdateHz*trials.delayTimeSec);
+% 	% emptry response arrays
+% 	trials.resp         = cell(1, length(trials.condition));
+% 	trials.respCode     = NaN*ones(1, length(trials.condition));
+% 	trials.isCorrect    = zeros(1, length(trials.condition));
+% 
+% 	% generate random delay period for each trial
+% 	trials.delayTimeSec = randi([250 750], 1, length(trials.condition))./1000;
+% 	trials.delayUpdates = round(stimset.dotUpdateHz*trials.delayTimeSec);
 
 
 	%% SOUND %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

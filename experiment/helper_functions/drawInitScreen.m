@@ -9,3 +9,4 @@ function [] = drawInitScreen(el, scr, window)
 	rectt = CenterRectOnPoint([0 0 size2 size2], width/2, height/2);
 	Screen( 'FillOval', window, [el.foregroundcolour],  rectt );
 	Screen('Flip',  window, [], 1);
+end

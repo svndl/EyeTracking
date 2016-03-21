@@ -1,4 +1,4 @@
-function store_results(stm)
+function saveTrialData(stm)
 %
 % store stimulus info, behavioral and eyetracking data
 

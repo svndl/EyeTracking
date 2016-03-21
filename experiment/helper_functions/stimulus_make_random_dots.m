@@ -1,12 +1,12 @@
-function [dots] = stimulus_make_random_dots(xmax,ymax,numDots)
-%
-% make coordinates 
-% Stimulus settings:
-dots = zeros(2, numDots);
+function [dots] = stimulus_make_random_dots(xmax, ymax, numDots)
+	%
+	% make coordinates 
+	% Stimulus settings:
+	dots = zeros(2, numDots);
 
-xmax = min(xmax, ymax) / 2;
-ymax = xmax;
+	xmax = min(xmax, ymax) / 2;
+	ymax = xmax;
 
-dots(1, :) = 2*(xmax)*rand(1, numDots) - xmax;
-dots(2, :) = 2*(ymax)*rand(1, numDots) - ymax;
-
+	dots(1, :) = 2*(xmax)*rand(1, numDots) - xmax;
+	dots(2, :) = 2*(ymax)*rand(1, numDots) - ymax;
+end

@@ -1,4 +1,4 @@
-function [dotsLEcr,dotsREcr] = stimulus_pregenerate_trial(scr,stm,condition,dynamics,direction,delay)
+function [dotsLEcr,dotsREcr] = stimulus_pregenerate_trial(scr, stm, condition, dynamics, direction, delay)
 %
 % pre-generate stimulus frames for this trial
 % if stimType is delay, this is for a radnom delay period with no motion
@@ -81,17 +81,24 @@ for x = 1:length(disparities)
 			dotsLEall = dotsLE - shiftLE;
 			dotsREall = dotsRE - shiftRE;
 			
-		case 'right sine'
+		case 'right'
 			
-			
-			dotsLEall(1) = dotsLE(1) + shiftLE(1);
-			dotsREall(1) = dotsRE(1) + shiftRE(1);
-			
-			dotsLEall(2) = stm.amplitudePix*sin(stm.freqHz*dotsLEall(1));
-			dotsREall(2) = stm.amplitudePix*sin(stm.freqHz*dotsREall(1));
+			dotsLEall = dotsLE + shiftLE;
+			dotsREall = dotsRE - shiftRE;
 
+		case 'right sin'
 			
-		case 'left sine'			
+			dotsTmpL =  dotsLE + shiftLE;
+			dotsTmpR =  dotsRE - shiftRE;
+						
+			dotsLEall = dotsTmpL;
+			dotsREall = dotsTmpR;
+			
+		case 'left sin'	
+			
+			dotsTmpL =  dotsLE - shiftLE;
+			dotsTmpR =  dotsRE - shifktRE;
+			
 			dotsLEall = dotsLE(1) - shiftLE(1);
 			dotsREall = dotsRE(1) - shiftRE(1);
 			

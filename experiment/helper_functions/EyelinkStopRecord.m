@@ -1,4 +1,4 @@
-function eyelink_end_recording(condition,dynamics,direction,trial)
+function EyelinkStopRecord(condition,dynamics,direction,trial)
 %
 % stop recording for trial and inset flag with response info
 

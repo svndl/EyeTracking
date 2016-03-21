@@ -11,3 +11,4 @@ function drawTrialEndScreen(w, scr)
 	% planar 
 	Screen('DrawText', w, 'Respond now', scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
 	Screen('Flip', w);
+end

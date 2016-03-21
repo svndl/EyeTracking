@@ -1,4 +1,4 @@
-function eyelink_transfer_file(stm, edfFile, fileStr)
+function EyelinkTransferFile(stm, edfFile, fileStr)
 
     
 	if ~isempty(edfFile)
@@ -19,7 +19,7 @@ function eyelink_transfer_file(stm, edfFile, fileStr)
     
 		%move and convert file
 	
-		filename = [stm.paradigmDir fileStr '.edf'];
+		filename = [stm.saveDir filesep fileStr '.edf'];
 		try
 			movefile(edfFile, filename);
 		catch

@@ -1,4 +1,4 @@
-function [rectL, rectR]=eyelink_draw_cal_target(el, x, y)
+function [rectL, rectR] = EyelinkDrawTarget(el, x, y)
 
 % draw simple calibration target
 %

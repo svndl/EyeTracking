@@ -72,4 +72,15 @@ function [scr, w, winRect] = setupVideoMode(inputScr)
 	if scr.topbottom == 1
 		scr.Yscale = 0.5;
 	end
+	
+	scr.fixationRadiusDeg = 1;
+	scr.fixationRadiusPix = (60*scr.fixationRadiusDeg)/scr.pix2arcmin;
+	scr.fixationRadiusSqPix = scr.fixationRadiusPix^2;
+
+	scr.fixationDotRadiusDeg = 0.125;
+	scr.fixationDotRadiusPix = (60*scr.fixationDotRadiusDeg)/scr.pix2arcmin;
+
+	scr.fixationRadiusYPix = scr.fixationRadiusPix*scr.Yscale;
+	scr.fixationRadiusXPix = scr.fixationRadiusPix;
+	
 end
