@@ -1,4 +1,4 @@
-function saveTrialData(stm)
+function saveTrialData(stm, cnd, trials)
 %
 % store stimulus info, behavioral and eyetracking data
 
@@ -10,6 +10,8 @@ function saveTrialData(stm)
 		
 	if (~exist(stm.saveDir, 'dir'))
 		mkdir(stm.saveDir)
-	end
-	save(fullfile([stm.paradigmDir filesep '.mat']), 'stm');
+    end
+    saveStr = ['cnd' num2str(cnd) 't1' num2str(stm.trialRepeats) '.mat'];
+    
+	save(fullfile(stm.saveDir, saveStr), 'stm', 'trials');
 end

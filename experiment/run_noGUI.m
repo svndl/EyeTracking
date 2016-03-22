@@ -12,8 +12,9 @@ function run_noGUI
 	conditions.cues = {'SingleDot'};
 	conditions.dynamics = {{'step', 'ramp'}};
 	%for each dynamics, define directions	
-	conditions.directions = {{'right', 'left'}};
-	conditions.motiontype = {'periodic'};
+	conditions.directions = {{'right', 'right'}};
+	conditions.isPeriodic = 0;
+	conditions.trialRepeats = 2;      % number of repeats per condition
 		
 	subj.name = 'Tester';
 	subj.ipd = 6.5;
@@ -29,7 +30,7 @@ function run_noGUI
 	
 	%% Screen, Keyboard
 	[scr, w, ~]   = setupVideoMode(videoMode);     
-	[session, keys] = keys_setup(session);
+	keys = KeysSetup;
 	
 	
 	%% mkdir
@@ -63,50 +64,51 @@ function run_noGUI
 	
 	
 	%update dat.paradigm
-	dataCombs = createTrialStructure(session);
-	
-	
-	for s = 1:numel(dataCombs)
+	allConditions = createConditions(session);
+    
+    for s = 1:numel(allConditions)
 		
-		sessionData = dataCombs{s};
-		sessionData.timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
+		cndData = allConditions{s};
+		cndData.timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
 		
 
-		stm = setupStimSession(sessionData, scr);   % stimulus properties		
-		stm.recording = sessionData.recording;
+		stm = calcStimsetParams(cndData, scr);   % stimulus properties		
+		stm.recording = cndData.recording;
 		
-		
+		trials = createTrials(stm);
 		% for each trial		
-		for t = 1:stm.nTrials                 
+		for t = 1:stm.trialRepeats                 
     
-			display(['trial ' num2str(t) '/' num2str(length(stm.nTrials)) ' ' ...
+			display(['trial ' num2str(t) '/' num2str(length(stm.trialRepeats)) ' ' ...
 				stm.condition ' ' stm.dynamics ' ... direction = ' stm.directions])    
 			
-			delay = (1e-03*randi([250, 750])/stm.dotUpdateSec);
-    
+            
+            
 			%% pre-generate stimulus frames for this trial (and for the random delay period)
 			
-			[dotsLE, dotsRE]   = generateDotFrames(scr, stm, delay);
+			[dotsLE, dotsRE] = generateDotFrames(scr, stm, trials.delayFrames(t));
     
 			%% initialize trial
-			drawFixation(w, scr, stm, 1);                
-			keys_wait(keys, stm)                                     
-		
+			drawFixation(w, scr, 1);                
+			KeysWait(keys, stm)                                     
 		
 			if (stm.recording) 
 				Eyelink('StartRecording');  
 			end
 			
 			%% show trial (with random delay first)
-			runTrial(w, trial, dotsLE, dotsRE, stm, scr);
-    
+			trialTiming = drawTrial(w, t, dotsLE, dotsRE, stm, scr, trials.delayFrames(t));
+            trials.timing(t) = trialTiming;
+            
 			% clear screen at end
 			drawTrialEndScreen(w, scr);
     
     
 			% get subject responses
 			while keys.isDown == 0
-				[stm,keys] = keys_get_response(keys, stm, trial, direction);
+				[keys, response] = KeysGetResponse(keys, stm);
+                trials.response{t} = response;
+                
 			end
 			keys.isDown = 0;
     
@@ -117,18 +119,18 @@ function run_noGUI
 		stm.display_info    = scr;
 		
 		try
-			saveTrialData(stm);
+			saveTrialData(stm, s, trials);
 		catch
-			saveStr = strcat(sessionData.subj, '_', sessionData.timeStamp);
+			saveStr = strcat(cndData.subj, '_', cndData.timeStamp);
 			display(['Could not save the session in requested folder, saving here as ' saveStr]);
 			save([saveStr '.mat'], 'stm');
 		end
 		% display how much time left
-		Screen('DrawText', w, ['Done block' num2str(s) ' of' num2str(numel(dataCombs)) ' '], ...
+		Screen('DrawText', w, ['Done block' num2str(s) ' of' num2str(numel(allConditions)) ' '], ...
 			scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
 		Screen('Flip', w);
 		WaitSecs(2);
-	end
-	cleanup(0, stm);	
+    end
+    ExitSession(stm);
 end
 

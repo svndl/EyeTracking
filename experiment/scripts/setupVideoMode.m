@@ -8,13 +8,14 @@ function [scr, w, winRect] = setupVideoMode(inputScr)
 	scr.screenNumber = max(Screen('Screens'));      % Use max screen number
 	PsychImaging('PrepareConfiguration');       % Prepare pipeline for configuration.
 
-	if scr.skipSync
-		Screen('Preference', 'SkipSyncTests', 1);
-	else
-		Screen('Preference', 'SkipSyncTests', 0);
-	end
+% 	if scr.skipSync
+% 		Screen('Preference', 'SkipSyncTests', 1);
+% 	else
+% 		Screen('Preference', 'SkipSyncTests', 0);
+%     end
 
-
+    Screen('Preference', 'SkipSyncTests', 2);
+	
 	[w, winRect] = PsychImaging('OpenWindow', scr.screenNumber, ...
                                         0, [], [], [], [], 4);      % Open PTB graphics window, should be upscaled by a factor of 4 for antialiasing
 	Screen(w,'BlendFunction',GL_ONE, GL_ONE);                      % Enable alpha blending - these are the settings that are needed for Planar
@@ -23,14 +24,15 @@ function [scr, w, winRect] = setupVideoMode(inputScr)
 	Screen('FillRect', w, [0 0 0], InsetRect(Screen('Rect', w), -1, -1));
 	Screen('Flip', w);
 
-	scr.frameRate   = Screen('NominalFrameRate',w);
+	scr.frameRate   = Screen('NominalFrameRate', w);
 
 	% PTB can't seem to get the frame rate of this display
 	if strcmp(scr.name,'CinemaDisplay') || strcmp(scr.name,'planar')
 		scr.frameRate = 60;
 		warning('Set CinemaDisplay/Planar true frame rate');
-	end
-
+    end
+    
+    
 	scr.width_pix   = RectWidth(Screen('Rect', scr.screenNumber));
 	scr.height_pix  = RectHeight(Screen('Rect', scr.screenNumber));
 

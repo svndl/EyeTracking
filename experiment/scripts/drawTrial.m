@@ -1,7 +1,11 @@
-function trials = runTrial(w, trialNum, dotsLE, dotsRE, stm, scr, condition, dynamics, direction, delay)
-% draw dynamic part of trial
-% simultaneously record
+function timing = drawTrial(w, trialNum, dotsLE, dotsRE, stm, scr, delay)
+% draw dynamic part of trial simultaneously record
 
+    % timing control
+    waitframes = 1;
+    vbl = Screen('Flip', w);
+    ifi = Screen('GetFlipInterval', w);
+    
 	t = GetSecs;
 	% stimulus step update index
 	uind   = 1;                         
@@ -28,25 +32,25 @@ function trials = runTrial(w, trialNum, dotsLE, dotsRE, stm, scr, condition, dyn
 			Screen('DrawDots', w, rDots, stm.dotSizePix, scr.REwhite, scrRCenter, 0);
         
 			% determine time for screen flip
-			trials.StimulusReqTime{trialNum}(fidx) = t + ((1/scr.frameRate)*(fidx - 1));
+			timing.StimulusReqTime(fidx) = t + ((1/scr.frameRate)*(fidx - 1));
         
 			% flip screen and store timing info for this frame (negative Missed values mean frame was drawn on time)
-		
-			[timeStamp, onsetTime, flipTimeStamp, missed, beampos] = Screen('Flip', w, trials.StimulusReqTime{trialNum}(fidx));
+
+			[vbl, onsetTime, flipTimeStamp, missed, beampos] = Screen('Flip', w, vbl + (waitframes - 0.5) * ifi);
         
-			trials.VBLTimestamp(trialNum, fidx) = timeStamp;
-			trials.StimulusOnsetTime(trialNum, fidx) = onsetTime;
-			trials.FlipTimestamp(trialNum, fidx) = flipTimeStamp;
-			trials.Missed(trialNum, fidx)  = missed;
-			trials.Beampos(trialNum, fidx) = beampos;
+			timing.VBLTimestamp(fidx) = vbl;
+			timing.StimulusOnsetTime(fidx) = onsetTime;
+			timing.FlipTimestamp(fidx) = flipTimeStamp;
+			timing.Missed(fidx)  = missed;
+			timing.Beampos(fidx) = beampos;
         
 			fidx = fidx + 1;
 		end
 		if uind == delay
-        
+            display('Reached delay');
 			tStart  = GetSecs;
 			if (stm.recording)
-				EyelinkStartRecord(stm, condition, dynamics, direction, trialNum) 
+				EyelinkMsgStart(stm, trialNum); 
 			end
 		end
     
@@ -55,12 +59,12 @@ function trials = runTrial(w, trialNum, dotsLE, dotsRE, stm, scr, condition, dyn
 
 	% stop recording
 	if (stm.recording)
-		EyelinkStopRecord(condition, dynamics, direction, trialNum)
+		EyelinkMsgStop(stm, trialNum);
 	end
 
 	% store trial timing info
-	trials.durationSec(trialNum) = GetSecs - tStart;
+	timing.durationSec(trialNum) = GetSecs - tStart;
 
 	% report to experimenter about trial timing
-	display(['Trial duration was ' num2str(1000*(stm.trials.durationSec(trialNum) - (dat.preludeSec + dat.cycleSec)),3) ' ms over']); 
+	display(['Trial duration was ' num2str(1e+03*(timing.durationSec(trialNum) - (stm.preludeSec + stm.cycleSec)), 3) ' ms over']); 
 end

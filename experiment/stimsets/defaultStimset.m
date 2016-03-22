@@ -7,18 +7,18 @@ function dat = defaultStimset
 	% dot field properties
 	dat.stimRadDeg      = 20;      % stimulus field radius
 	dat.dispArcmin      = 240;      % disparity magnitude
-	dat.rampSpeedDegSec = [1, 2];      % ramp speed in degrees per second
-	dat.dotSizeDeg      = [0.25, 0.5];      % diameter of each dot
+	dat.rampSpeedDegSec = 2;      % ramp speed in degrees per second
+	dat.dotSizeDeg      = 0.25;      % diameter of each dot
 	dat.dotDensity      = 2;      % dots per degree2
 
 	% timing
-	dat.preludeSec      = 0.25;      % delay before motion onset
-	dat.cycleSec        = 2;      % duration of stimulus after prelude
-	dat.trialRepeats    = 1;      % number of repeats per condition
+	dat.preludeSec      = 0.25;   % delay before motion onset
+	dat.cycleSec        = 10;      % duration of stimulus after prelude
 	
 	dat.amplitudeDeg    = 0.2;
 	dat.freqHz          = 0.5;
-	% dot update params
+	
+    % dot update params
 	dat.dotUpdateHz     = 60;        
 	dat.numCycles       = 1;         
 end
