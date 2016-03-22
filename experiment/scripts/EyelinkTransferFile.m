@@ -28,7 +28,7 @@ function EyelinkTransferFile(stm, edfFile, fileStr)
 			filename = [datestr(clock,'mm_dd_yy_HHMMSS') '.edf'];
 			movefile(edfFile, filename);
 		end
-		command = ['/Applications/EyeLink/edfapi\ universal/edf2asc -sh ' filename];
+		command = ['edf2asc -sh ' filename];
 		[~, ~] = system(command);
 	end
 end

@@ -19,14 +19,14 @@ function run_noGUI
 	subj.name = 'Tester';
 	subj.ipd = 6.5;
 	
-	useEyelink = 0;
+	useEyelink = 1;
 	session = createSession(stimsetParams, videoMode, conditions, subj, useEyelink);
 	
 	%% OLD CODE 
 	
 	session.directories = setPath;             
 	session.timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
-	session.paradigmStr = 'TestingNewGui';
+	session.paradigmStr = 'TestingNewCode';
 	
 	%% Screen, Keyboard
 	[scr, w, ~]   = setupVideoMode(videoMode);     
@@ -53,7 +53,6 @@ function run_noGUI
 				KbWait;							
 				WaitSecs(0.25);			
 				EyelinkRunCalibration(session, scr, el)
-				Eyelink('Openfile', 'tmp.edf');
 			else
 				%eyelink is not responding
 				session.recording = 0;				
@@ -93,6 +92,7 @@ function run_noGUI
 			KeysWait(keys, stm)                                     
 		
 			if (stm.recording) 
+				Eyelink('Openfile', 'tmp.edf');				
 				Eyelink('StartRecording');  
 			end
 			
@@ -103,7 +103,11 @@ function run_noGUI
 			% clear screen at end
 			drawTrialEndScreen(w, scr);
     
-    
+    		if (stm.recording) 
+				%transfer eyelink file and save
+				EyelinkTransferFile(stm, 'tmp.edf', ['_' 'cnd' num2str(s)]);
+			end
+
 			% get subject responses
 			while keys.isDown == 0
 				[keys, response] = KeysGetResponse(keys, stm);
