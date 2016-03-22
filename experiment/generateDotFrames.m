@@ -6,41 +6,41 @@ function [dotsLall, dotsRall] = generateDotFrames(scr, stm, delay)
 	stepDisparity = stm.step.*sum(ismember(stm.dynamics, 'step'));
 	rampDisparity = stm.ramp.*sum(ismember(stm.dynamics, 'ramp'));
 	
+	if (ismember(stm.motiontyp, 'periodic'))
+		% dot(s) will move back to the start
+		rampDisparity = [rampDisparity, rampDisparity(end:-1:1)]
+		stepDisparity = [stepDisparity, stepDisparity];
+	end
+
+	delayFrames = zeros(1, delay);
 	
-	% add in delay frames and divide disparities by two, half for each eye	
-	%dotDisparities = [zeros(1, delay) disparities]/2;    
 	
+	dir1 = 'towards';
+	dir2 = 'away';
+	signRightMotion = -1;
+
+	motionInDepth = ismember(stm.directions, dir1) ||
+				ismember(stm.directions, dir2);
+	
+	if (~motionInDepth)
+		% linear motion
+		dir1 = 'left';
+		dir2 = 'right';
+		signMotion = 1;
+	end
 	delayFrames = zeros(1, delay);
 	% frame dots
 	
-	[dotsL, dotsR] = mkLeftRightDots(scr, stm, delay + numel(rampDisparity));
-	%shiftL.x = repmat(dotDisparities', [1 size(dotsL.x, 2)]);
-	%shiftR.x = scr.signRight.*shiftL.x;
+	
+	directionsSign = -1*ismember(stm.directions, dir1) + ...
+		ismember(stm.directions, dir2);
+	disparities = directionsSign*[stepDisparity; rampDisparity];
 
-	switch direction
-		case {'towards', 'away'}
-			
-			+shiftL.x;
-			-shiftR.x;
-						
-			- shiftL.x;
-			+ shiftR.x;
-			
-		case {'left', 'right'}
-			
-			directionLR = -1*ismember(stm.directions, 'left') + ...
-				ismember(stm.directions, 'right');
-			disparities = directionLR*[stepDisparity; rampDisparity];
-						
-	end
-	
-	if (strcmp(stm.motiontyp, 'periodic'))
-		
-	
 	dotDisparities = [zeros(1, delay) disparities]/2;
 	
+	[dotsL, dotsR] = mkLeftRightDots(scr, stm, delay + numel(dotDisparities));	
 	shiftL.x = repmat(dotDisparities', [1 size(dotsL.x, 2)]);
-	shiftR.x = scr.signRight.*shiftL.x;
+	shiftR.x = scr.signRight.*shiftL.x*signMotion;
 	
 	dotsLall.x = dotsL.x + shiftL.x;
 	dotsRall.x = dotsR.x + shiftR.x;
