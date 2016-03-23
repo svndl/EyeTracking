@@ -1,4 +1,4 @@
-function [scr, w, winRect] = setupVideoMode(inputScr)
+function [scr, winRect] = setupVideoMode(inputScr)
 % open and set up PTB screen window
 % get running videosystem parameters (resolution, framerate)
 % update screen info structure 
@@ -15,16 +15,20 @@ function [scr, w, winRect] = setupVideoMode(inputScr)
 %     end
 
     Screen('Preference', 'SkipSyncTests', 2);
-	
-	[w, winRect] = PsychImaging('OpenWindow', scr.screenNumber, ...
-                                        0, [], [], [], [], 4);      % Open PTB graphics window, should be upscaled by a factor of 4 for antialiasing
-	Screen(w,'BlendFunction',GL_ONE, GL_ONE);                      % Enable alpha blending - these are the settings that are needed for Planar
+    
+    % Open PTB graphics window, should be upscaled by a factor of 4 for antialiasing
+    % Enable alpha blending - these are the settings that are needed for Planar
+	[wPtr, winRect] = PsychImaging('OpenWindow', scr.screenNumber, ...
+                                        0, [], [], [], [], 4);      
+	Screen(wPtr,'BlendFunction', GL_ONE, GL_ONE_MINUS_SRC_ALPHA); 
+    Screen('Preference', 'VisualDebugLevel', 1)  
 
 	%fill screen
-	Screen('FillRect', w, [0 0 0], InsetRect(Screen('Rect', w), -1, -1));
-	Screen('Flip', w);
+    
+	Screen('FillRect', wPtr, scr.background, InsetRect(Screen('Rect', wPtr), -1, -1));
+	Screen('Flip', wPtr);
 
-	scr.frameRate   = Screen('NominalFrameRate', w);
+	scr.frameRate = Screen('NominalFrameRate', wPtr);
 
 	% PTB can't seem to get the frame rate of this display
 	if strcmp(scr.name,'CinemaDisplay') || strcmp(scr.name,'planar')
@@ -41,13 +45,17 @@ function [scr, w, winRect] = setupVideoMode(inputScr)
 
 	% if using planar, must be in native resolution for accurate eyetracking
 	if strcmp(scr.name,'planar')
-		res=Screen('Resolution', scr.screenNumber);
+		res = Screen('Resolution', scr.screenNumber);
     
 		if res.width ~= 1600 || res.height ~= 1200 || res.pixelSize ~= 32 || res.hz ~= 60
 			warning('Planar not in native resolution');
 		end
-	end
-
+    end
+    
+    %% store pointers
+    
+    scr.wPtr = wPtr;
+    scr.winRect = winRect;
 	
 	scr.cm2pix              = scr.width_pix/scr.width_cm;                           
 	scr.pix2arcmin          = 2*60*atand(0.5/(scr.viewDistCm*scr.cm2pix));          
