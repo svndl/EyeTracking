@@ -4,16 +4,16 @@ function run_noGUI
 	stimsetParams = eval(stimsetName);
 		
 	%videoMode info
-	videoDisplay = 'planar';
+	videoDisplay = 'laptop';
 	videoMode = getVideoMode(videoDisplay);
 		
 		% experiment params
 	%one/many dots
-	conditions.cues = {'SingleDot'};
+	conditions.cues = {'IOVD'};
 	conditions.dynamics = {{'ramp'}};
 	%for each dynamics, define directions	
 	conditions.directions = {{'right'}};
-	conditions.isPeriodic = 1;
+	conditions.isPeriodic = 0;
 	conditions.trialRepeats = 5;      % number of repeats per condition
 		
 	subj.name = 'Tester';
@@ -29,7 +29,8 @@ function run_noGUI
 	session.paradigmStr = 'TestingNewCode';
 	
 	%% Screen, Keyboard
-	[scr, w, ~]   = setupVideoMode(videoMode);     
+    videoMode.background = [127 127 127];    
+	scr  = setupVideoMode(videoMode);     
 	keys = KeysSetup;
 	
 	
@@ -43,8 +44,8 @@ function run_noGUI
 	if (session.recording)
 		try
 			if (EyelinkInitialize)
-				el = EyelinkSetup(session, w, scr);  
-				drawInitScreen(el, scr, w)    
+				el = EyelinkSetup(session, scr);  
+				drawInitScreen(el, scr)    
 	
 				display('Experimenter press Space when cameras are ready');
 			
@@ -79,12 +80,15 @@ function run_noGUI
 		
 		trials = createTrials(stm);
 		% Open file for recording
-		Eyelink('Openfile', 'tmp.edf');				
-		
+        
+        if (stm.recording)
+            Eyelink('Openfile', 'tmp.edf');				
+        end
+        
 		for t = 1:stm.trialRepeats
 			try 
 				[trials.timing(t), trials.response{t}] = runTrial(t, stm, ...
-					scr, w, keys, trials.delayFrames(t));
+					scr, keys);
 				trials.isOK(t) = 1;
 			catch err
 				display('Ooops!')
@@ -100,34 +104,34 @@ function run_noGUI
 			end
 		end
 		saveCondition(scr, stm, s, trials);
-		drawConditionScr(s, allConditions, scr, w);
+		drawConditionScr(s, allConditions, scr);
     end
     ExitSession(stm);
 end
 
 
-function [trialTiming, response] = runTrial(trialNum, stm, scr, window, keys, trialDelay)
+function [trialTiming, response] = runTrial(trialNum, stm, scr, keys)
 
 	display(char(['trial ' num2str(trialNum) '/' num2str(length(stm.trialRepeats)) ' ' ...
 		stm.condition ' ' stm.dynamics ' ... direction = ' stm.directions]))    
 			
 	%% pre-generate stimulus frames for this trial (and for the random delay period)
 			
-	[dotsLE, dotsRE] = generateDotFrames(scr, stm, trialDelay);
+	[dotsLE, dotsRE] = generateDotFrames(scr, stm);
     
 	%% initialize trial
-	drawFixation(window, scr, 1);                
+	drawFixation(scr, 1);                
 	KeysWait(keys, stm)                                     
 		
 	if (stm.recording) 
 		Eyelink('StartRecording');  
 	end
-			
+	isSaltPepper = 1;		
 	%% show trial (with random delay first)
-	trialTiming = drawTrial(window, trialNum, dotsLE, dotsRE, stm, scr, trialDelay);
+	trialTiming = drawTrial(trialNum, dotsLE, dotsRE, stm, scr, isSaltPepper);
             
 	% clear screen at end
-	drawTrialEndScreen(window, scr);
+	drawTrialEndScreen(scr);
     
 	% get subject responses
 	response = 'Mis';
@@ -151,10 +155,10 @@ function saveCondition(scr, stm, cnd, trials)
 	end
 end
 
-function drawConditionScr(cnd, ncnd, scr, w)
+function drawConditionScr(cnd, ncnd, scr)
 	%% display how much time left
-	Screen('DrawText', w, ['Done block' num2str(cnd) ' of' num2str(numel(ncnd)) ' '], ...
+	Screen('DrawText', scr.wPtr, ['Done block' num2str(cnd) ' of' num2str(numel(ncnd)) ' '], ...
 		scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
-	Screen('Flip', w);
+	Screen('Flip', scr.wPtr);
 	WaitSecs(2);
 end

@@ -1,4 +1,4 @@
-function [dotsLall, dotsRall] = generateDotFrames(scr, stm, delay)
+function [dotsLall, dotsRall] = generateDotFrames(scr, stm)
 %
 	% pre-generate stimulus frames for this trial
 	% if stimType is delay, this is for a radnom delay period with no motion
@@ -35,8 +35,9 @@ function [dotsLall, dotsRall] = generateDotFrames(scr, stm, delay)
 		signMotion = 1;
     end
     
-	delayFrames = zeros(1, delay);
-
+	%delayFrames = zeros(1, delay);
+	delayFrames = [];
+    
 	directionsSign = -1*ismember(stm.directions, dir1) + ... 
 		ismember(stm.directions, dir2);
     
@@ -56,8 +57,14 @@ function [dotsLall, dotsRall] = generateDotFrames(scr, stm, delay)
 	
 	% crop to circle
 	if (~strcmp(stm.condition, 'SingleDot'))
-		dotsLall.x = dotsLall.x(:, (dotsLall.x.^2 + (dotsLall.y./scr.Yscale).^2 < stm.stimRadSqPix));
-		dotsRall.x = dotsRall.x(:, (dotsRall.x.^2 + (dotsRall.y./scr.Yscale).^2 < stm.stimRadSqPix));
+        inScrRadiusL = dotsLall.x.^2 + (dotsLall.y./scr.Yscale).^2 < stm.stimRadSqPix;
+        inScrRadiusR = dotsRall.x.^2 + (dotsRall.y./scr.Yscale).^2 < stm.stimRadSqPix;
+		
+        dotsLall.x = dotsLall.x.*inScrRadiusL;
+        dotsLall.y = dotsLall.y.*inScrRadiusL;
+        
+		dotsRall.x = dotsRall.x.*inScrRadiusR;
+		dotsRall.y = dotsRall.y.*inScrRadiusR;
 	end
 end
 	
