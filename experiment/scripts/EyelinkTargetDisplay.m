@@ -42,7 +42,7 @@ while stop==0 && bitand(Eyelink('CurrentMode'), el.IN_TARGET_MODE)
 		return;
 	end;
 
-	[key, el]=eyelink_get_key(el);		% getkey() HANDLE LOCAL KEY PRESS
+	[key, el]=EyelinkGetKey(el);		% getkey() HANDLE LOCAL KEY PRESS
 
 	switch key 
 		case el.TERMINATE_KEY,       % breakout key code
@@ -87,7 +87,7 @@ while stop==0 && bitand(Eyelink('CurrentMode'), el.IN_TARGET_MODE)
 	if targetvisible==0 && result==1
  		fprintf( 'Target drawn at: x=%d, y=%d\n', targetX, targetY );
 		
-		[targetrectL, targetrectR]=eyelink_draw_cal_target(el, targetX, targetY);
+		[targetrectL, targetrectR] = EyelinkDrawCalTarget(el, targetX, targetY);
 		targetvisible = 1;
 		otx = targetX;		% record position for future tests
 		oty = targetY;

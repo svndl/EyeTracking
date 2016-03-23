@@ -33,7 +33,7 @@ EyelinkClearCalDisplay(el);                                 % setup_cal_display(
 
 key = 1;
 while key ~= 0
-	key = eyelink_get_key(el);                              % dump old keys
+	key = EyelinkGetKey(el);                              % dump old keys
 end
 
 
@@ -61,7 +61,7 @@ while stop == 0 && bitand(Eyelink( 'CurrentMode'), el.IN_SETUP_MODE)
 
 	if bitand(i, el.IN_TARGET_MODE)			% calibrate, validate, etc: show targets
 
-		eyelink_target_mode_display(el);	
+		EyelinkTargetDisplay(el);	
         
 	elseif bitand(i, el.IN_IMAGE_MODE)		% display image until we're back
 % 		
@@ -73,7 +73,7 @@ while stop == 0 && bitand(Eyelink( 'CurrentMode'), el.IN_SETUP_MODE)
 		end	
 	end
 
-	[key, el]=eyelink_get_key(el);		% getkey() HANDLE LOCAL KEY PRESS
+	[key, el]=EyelinkGetKey(el);		% getkey() HANDLE LOCAL KEY PRESS
     if 1 && key~=0 && key~=el.JUNK_KEY    % print pressed key codes and chars
         fprintf('%d\t%s\n', key, char(key) );
     end

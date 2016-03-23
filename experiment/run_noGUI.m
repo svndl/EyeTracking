@@ -10,16 +10,16 @@ function run_noGUI
 		% experiment params
 	%one/many dots
 	conditions.cues = {'SingleDot'};
-	conditions.dynamics = {{'step', 'ramp'}};
+	conditions.dynamics = {{'ramp'}};
 	%for each dynamics, define directions	
-	conditions.directions = {{'right', 'right'}};
-	conditions.isPeriodic = 0;
-	conditions.trialRepeats = 2;      % number of repeats per condition
+	conditions.directions = {{'right'}};
+	conditions.isPeriodic = 1;
+	conditions.trialRepeats = 5;      % number of repeats per condition
 		
 	subj.name = 'Tester';
 	subj.ipd = 6.5;
 	
-	useEyelink = 1;
+	useEyelink = 0;
 	session = createSession(stimsetParams, videoMode, conditions, subj, useEyelink);
 	
 	%% OLD CODE 
@@ -57,7 +57,10 @@ function run_noGUI
 				%eyelink is not responding
 				session.recording = 0;				
 			end
-		catch
+		catch err
+			display(err.message);
+			display(err.stack(1).file);
+			display(err.stack(1).line);
 		end
 	end
 	
@@ -75,66 +78,83 @@ function run_noGUI
 		stm.recording = cndData.recording;
 		
 		trials = createTrials(stm);
-		% for each trial		
-		for t = 1:stm.trialRepeats                 
-    
-			display(['trial ' num2str(t) '/' num2str(length(stm.trialRepeats)) ' ' ...
-				stm.condition ' ' stm.dynamics ' ... direction = ' stm.directions])    
-			
-            
-            
-			%% pre-generate stimulus frames for this trial (and for the random delay period)
-			
-			[dotsLE, dotsRE] = generateDotFrames(scr, stm, trials.delayFrames(t));
-    
-			%% initialize trial
-			drawFixation(w, scr, 1);                
-			KeysWait(keys, stm)                                     
+		% Open file for recording
+		Eyelink('Openfile', 'tmp.edf');				
 		
-			if (stm.recording) 
-				Eyelink('Openfile', 'tmp.edf');				
-				Eyelink('StartRecording');  
+		for t = 1:stm.trialRepeats
+			try 
+				[trials.timing(t), trials.response{t}] = runTrial(t, stm, ...
+					scr, w, keys, trials.delayFrames(t));
+				trials.isOK(t) = 1;
+			catch err
+				display('Ooops!')
+				display(err.message);
+				display(err.stack(1).file);
+				display(err.stack(1).line);
+							
+				%drop this trial
+				if (stm.recording)
+					Eyelink('StopRecording');
+				end
+				trials.isOK(t) = 0;
 			end
-			
-			%% show trial (with random delay first)
-			trialTiming = drawTrial(w, t, dotsLE, dotsRE, stm, scr, trials.delayFrames(t));
-            trials.timing(t) = trialTiming;
-            
-			% clear screen at end
-			drawTrialEndScreen(w, scr);
-    
-    		if (stm.recording) 
-				%transfer eyelink file and save
-				EyelinkTransferFile(stm, 'tmp.edf', ['_' 'cnd' num2str(s)]);
-			end
-
-			% get subject responses
-			while keys.isDown == 0
-				[keys, response] = KeysGetResponse(keys, stm);
-                trials.response{t} = response;
-                
-			end
-			keys.isDown = 0;
-    
 		end
-
-		% aggregate and save data structures
-		stm.keys            = keys;
-		stm.display_info    = scr;
-		
-		try
-			saveTrialData(stm, s, trials);
-		catch
-			saveStr = strcat(cndData.subj, '_', cndData.timeStamp);
-			display(['Could not save the session in requested folder, saving here as ' saveStr]);
-			save([saveStr '.mat'], 'stm');
-		end
-		% display how much time left
-		Screen('DrawText', w, ['Done block' num2str(s) ' of' num2str(numel(allConditions)) ' '], ...
-			scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
-		Screen('Flip', w);
-		WaitSecs(2);
+		saveCondition(scr, stm, s, trials);
+		drawConditionScr(s, allConditions, scr, w);
     end
     ExitSession(stm);
 end
 
+
+function [trialTiming, response] = runTrial(trialNum, stm, scr, window, keys, trialDelay)
+
+	display(char(['trial ' num2str(trialNum) '/' num2str(length(stm.trialRepeats)) ' ' ...
+		stm.condition ' ' stm.dynamics ' ... direction = ' stm.directions]))    
+			
+	%% pre-generate stimulus frames for this trial (and for the random delay period)
+			
+	[dotsLE, dotsRE] = generateDotFrames(scr, stm, trialDelay);
+    
+	%% initialize trial
+	drawFixation(window, scr, 1);                
+	KeysWait(keys, stm)                                     
+		
+	if (stm.recording) 
+		Eyelink('StartRecording');  
+	end
+			
+	%% show trial (with random delay first)
+	trialTiming = drawTrial(window, trialNum, dotsLE, dotsRE, stm, scr, trialDelay);
+            
+	% clear screen at end
+	drawTrialEndScreen(window, scr);
+    
+	% get subject responses
+	response = 'Mis';
+	while keys.isDown == 0
+		[keys, response] = KeysGetResponse(keys, stm);
+	end
+	keys.isDown = 0;
+end
+function saveCondition(scr, stm, cnd, trials)
+	stm.display_info    = scr;
+	try
+		if (stm.recording) 
+			%transfer eyelink file and save
+			EyelinkTransferFile(stm, 'tmp.edf', ['cnd' num2str(cnd)]);
+		end
+		saveTrialData(stm, cnd, trials);
+	catch
+		saveStr = strcat(stm.subj, '_', stm.timeStamp);
+		display(['Could not save the session in requested folder, saving here as ' saveStr]);
+		save([saveStr '.mat'], 'stm', 'trials');
+	end
+end
+
+function drawConditionScr(cnd, ncnd, scr, w)
+	%% display how much time left
+	Screen('DrawText', w, ['Done block' num2str(cnd) ' of' num2str(numel(ncnd)) ' '], ...
+		scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
+	Screen('Flip', w);
+	WaitSecs(2);
+end

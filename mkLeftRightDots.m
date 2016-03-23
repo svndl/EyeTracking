@@ -9,7 +9,7 @@ function [dotsL, dotsR ] = mkLeftRightDots(scr, stm, varargin)
 	%max value for dot coordinates
 	maxVal = min(stm.xmax, stm.ymax) / 2;
 	
-	switch stm.condition
+	switch char(stm.condition)
     
 		case 'SingleDot'        
 			% just one dot per eye in center       

@@ -1,6 +1,6 @@
 function EyelinkRunCalibration(stm, scr, el)
   
-    eyelink_set_targets(scr)                     % setup target locations on screen
+    EyelinkSetTargets(scr)                     % setup target locations on screen
     
     % open file to record calibation data to
     Eyelink('Openfile', 'tmp.edf');

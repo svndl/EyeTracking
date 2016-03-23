@@ -5,7 +5,8 @@ function EyelinkMsgStart(stm, trial)
 	display('Eyelink Recording Started');
 	
 	% mark zero-plot time in data file
+	msgStr = ['STARTTIME ' stm.condition ' ' ...
+		stm.dynamics ' ' stm.directions ' ' num2str(trial)];
 	
-	Eyelink('Message', ['STARTTIME ' stm.condition ' ' ...
-		stm.dynamics ' ' stm.direction ' ' num2str(trial)]); 
+	Eyelink('Message', char(msgStr)); 
 end
