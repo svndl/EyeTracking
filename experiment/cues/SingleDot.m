@@ -13,7 +13,7 @@ function dotFrames = SingleDot(stmInfo)
     %sign shift: right eye(away, right) = 1; 
     %sign shift: right eye(towards, left) = - 1
     
-    dotFrames.x = dots.x + signShift*shift.x;	
+    dotFrames.x = dots.x + stmInfo.shiftSign*shift.x;	
 	dotFrames.y = dots.y;
     
 end

@@ -7,7 +7,7 @@ function dotFrames = FullCue(stmInfo)
     dotShift = mkDotShift(stmInfo);
     shift.x = repmat(dotShift', [1 size(dots.x, 2)]);
         
-    dotFrames.x = dots.x + signShift*shift.x;	
+    dotFrames.x = dots.x + stmInfo.shiftSign*shift.x;	
 	dotFrames.y = dots.y;
     
     %limit dot motion to circle

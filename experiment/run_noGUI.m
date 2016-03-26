@@ -112,7 +112,7 @@ end
 
 function [trialTiming, response] = runTrial(trialNum, stm, scr, keys)
 
-	display(char(['trial ' num2str(trialNum) '/' num2str(length(stm.trialRepeats)) ' ' ...
+	display(cell2mat(['trial ' num2str(trialNum) '/' num2str(length(stm.trialRepeats)) ' ' ...
 		stm.condition ' ' stm.dynamics ' ... direction = ' stm.directions]))    
 			
 	%% pre-generate stimulus frames for this trial (and for the random delay period)

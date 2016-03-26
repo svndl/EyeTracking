@@ -13,7 +13,7 @@ function dotFrames = IOVD(stmInfo)
     %sign motion: right eye(away, right) = 1; 
     %sign motion: right eye(towards, left) = - 1
       
-    dotFrames.x = dots.x + stmInfo.direcionSign.*shift.x;	
+    dotFrames.x = dots.x + stmInfo.shiftSign.*shift.x;	
 	dotFrames.y = dots.y;
     
     %limit dot motion to circle

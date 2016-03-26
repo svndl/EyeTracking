@@ -8,5 +8,5 @@ function EyelinkMsgStart(stm, trial)
 	msgStr = ['STARTTIME ' stm.condition ' ' ...
 		stm.dynamics ' ' stm.directions ' ' num2str(trial)];
 	
-	Eyelink('Message', char(msgStr)); 
+	Eyelink('Message', cell2mat(msgStr)); 
 end
