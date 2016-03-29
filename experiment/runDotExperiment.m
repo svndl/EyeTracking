@@ -19,6 +19,7 @@ function runDotExperiment
     
  	useEyelink = 0;
 	
+    %session info
     session = createSession(dotParams, displayParams, condition, subject, useEyelink);
 	
 	%% OLD CODE 
