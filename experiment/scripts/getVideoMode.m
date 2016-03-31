@@ -22,5 +22,7 @@ function scr = getVideoMode(displayName)
         
 			scr.REwhite = [scr.wlevel scr.wlevel scr.wlevel];
 			scr.REblack = [scr.blevel scr.blevel scr.blevel]; 
-    end	
+    end
+    
+    %salt'n'pepper
 end

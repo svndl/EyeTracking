@@ -2,7 +2,7 @@ function runDotExperiment
 
     %% setup
     
-    dotParamsName = 'defaultDotParams';
+    dotParamsName = 'defaultStimset';
     dotParams = eval(dotParamsName);
     
     display = 'planar';
@@ -18,10 +18,7 @@ function runDotExperiment
     subject.ipd = 6.5;    
     
  	useEyelink = 0;
-	
-    %session info
-    session = createSession(dotParams, displayParams, condition, subject, useEyelink);
-	
+
 	%% OLD CODE 
 	
 	directories = setPath;             
@@ -29,10 +26,16 @@ function runDotExperiment
 	paradigmStr = 'TestingNewCode';
 	
 	%% Screen, Keyboard
-    displayParams.background = [127 127 127];    
-	videoMode = setupVideoMode(displayParams);     
+    displayParams.white = 255;
+    displayParams.gray = 127;
+    displayParams.black = 0;
+    
+    
+	videoMode = setupVideoMode_new(displayParams);     
     keys = KeysSetup;
 	
+    %session info
+    %session = createSession(dotParams, displayParams, condition, subject, useEyelink);
 	
 	%% mkdir
 	session.saveDir = fullfile(directories.data, paradigmStr, [subject.name timeStamp]);

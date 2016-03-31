@@ -54,12 +54,12 @@ function timing = drawBW(dotsLE, dotsRE, stm, scr)
 			lDots = [dotsLE.x(idxUpdate, :); dotsLE.y(idxUpdate, :)];
 			rDots = [dotsRE.x(idxUpdate, :); dotsRE.y(idxUpdate, :)];
 			
-			scrLCenter = [scr.x_center_pix_left  scr.y_center_pix_left];
-			scrRCenter = [scr.x_center_pix_right scr.y_center_pix_right];
+			scrLCenter = [scr.xc_l scr.yc_l];
+			scrRCenter = [scr.xc_r scr.yc_r];
         
 			% update dots
-			Screen('DrawDots', scr.wPrt, lDots, stm.dotSizePix, scr.LEwhite, scrLCenter, 0);
-			Screen('DrawDots', scr.wPrt, rDots, stm.dotSizePix, scr.REwhite, scrRCenter, 0);
+			Screen('DrawDots', scr.wPrt, lDots, stm.dotSizePix, scr.lwhite, scrLCenter, 0);
+			Screen('DrawDots', scr.wPrt, rDots, stm.dotSizePix, scr.rwhite, scrRCenter, 0);
         
 			% determine time for screen flip
 			timing.StimulusReqTime(idxFrame) = t + ((1/scr.frameRate)*(idxFrame - 1));

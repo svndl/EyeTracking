@@ -9,6 +9,6 @@ function drawTrialEndScreen(scr)
 	% ask for response
 	%Screen('DrawText', w, 'Respond now', scr.x_center_pix_right - 25, scr.y_center_pix_right - 50, stm.REwhite);
 	% planar 
-	Screen('DrawText', scr.wPtr, 'Respond now', scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
+	Screen('DrawText', scr.wPtr, 'Respond now', scr.xc_l - 25, scr.yc_l, scr.lwhite);
 	Screen('Flip', scr.wPtr);
 end

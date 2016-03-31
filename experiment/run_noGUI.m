@@ -158,7 +158,7 @@ end
 function drawConditionScr(cnd, ncnd, scr)
 	%% display how much time left
 	Screen('DrawText', scr.wPtr, ['Done block' num2str(cnd) ' of' num2str(numel(ncnd)) ' '], ...
-		scr.x_center_pix_left - 25, scr.y_center_pix_left, scr.LEwhite);
+		scr.xc_l - 25, scr.yc_l, scr.lwhite);
 	Screen('Flip', scr.wPtr);
 	WaitSecs(2);
 end

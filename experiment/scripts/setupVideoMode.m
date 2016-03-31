@@ -3,9 +3,20 @@ function [scr, winRect] = setupVideoMode(inputScr)
 % get running videosystem parameters (resolution, framerate)
 % update screen info structure 
 
-	scr = inputScr;
-	
-	scr.screenNumber = max(Screen('Screens'));      % Use max screen number
+    colormode = setupColor(inputScr.name, inputScr.colormode);
+	scrPTB = setupPTB(inputScr);
+    fixation = setupFixation(scrPTB);
+    
+    scr = catstruct(fixation, colormode);
+    
+    %% store pointers
+    scr.wPtr = wPtr;
+    scr.winRect = winRect;	
+end
+function outScr = setupPTB(inScr)
+    outScr = inScr;
+
+	outScr.screenNumber = max(Screen('Screens'));      % Use max screen number
 	PsychImaging('PrepareConfiguration');       % Prepare pipeline for configuration.
 
 % 	if scr.skipSync
@@ -18,79 +29,112 @@ function [scr, winRect] = setupVideoMode(inputScr)
     
     % Open PTB graphics window, should be upscaled by a factor of 4 for antialiasing
     % Enable alpha blending - these are the settings that are needed for Planar
-	[wPtr, winRect] = PsychImaging('OpenWindow', scr.screenNumber, ...
+	[wPtr, winRect] = PsychImaging('OpenWindow', outScr.screenNumber, ...
                                         0, [], [], [], [], 4);      
 	Screen(wPtr,'BlendFunction', GL_ONE, GL_ONE_MINUS_SRC_ALPHA); 
     Screen('Preference', 'VisualDebugLevel', 1)  
 
 	%fill screen
     
-	Screen('FillRect', wPtr, scr.background, InsetRect(Screen('Rect', wPtr), -1, -1));
+	Screen('FillRect', wPtr, outScr.background, InsetRect(Screen('Rect', wPtr), -1, -1));
 	Screen('Flip', wPtr);
 
-	scr.frameRate = Screen('NominalFrameRate', wPtr);
+	outScr.frameRate = Screen('NominalFrameRate', wPtr);
 
-	% PTB can't seem to get the frame rate of this display
-	if strcmp(scr.name,'CinemaDisplay') || strcmp(scr.name,'planar')
-		scr.frameRate = 60;
+	% PTB can't seem to get the frame rate of this display\
+    if strcmp(outScr.name,'CinemaDisplay') || strcmp(outScr.name,'planar')
+		outScr.frameRate = 60;
 		warning('Set CinemaDisplay/Planar true frame rate');
-    end
+    end 
     
-    
-	scr.width_pix   = RectWidth(Screen('Rect', scr.screenNumber));
-	scr.height_pix  = RectHeight(Screen('Rect', scr.screenNumber));
+	outScr.width_pix   = RectWidth(Screen('Rect', outScr.screenNumber));
+	outScr.height_pix  = RectHeight(Screen('Rect', outScr.screenNumber));
 
 	% Disable key output to Matlab window:
 	ListenChar(2);
 
 	% if using planar, must be in native resolution for accurate eyetracking
-	if strcmp(scr.name,'planar')
-		res = Screen('Resolution', scr.screenNumber);
+	if strcmp(outScr.name,'planar')
+		res = Screen('Resolution', outScr.screenNumber);
     
 		if res.width ~= 1600 || res.height ~= 1200 || res.pixelSize ~= 32 || res.hz ~= 60
 			warning('Planar not in native resolution');
 		end
     end
+end
+
+function outScr = setupFixation(inScr)
     
-    %% store pointers
-    
-    scr.wPtr = wPtr;
-    scr.winRect = winRect;
+    outScr = inScr;
+    outScr.cm2pix              = outScr.width_pix/outScr.width_cm;                           
+	outScr.pix2arcmin          = 2*60*atand(0.5/(outScr.viewDistCm*outScr.cm2pix));          
+
+	display(['1 pixel = ' num2str(outScr.pix2arcmin,2) ' arcmin']);
+
+	outScr.x_center_pix        = outScr.width_pix/2;                                      
+	outScr.y_center_pix        = outScr.height_pix/2 - (outScr.stimCenterYCm*outScr.cm2pix);    
+
+	outScr.y_center_pix_left   = outScr.y_center_pix;                                     
+	outScr.y_center_pix_right  = outScr.y_center_pix;
+
+	outScr.x_center_pix_left   = outScr.x_center_pix - (outScr.prismShiftCm*outScr.cm2pix);
+	outScr.x_center_pix_right  = outScr.x_center_pix + (outScr.prismShiftCm*outScr.cm2pix);
+
+    outScr.calicolor = [0 0 0];                      
+
+	outScr.caliRadiusDeg		= 8;
+	outScr.caliRadiusPixX      = ceil(outScr.caliRadiusDeg*60*(1/outScr.pix2arcmin));
+	outScr.caliRadiusPixY      = outScr.caliRadiusPixX/2;
 	
-	scr.cm2pix              = scr.width_pix/scr.width_cm;                           
-	scr.pix2arcmin          = 2*60*atand(0.5/(scr.viewDistCm*scr.cm2pix));          
-
-	display(['1 pixel = ' num2str(scr.pix2arcmin,2) ' arcmin']);
-
-	scr.x_center_pix        = scr.width_pix/2;                                      
-	scr.y_center_pix        = scr.height_pix/2 - (scr.stimCenterYCm*scr.cm2pix);    
-
-	scr.y_center_pix_left   = scr.y_center_pix;                                     
-	scr.y_center_pix_right  = scr.y_center_pix;
-
-	scr.x_center_pix_left   = scr.x_center_pix - (scr.prismShiftCm*scr.cm2pix);
-	scr.x_center_pix_right  = scr.x_center_pix + (scr.prismShiftCm*scr.cm2pix);
-
-    scr.calicolor = [0 0 0];                      
-
-	scr.caliRadiusDeg		= 8;
-	scr.caliRadiusPixX      = ceil(scr.caliRadiusDeg*60*(1/scr.pix2arcmin));
-	scr.caliRadiusPixY      = scr.caliRadiusPixX/2;
+	outScr.Yscale = 1;
 	
-	scr.Yscale = 1;
-	
-	if scr.topbottom == 1
-		scr.Yscale = 0.5;
+	if outScr.topbottom == 1
+		outScr.Yscale = 0.5;
 	end
 	
-	scr.fixationRadiusDeg = 1;
-	scr.fixationRadiusPix = (60*scr.fixationRadiusDeg)/scr.pix2arcmin;
-	scr.fixationRadiusSqPix = scr.fixationRadiusPix^2;
+	outScr.fixationRadiusDeg = 1;
+	outScr.fixationRadiusPix = (60*outScr.fixationRadiusDeg)/outScr.pix2arcmin;
+	outScr.fixationRadiusSqPix = outScr.fixationRadiusPix^2;
 
-	scr.fixationDotRadiusDeg = 0.125;
-	scr.fixationDotRadiusPix = (60*scr.fixationDotRadiusDeg)/scr.pix2arcmin;
+	outScr.fixationDotRadiusDeg = 0.125;
+	outScr.fixationDotRadiusPix = (60*outScr.fixationDotRadiusDeg)/outScr.pix2arcmin;
 
-	scr.fixationRadiusYPix = scr.fixationRadiusPix*scr.Yscale;
-	scr.fixationRadiusXPix = scr.fixationRadiusPix;
-	
+	outScr.fixationRadiusYPix = outScr.fixationRadiusPix*outScr.Yscale;
+	outScr.fixationRadiusXPix = outScr.fixationRadiusPix;
+end
+function outScr = setupColor(displayName, colormode)
+
+    switch colormode
+        
+        case 'saltpepper'
+            outScr.white = 255;       
+            outScr.gray = 127;          
+            outScr.black = 0;            
+        case 'blackwhite'
+            outScr.white = 255;       
+            outScr.gray = 0;          
+            outScr.black = 0;
+    end
+    
+    
+    outScr.background = [outScr.gray outScr.gray outScr.gray];
+	switch displayName
+    
+		case {'planar','laptopRB','LG3DRB','CinemaDisplayRB'}
+            % blue-left, red-right             
+			outScr.left.white = [outScr.white outScr.gray outScr.gray];
+			outScr.left.black = [outScr.black outScr.gray outScr.gray];
+            
+            outScr.right.white = [outScr.gray outScr.gray outScr.white];
+			outScr.right.black = [outScr.gray outScr.black outScr.black];
+        otherwise                                                   
+            % use white/black
+			outScr.left.white = [outScr.white outScr.white outScr.white];
+			outScr.left.black = [outScr.black outScr.black outScr.black];
+        
+			outScr.right.white = [outScr.white outScr.white outScr.white];
+			outScr.right.black = [outScr.black outScr.black outScr.black]; 
+    end
+    
+    %salt'n'pepper
 end
