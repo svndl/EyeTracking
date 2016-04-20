@@ -45,7 +45,7 @@ function eyelinkData = loadEyelinkFile(filename, startRow, endRow)
     % code. If an error occurs for a different file, try regenerating the code
     % from the Import Tool.
     textscan(fileID, '%[^\n\r]', startRow(1)-1, 'ReturnOnError', false);
-    dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'EmptyValue' ,NaN,'ReturnOnError', false);
+    dataArray = textscan(fileID, formatSpec, endRow(1) - startRow(1) + 1, 'Delimiter', delimiter, 'EmptyValue' ,NaN,'ReturnOnError', false);
     
     for block = 2:length(startRow)
         frewind(fileID);

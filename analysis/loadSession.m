@@ -26,11 +26,16 @@ function sessionInfo = loadSession(pathToSession)
         elFilename = ['cnd' num2str(c) '.asc'];
         if(sum(ismember(elf, elFilename)))
             trials = processEyelinkFile(fullfile(pathToSession, elFilename), elInfo);
-        end
-         
+            %load session timimng
+            load(listSessionFiles(c).name);
+        end       
     end
 end
+function checkTiming()
 
+
+
+end
 
 function converter(filepath)
     command = ['edf2asc ' filepath];

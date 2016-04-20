@@ -1,6 +1,6 @@
 function ds = directionSigns(direction, eye)
     
-    switch direction
+    switch char(direction)
         case 'away'
             signs.L = 1;
             signs.R = -1;
@@ -10,7 +10,7 @@ function ds = directionSigns(direction, eye)
         case 'left'
             signs.L = -1;
             signs.R = -1;
-        case 'righ'
+        case 'right'
             signs.L = 1;
             signs.R = 1;
     end

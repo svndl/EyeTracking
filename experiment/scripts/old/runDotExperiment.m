@@ -8,7 +8,7 @@ function runDotExperiment
     display = 'planar';
     displayParams = eval(display);
     
-    condition.cues = 'SingleDot';
+    condition.cues = 'SingleDot';                 
     condition.dynamics = {{'step', 'ramp'}};
     condition.direction = {{'left', 'right'}};
 	condition.isPeriodic = 0;
@@ -23,13 +23,7 @@ function runDotExperiment
 	
 	directories = setPath;             
 	timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
-	paradigmStr = 'TestingNewCode';
-	
-	%% Screen, Keyboard
-    displayParams.white = 255;
-    displayParams.gray = 127;
-    displayParams.black = 0;
-    
+	paradigmStr = 'TestingNewCode';    
     
 	videoMode = setupVideoMode_new(displayParams);     
     keys = KeysSetup;
@@ -41,10 +35,15 @@ function runDotExperiment
 	session.saveDir = fullfile(directories.data, paradigmStr, [subject.name timeStamp]);
 	if (~exist(session.saveDir, 'dir'))
 		mkdir(session.saveDir);
-	end
+    end
+    
+    %% copy info to session
+    session.subj = subj;
+    session.condition = condition;
+    
    
     %% init experiment params (eyelink)
-    updatedSession = inintExperiment(session, videoMode);
+    updatedSession = initSession(session, videoMode);
     
     %vary conditions ?? 
     allConditions = createConditions(dotParams);
@@ -87,35 +86,6 @@ function runDotExperiment
 		drawConditionScr(s, allConditions, scr);
     end
     ExitSession(stm);
-end
-
-function updatedSession = inintExperiment(session, scr)
-    
-    updatedSession = session;
-	if (updatedSession.recording)
-		try
-			if (EyelinkInitialize)
-				el = EyelinkSetup(updatedSession, scr);  
-				drawInitScreen(el, scr)    
-	
-				display('Experimenter press Space when cameras are ready');
-			
-				%slight delay before calibration/validation			
-			
-				KbWait;							
-				WaitSecs(0.25);			
-				EyelinkRunCalibration(updatedSession, scr, el)
-			else
-				%eyelink is not responding
-				updatedSession.recording = 0;				
-			end
-		catch err
-			display(err.message);
-			display(err.stack(1).file);
-			display(err.stack(1).line);
-		end
-    end
-
 end
 
 function [trialTiming, response] = runTrial(trialNum, stm, scr, keys)

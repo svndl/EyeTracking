@@ -10,8 +10,8 @@ function dotDisparities = mkDotShift(stm)
 	rd = stm.ramp.*hasRamp;
     pd = stm.prelude;
 
-    stepDisparity = [];
-    rampDisparity= [];
+    stepDisparity = 0;
+    rampDisparity = 0;
     
     if (hasStep)
         stepDisparity = [pd, sd];
@@ -28,8 +28,9 @@ end
 
 function  sd = signDir(stm)
 
-    sd = - 1;
-    if (numel(unique(stm.directions)) > 1)
-        sd = 1;
+    sd = 1;
+    % if we have a combination of left+right directions  
+    if (numel(unique(stm.direction)) == 2 && numel(stm.direction )== 2)
+        sd = -1;
     end     
 end

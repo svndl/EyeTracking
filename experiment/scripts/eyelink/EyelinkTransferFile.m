@@ -1,4 +1,4 @@
-function EyelinkTransferFile(stm, edfFile, fileStr)
+function EyelinkTransferFile(ssession, edfFile, fileStr)
 
     
 	if ~isempty(edfFile)
@@ -19,7 +19,7 @@ function EyelinkTransferFile(stm, edfFile, fileStr)
     
 		%move and convert file
 	
-		filename = [stm.saveDir filesep fileStr '.edf'];
+		filename = [ssession.saveDir filesep fileStr '.edf'];
 		try
 			movefile(edfFile, filename);
 		catch

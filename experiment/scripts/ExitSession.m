@@ -1,6 +1,6 @@
 % Cleanup routine:
-function ExitSession(stm)
-	if stm.recording
+function ExitSession(recording)
+	if recording
 		Eyelink('Shutdown');    % Shutdown Eyelink:
 	end
 	sca;                    % Close window:

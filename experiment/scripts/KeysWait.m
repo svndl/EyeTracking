@@ -1,4 +1,4 @@
-function KeysWait(keys, stm)
+function KeysWait(keys, recording)
 
 %check for space bar or A gamepad button
 [keyIsDown, ~, keyCode] = KbCheck();
@@ -26,7 +26,7 @@ while ~keyCode(keys.esc) && ~keyCode(keys.space) && ~sum(goBn)
 end
 
 if keyCode(keys.esc)	
-	ExitSession(stm);
+	ExitSession(recording);
 end
 
 while keyIsDown || sum(goBn) == 1

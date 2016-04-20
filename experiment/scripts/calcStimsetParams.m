@@ -14,10 +14,10 @@ function params = calcStimsetParams(stimset, videoMode)
     
 	if (~stimset.isPeriodic)
         rampEndDispDeg      = 2*(stimset.rampSpeedDegSec*stimset.cycleSec);
-        params.numUpdates = round(stimset.dotUpdateHz*stimset.cycleSec);
+        params.nFrames = round(stimset.dotUpdateHz*stimset.cycleSec);
     else
         rampEndDispDeg = stimset.rampSpeedDegSec;
-        params.numUpdates = round(0.5*stimset.dotUpdateHz);        
+        params.nFrames = round(0.5*stimset.dotUpdateHz);        
     end
     
     params.rampEndDispPix  = (60*rampEndDispDeg)/videoMode.pix2arcmin;
@@ -52,8 +52,8 @@ function params = calcStimsetParams(stimset, videoMode)
 	params.prelude = zeros(1, params.preludeUpdates);
     
     
-    rampDisparity = linspace(params.rampEndDispPix/params.numUpdates, ...
-            params.rampEndDispPix, params.numUpdates);
+    rampDisparity = linspace(params.rampEndDispPix/params.nFrames, ...
+            params.rampEndDispPix, params.nFrames);
    
     if (~stimset.isPeriodic)
         params.ramp = rampDisparity;
@@ -64,74 +64,13 @@ function params = calcStimsetParams(stimset, videoMode)
      params.step = params.dispPix*ones(size(params.ramp));
    
 	% conditions should not don't exceed calibration area
-	isTooBigForRamp = max(params.ramp/2) > videoMode.caliRadiusPixX;
-	isTooBigForStep = max(params.step/2) > videoMode.caliRadiusPixX;
+	isTooBigForRamp = max(params.ramp/2) > videoMode.clbRadiusX;
+	isTooBigForStep = max(params.step/2) > videoMode.clbRadiusX;
 
 	
 	if(isTooBigForRamp || isTooBigForStep)
 		warning('need to increase calibration area in order to run this condition');
     end
 
-% 	%%  TRIAL STRUCTURE 
-% 	combTrials = allcombs(stimset.conditions, stimset.dynamics, stimset.directions);
-% 	
-% 	
-% % 	trials.condition        = {};	
-% % 	trials.dynamics         = {};
-% % 	trials.direction        = {};
-% % 	% 
-% % 	
-% % 	trials.repeat           = [];	
-% % 
-% % 	for c = 1:length(stimset.conditions)
-% %     
-% % 		for d = 1:length(stimset.dynamics)
-% %         
-% % 			for n = 1:length(stimset.directions)
-% %             
-% % 				for r = 1:stimset.cond_repeats
-% %                 
-% % 					trials.condition    = [stim_session.trials.condition ; stimset.conditions{c}];
-% % 					trials.dynamics     = [stim_session.trials.dynamics ; stimset.dynamics{d}];
-% % 					trials.direction    = [stim_session.trials.direction ; stimset.directions{n}];
-% % 					trials.repeat       = [stim_session.trials.repeat ; r];
-% %                 
-% % 				end
-% % 			end     
-% % 		end
-% % 	end
-% 	
-% 	% randomize trial order
-% 	trials.trialnum = randperm(length(combTrials));
-% 
-% 	% emptry response arrays
-% 	trials.resp         = cell(1, length(trials.condition));
-% 	trials.respCode     = NaN*ones(1, length(trials.condition));
-% 	trials.isCorrect    = zeros(1, length(trials.condition));
-% 
-% 	% generate random delay period for each trial
-% 	trials.delayTimeSec = randi([250 750], 1, length(trials.condition))./1000;
-% 	;
-
-
-	%% SOUND %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-	cf = 1000;                  % carrier frequency (Hz)
-	sf = 22050;                 % sample frequency (Hz)
-	d = 0.1;                    % duration (s)
-	n = sf * d;                 % number of samples
-	s = (1:n) / sf;             % sound data preparation
-	s = sin(2 * pi * cf * s);   % sinusoidal modulation
-	params.sound.s = s;
-	params.sound.sf = sf;
-
-	cf = 2000;                  % carrier frequency (Hz)
-	sf = 22050;                 % sample frequency (Hz)
-	d = 0.1;                    % duration (s)
-	n = sf * d;                 % number of samples
-	s = (1:n) / sf;             % sound data preparation
-	s = sin(2 * pi * cf * s);   % sinusoidal modulation
-	params.sound.sFeedback = s;
-	params.sound.sfFeedback = sf;
 end
 

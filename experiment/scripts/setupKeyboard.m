@@ -1,4 +1,4 @@
-function keys = KeysSetup
+function keys = setupKeyboard
 
     KbName('UnifyKeyNames');
 

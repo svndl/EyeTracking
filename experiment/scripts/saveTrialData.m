@@ -1,17 +1,17 @@
-function saveTrialData(stm, cnd, trials)
+function saveTrialData(session, cndInfo, nC)
 %
 % store stimulus info, behavioral and eyetracking data
 
-	if stm.recording
+	if session.recording
 		Eyelink('CloseFile');
-		EyelinkTransferFile(stm, 'tmp.edf', '_all_')
+		EyelinkTransferFile(session, 'tmp.edf', '_all_')
 	end
 	
 		
-	if (~exist(stm.saveDir, 'dir'))
-		mkdir(stm.saveDir)
+	if (~exist(session.saveDir, 'dir'))
+		mkdir(session.saveDir)
     end
-    saveStr = ['cnd' num2str(cnd) 't1' num2str(stm.trialRepeats) '.mat'];
+    saveStr = ['cnd' num2str(nC) 't1' num2str(cndInfo.nTrials) '.mat'];
     
-	save(fullfile(stm.saveDir, saveStr), 'stm', 'trials');
+	save(fullfile(session.saveDir, saveStr), 'cndInfo', 'trials');
 end
