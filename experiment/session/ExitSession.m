@@ -5,7 +5,7 @@ function ExitSession(recording)
 	end
 	sca;                    % Close window:
 	ListenChar(0);          % Restore keyboard output to Matlab:
-    warning('Exited experiment before completion');
+    %warning('Exited experiment before completion');
 	clear all;
 	commandwindow;
 end

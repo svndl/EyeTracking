@@ -1,4 +1,4 @@
-function [dotFrames, dotColor, dotSize] = generateDotFrames(dotParams, videoMode)
+function [dotFrames, dotColor, dotSize] = DotFrames(dotParams, videoMode)
     % function will generate dot frames for a given 
     dotParams = calcStimsetParams(dotParams, videoMode);
     dotFrames{1} = feval(dotParams.cues, dotParams);  

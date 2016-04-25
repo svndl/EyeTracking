@@ -1,4 +1,4 @@
-function [session, scr] = setupSession (display, subj)
+function [session, scr] = setupSession(display, subj)
     displayParams = eval(display);
     	
 	directories = setPath;             
@@ -12,7 +12,7 @@ function [session, scr] = setupSession (display, subj)
     	
 	%% mkdir
 	session.saveDir = fullfile(directories.data, paradigmStr, [subj.name timeStamp]);
-	if (~exist(session.saveDir, 'dir'))
+    if(~exist(session.saveDir, 'dir'))
 		mkdir(session.saveDir);
     end
     

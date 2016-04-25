@@ -1,4 +1,4 @@
-function saveTrialData(session, cndInfo, nC)
+function saveTrialData(session, cndInfo, nC, trials)
 %
 % store stimulus info, behavioral and eyetracking data
 

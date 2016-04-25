@@ -1,28 +1,19 @@
-function drawFixation(scr, flipIt)
+function drawFixation(scr, flipIt, varargin)
 %
 % draws binocular fixation nonius to the screen, if flipIt is 1, then draw
 % full nonius and flip, if flipIt is 0, draw only verticals and wait to
-% flip until the stimulus is drawn too
-
-% length of diagonal lines
+% flip until the stimulus is drawn too    
+    %support for 3D
+    if (~isempty(varargin))
+        Screen('SelectStereoDrawBuffer', scr.wPtr, varargin{1});
+    end
+    % length of diagonal lines
 	fxRadiusX2 = sqrt(((scr.fxRadiusX).^2)/2);
 	fxRadiusY2 = sqrt(((scr.fxRadiusY).^2)/2);
-
-	% line width in pixels
-	line_width  = 2;
-
-	% bg
-	Screen('FillRect', scr.wPtr, scr.background);
-
-	% central square - same size as dots
-	Screen('FillRect', scr.wPtr, scr.lwhite, ...
-		[scr.xc_l - scr.fxDotRadius scr.yc_l - scr.fxDotRadius ...
-		scr.xc_l + scr.fxDotRadius scr.yc_l + scr.fxDotRadius] );
-
-	Screen('FillRect', scr.wPtr, scr.rwhite, ...
-		[scr.xc_r - scr.fxDotRadius scr.yc_r - scr.fxDotRadius ...
-		scr.xc_r + scr.fxDotRadius scr.yc_r + scr.fxDotRadius] );
-
+ 	
+    % line width in pixels
+	line_width  = 2;    
+    
 	%% nonius lines
 	% vertical
 	if flipIt
@@ -33,10 +24,22 @@ function drawFixation(scr, flipIt)
 		% make verticals the same as all other lines
 		vert_R = scr.fxRadiusY*2;
 		vert_W  = line_width*3;
-	end
+    end
+   
+    Screen('FillRect', scr.wPtr, scr.background);	
+    
+    % central square - same size as dots
+	Screen('FillRect', scr.wPtr, scr.lwhite, ...
+		[scr.xc_l - scr.fxDotRadius scr.yc_l - scr.fxDotRadius ...
+		scr.xc_l + scr.fxDotRadius scr.yc_l + scr.fxDotRadius] );
 
-	%% draw vertical lines
+	Screen('FillRect', scr.wPtr, scr.rwhite, ...
+		[scr.xc_r - scr.fxDotRadius scr.yc_r - scr.fxDotRadius ...
+		scr.xc_r + scr.fxDotRadius scr.yc_r + scr.fxDotRadius] );
+	
+    %% draw vertical lines
     %right display
+
 	Screen('DrawLine', scr.wPtr, scr.rwhite, scr.xc_r, scr.yc_r - vert_R, ...
 		scr.xc_r, scr.yc_r - vert_W, vert_W);
     %left display
@@ -76,5 +79,5 @@ function drawFixation(scr, flipIt)
 			scr.yc_l  - (fxRadiusY2) , line_width);
 	
 		Screen('Flip', scr.wPtr);
-	end
-
+    end
+end

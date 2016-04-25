@@ -1,4 +1,4 @@
-function dat = defaultStimset
+function dat = exampleDots
 
 	% set up properties
 	dat.exp_name        = 'testingNewScripts';

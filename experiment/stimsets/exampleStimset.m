@@ -1,4 +1,4 @@
-function conditions = myConditions1(videoMode)
+function stimset = exampleStimset(videoMode)
     % condition structure:
     % conditions.fhandle : function handle that will return dotFrames, dotColor and dotSize
     % conditions.fparams: arguments to function handle
@@ -13,25 +13,28 @@ function conditions = myConditions1(videoMode)
     % define simple stimset#2
     dotParamsName = 'defaultStimset';
     dotParams = eval(dotParamsName);
-    dotParams.cues = 'IOVD';                 
-    dotParams.dynamics = {'ramp'};
-    dotParams.direction = {{'right'}};
+    dotParams.cues = 'SingleDot';                 
+    dotParams.dynamics = {{'step', 'ramp'}};
+    dotParams.direction = {{'left', 'right'}};
 	dotParams.isPeriodic = 0;
-	dotParams.trialRepeats = 1;
+	dotParams.nTrials = 1;
     
-    allConditions = createConditions(dotParams);
+    allConditions = createCombinations(dotParams);
     nc = numel(allConditions);
-    conditions = cell(nc, 1);
+    stimset = cell(nc + 1, 1);
     
     info1.cues =  dotParams.cues;
     info1.dynamics = dotParams.dynamics;
     info1.direction = dotParams.direction;
-	info1.nTrials = dotParams.trialRepeats;
+	info1.nTrials = dotParams.nTrials;
     
     
     for c = 1:nc
-        conditions{c}.fhandle = 'generateDotFrames';
-        conditions{c}.fparams = {allConditions{c}, videoMode};
-        conditions{c}.info = info1;
-    end 
+        stimset{c}.fhandle = 'generateDotFrames';
+        stimset{c}.fparams = {allConditions{c}, videoMode};
+        stimset{c}.info = info1;
+    end
+    stimset{nc + 1}.fhandle = 'exampleMixedCondition';   
+    stimset{nc + 1}.fparams = {videoMode};
+    stimset{nc + 1}.info = exampleMixedCondition;  
 end

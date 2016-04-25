@@ -7,7 +7,7 @@ function runSession
     
  	useEyelink = 0;
 
-    displayName = 'laptop';    
+    displayName = 'LG_OLED_TB';    
     %% Setup session
     [mySession, myScr] = setupSession(displayName, subject);
         
@@ -20,12 +20,12 @@ function runSession
         end
     end
     
-    conditions = myConditions(myScr);
-    mySession.isrecording = useEyelink;
+    conditions = testCalibrationStimset(myScr);
+    mySession.recording = useEyelink;
     %% run experiment 
     for s = 1:numel(conditions)
 		
-		cndData.timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
+		mySession.timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
 		condition = conditions{s};
         
 		trials = createTrials(condition.info);
@@ -54,7 +54,7 @@ function runSession
 			end
 		end
 		saveCondition(mySession, condition.info, myScr, s, trials);
-		drawConditionScr(s, allConditions, myScr);
+		drawConditionScr(s, numel(conditions), myScr);
     end
     ExitSession(useEyelink);
 end
@@ -67,7 +67,9 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 	
     [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
     %% initialize trial
-	drawFixation(scr, 1);                
+	drawFixation(scr, 1, 0);
+	drawFixation(scr, 1, 1);
+    
 	KeysWait(keys, useEyelink);                                     
 		
 	if (useEyelink) 
@@ -93,7 +95,7 @@ function saveCondition(sessionInfo, conditionInfo, scr, nC, trials)
 			%transfer eyelink file and save
 			EyelinkTransferFile(sessionInfo, 'tmp.edf', ['cnd' num2str(nC)]);
 		end
-		saveTrialData(sessionInfo, nC, trials);
+		saveTrialData(sessionInfo, conditionInfo, nC, trials);
 	catch
 		saveStr = strcat(sessionInfo.subj, '_', sessionInfo.timeStamp);
 		display(['Could not save the session in requested folder, saving here as ' saveStr]);
@@ -103,7 +105,7 @@ end
 
 function drawConditionScr(cnd, ncnd, scr)
 	%% display how much time left
-	Screen('DrawText', scr.wPtr, ['Done block' num2str(cnd) ' of' num2str(numel(ncnd)) ' '], ...
+	Screen('DrawText', scr.wPtr, ['Done block' num2str(cnd) ' of' num2str(ncnd) ' '], ...
 		scr.xc_l - 25, scr.yc_l, scr.lwhite);
 	Screen('Flip', scr.wPtr);
 	WaitSecs(2);
