@@ -88,12 +88,11 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 	if (useEyelink)
         display('Eyelink Recording Started');
     
-        msgEyelink = ['STARTTIME ' condition.info.name ':' ...
+        condition.info.msgEyelink = ['STARTTIME ' condition.info.name ':' ...
 		condition.info.dynamics{:} ':'...
         condition.info.direction{:} ':' num2str(trialNum)];
     
-    
-        Eyelink('Message',  msgEyelink)
+        Eyelink('Message',  condition.info.msgEyelink);
 		Eyelink('StartRecording');  
     end
     
