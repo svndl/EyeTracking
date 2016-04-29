@@ -20,7 +20,7 @@ function runSession
         end
     end
     
-    conditions = testCalibrationStimset(myScr);
+    conditions = ta_TestSet(myScr);
     mySession.recording = useEyelink;
     %% run experiment 
     for s = 1:numel(conditions)
@@ -74,9 +74,10 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 		
 	if (useEyelink) 
 		Eyelink('StartRecording');  
-	end
+    end
+    dotUpdate = 60/condition.info.dotUpdateHz;
 	%% show trial (with random delay first)
-	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr);
+	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate);
             
 	% clear screen at end
 	drawTrialEndScreen(scr);

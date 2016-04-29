@@ -6,7 +6,7 @@ function [session, scr] = setupSession(display, subj)
 	paradigmStr = 'TestingNewCode';
 	
 	%% Screen, Keyboard
-    displayParams.white = 255;
+    displayParams.white = 180;
     displayParams.gray = 127;
     displayParams.black = 0;
     	

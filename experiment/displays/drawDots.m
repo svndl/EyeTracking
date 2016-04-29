@@ -1,4 +1,4 @@
-function timing = drawDots(dotFrames, dotColor, dotSize, scr)
+function timing = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate)
 	
     % stimulus step update index, frame index
 	idxUpdate   = 1;                         
@@ -32,8 +32,7 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr)
     
     while(idxUpdate <= nDotsUpdate)
         % draw dot updates for each frame;
-        dotRepeats = 1;
-        for r = 1:dotRepeats
+        for r = 1:dotUpdate
             % draw fixation pattern with stimulus
             drawFixation(scr, 0, 0);
             drawFixation(scr, 0, 1);
@@ -54,28 +53,28 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr)
                 % Select left-eye image buffer for drawing (buffer = 0)
                 Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
                 % Now draw our left eyes dots
-                Screen('DrawDots', scr.wPtr, lDots, dotSize{d}.L, dotColor{d}.L, scrLCenter, 2);
+                Screen('DrawDots', scr.wPtr, lDots, dotSize{d}.L, dotColor{d}.L, scrLCenter, 0);
 
                 % Select right-eye image buffer for drawing (buffer = 1)
                 Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
 
                 % Now draw our right eyes dots
-                Screen('DrawDots', scr.wPtr, rDots, dotSize{d}.R, dotColor{d}.R, scrRCenter, 2);
+                Screen('DrawDots', scr.wPtr, rDots, dotSize{d}.R, dotColor{d}.R, scrRCenter, 0);
 
                % flickering giant white dot
             end
             
-            if (rem(idxUpdate, 2))
-                Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
-                % Now draw our left eyes dots
-                Screen('DrawDots', scr.wPtr, [20, 20], 50, scr.rwhite, scrLCenter - 500, 2);
-
-                % Select right-eye image buffer for drawing (buffer = 1)
-                Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
-
-                % Now draw our right eyes dots
-                Screen('DrawDots', scr.wPtr, [20, 20], 50, scr.rwhite, scrRCenter - 500, 2);
-            end
+%             if (rem(idxUpdate, 2))
+%                 Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
+%                 % Now draw our left eyes dots
+%                 Screen('DrawDots', scr.wPtr, [20, 20], 50, scr.rwhite, scrLCenter - 500, 2);
+% 
+%                 % Select right-eye image buffer for drawing (buffer = 1)
+%                 Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
+% 
+%                 % Now draw our right eyes dots
+%                 Screen('DrawDots', scr.wPtr, [20, 20], 50, scr.rwhite, scrRCenter - 500, 2);
+%             end
             
             % determine time for screen flip            
             timing.StimulusReqTime(idxFrame) = t + ((1/scr.frameRate)*(idxFrame - 1));
