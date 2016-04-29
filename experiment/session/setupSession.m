@@ -1,9 +1,8 @@
-function [session, scr] = setupSession(display, subj)
+function [session, scr] = setupSession(display, subj, paradigmStr)
     displayParams = eval(display);
     	
 	directories = setPath;             
 	timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
-	paradigmStr = 'TestingNewCode';
 	
 	%% Screen, Keyboard
     displayParams.white = 180;

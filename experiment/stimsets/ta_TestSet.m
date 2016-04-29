@@ -14,19 +14,21 @@ function stimset = ta_TestSet(videoMode)
 
     fc = eval('FullCue_dots');
     fc.handle = 'mixedDotFrames';
-%     
-%     decorr = eval('De-Anti_Corr_dots');
-%     decorr.handle = 'mixedDotFrames';
-%       
-%     anti = eval('IOVD_dots');
-%     anti.handle = 'antiCorrDotFrames';
+    fc.name = 'Full Cue';
     
-%     cdot = eval('CDOT_dots');
-%     cdot.handle = 'mixedDotFrames';
-
-    params = {fc};
+    decorr = eval('IOVD_dots');
+    decorr.handle = 'mixedDotFrames';
+    decorr.name = 'Decorrelated';
     
-    %params = {fc, cdot, iovd_corr, iovd_anti};
+    anti = eval('AntiCorr_dots');
+    anti.handle = 'antiCorrDotFrames';
+    anti.name = 'Anticorrelated';
+    
+    cdot = eval('CDOT_dots');
+    cdot.handle = 'mixedDotFrames';
+    cdot.name = 'CDOT';
+    
+    params = {fc, cdot, decorr, anti};
     directions = {'towards', 'away'};
     
     stimset = cell(numel(params)*numel(directions), 1);
@@ -34,8 +36,7 @@ function stimset = ta_TestSet(videoMode)
     for p = 1: numel(params)
         for d = 1:numel(directions)
             info = params{p};
-            info.direction = directions(d);
-            
+            info.direction = directions(d);            
             stimset{c}.fhandle = info.handle;
             stimset{c}.fparams = {info, videoMode};
             stimset{c}.info = info;

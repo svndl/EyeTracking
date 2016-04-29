@@ -1,4 +1,4 @@
-function el = EyelinkSetup(session, scr)
+function el = EyelinkSetup(scr)
 % Initialize eyelink defaults and control code structure
 %
 % USAGE: el=EyelinkInitDefaults([window])
@@ -32,7 +32,6 @@ function el = EyelinkSetup(session, scr)
 	el.calibrationtargetsize = 0.5;  % size of calibration target as percentage of screen
 	el.backgroundcolour = scr.calicolor;
 	el.foregroundcolour = WhiteIndex(scr.wPtr);
-	if session.recording
     
 		% eyelink computer check
 		el.computer = computer;
@@ -294,5 +293,4 @@ function el = EyelinkSetup(session, scr)
     
     
 		EyelinkUpdateDefaults(el);
-	end
 end

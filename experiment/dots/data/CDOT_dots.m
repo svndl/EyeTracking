@@ -16,7 +16,7 @@ function cdot = CDOT_dots
 
 	% timing
 	cdot.preludeSec      = 0.5;   % delay before motion onset
-	cdot.cycleSec        = 4;      % duration of stimulus after prelude
+	cdot.cycleSec        = 2;      % duration of stimulus after prelude
 	cdot.nTrials         = 5;      % number of repeats per condition
 	
 	% dot update params

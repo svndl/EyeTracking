@@ -26,6 +26,7 @@ function runSession
     conditions = ta_TestSet(myScr);
     mySession.recording = useEyelink;
     
+    randList = numel(conditions)
     %% run experiment 
     for s = 1:numel(conditions)
 		

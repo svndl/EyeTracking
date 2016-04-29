@@ -1,6 +1,6 @@
 function iovd = IOVD_dots
 
-    iovd.cues = 'FullCue';                 
+    iovd.cues = 'IOVD';                 
     iovd.dynamics = {'ramp'};
 	iovd.isPeriodic = 0;
 
