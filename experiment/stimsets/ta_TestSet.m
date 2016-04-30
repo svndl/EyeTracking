@@ -28,7 +28,9 @@ function stimset = ta_TestSet(videoMode)
     cdot.handle = 'mixedDotFrames';
     cdot.name = 'CDOT';
     
-    params = {fc, cdot, decorr, anti};
+    %params = {fc, cdot, decorr, anti};
+    params = {fc};
+    
     directions = {'towards', 'away'};
     
     stimset = cell(numel(params)*numel(directions), 1);
