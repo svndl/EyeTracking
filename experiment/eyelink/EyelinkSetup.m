@@ -30,8 +30,8 @@ function el = EyelinkSetup(scr)
 %				input devices
 
 	el.calibrationtargetsize = 0.5;  % size of calibration target as percentage of screen
-	el.backgroundcolour = scr.calicolor;
-	el.foregroundcolour = WhiteIndex(scr.wPtr);
+	el.backgroundcolor = BlackIndex(scr.wPtr);
+	el.foregroundcolor = WhiteIndex(scr.wPtr);
     
 		% eyelink computer check
 		el.computer = computer;

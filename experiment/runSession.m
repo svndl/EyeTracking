@@ -2,7 +2,7 @@ function runSession
 
     
     %% Subject
-    subject.name = 'Tester';
+    subject.name = 'AY';
     subject.ipd = 6.5;    
  	useEyelink = 1;
 
@@ -36,7 +36,7 @@ function runSession
 		% Open file for recording
         
         if (useEyelink)
-            Eyelink('Openfile', 'tmp.edf');				
+            Eyelink('Openfile', ['tmp' num2str(s) '.edf']);				
         end
         
 		for t = 1:condition.info.nTrials
@@ -45,7 +45,7 @@ function runSession
 					mySession.keys, condition, useEyelink);
 				trials.isOK(t) = 1;
 			catch err
-				display('Ooops!');
+				display('runSession Error!');
 				display(err.message);
 				display(err.stack(1).file);
 				display(err.stack(1).line);
@@ -56,15 +56,17 @@ function runSession
 				end
 				trials.isOK(t) = 0;
 			end
-		end
+        end
 		saveCondition(mySession, condition.info, myScr, s, trials);
 		drawConditionScr(s, numel(conditions), myScr);
     end
+%     if (useEyelink)
+%         copyEyelinkFiles(mySession, s)
+%     end
     ExitSession(useEyelink);
 end
 function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useEyelink)
 
-    
     if (~isfield(condition.info, 'name'))
        condition.info.name = condition.info.cues;
     end
@@ -100,7 +102,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 
 	if (useEyelink)
         display('Eyelink Recording Ended');        
-		Eyelink('StopRecording');  
+		Eyelink('StopRecording');
     end
     
 	% clear screen at end
@@ -110,7 +112,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 	response = 'Mis';
 	while keys.isDown == 0
 		[keys, response] = KeysGetResponse(keys, useEyelink);
-	end
+    end
 	keys.isDown = 0;
 end
 function saveCondition(sessionInfo, conditionInfo, scr, nC, trials)
@@ -118,7 +120,7 @@ function saveCondition(sessionInfo, conditionInfo, scr, nC, trials)
 	try
 		if (sessionInfo.recording) 
 			%transfer eyelink file and save
-			EyelinkTransferFile(sessionInfo, 'tmp.edf', ['cnd' num2str(nC)]);
+			EyelinkTransferFile(sessionInfo, ['tmp' num2str(nC) '.edf'], ['cnd' num2str(nC)]);
 		end
 		saveTrialData(sessionInfo, conditionInfo, nC, trials);
 	catch
@@ -135,3 +137,16 @@ function drawConditionScr(cnd, ncnd, scr)
 	Screen('Flip', scr.wPtr);
 	WaitSecs(2);
 end
+% function copyEyelinkFiles(sessionInfo, nCnd)
+%     try
+%         for nC = 1:nCnd
+% 			%transfer eyelink file and save
+% 			EyelinkTransferFile(sessionInfo, ['tmp' num2str(nC) '.edf'], ['cnd' num2str(nC)]);
+%         end
+%     catch err
+%         display('Eyelink Transfer File Error!');
+% 		display(err.message);
+% 		display(err.stack(1).file);
+% 		display(err.stack(1).line);
+%     end        
+% end

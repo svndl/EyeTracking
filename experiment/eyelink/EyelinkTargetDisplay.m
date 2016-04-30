@@ -10,14 +10,13 @@ function result = EyelinkTargetDisplay(el)
 %   22-06-06    fwc OSX-ed
 
 
-	result=-1; % initialize
+	result = -1; % initialize
 	if nargin < 1
 		error( 'USAGE: result=EyelinkTargetModeDisplay(el)' );
 	end
 
 	targetvisible = 0;	% target currently drawn
-	targetrectL = zeros(1, 4);
-	targetrectR = zeros(1, 4);
+	targetrect = zeros(1, 4);
 
 	targetX = el.MISSING;
 	targetY = el.MISSING;
@@ -79,19 +78,18 @@ while stop==0 && bitand(Eyelink('CurrentMode'), el.IN_TARGET_MODE)
     %ty
 	% erased or moved: erase target
 	if (targetvisible==1 && result==0) || targetX~=otx || targetY~=oty
-		EyelinkEraseCalTarget(el, targetrectL);
-        EyelinkEraseCalTarget(el, targetrectR);
+        EyelinkEraseCalTarget(el, targetrect);
 		targetvisible = 0;
 	end
 	% redraw if invisible
-	if targetvisible==0 && result==1
+	if targetvisible == 0 && result == 1
  		fprintf( 'Target drawn at: x=%d, y=%d\n', targetX, targetY );
 		
-		[targetrectL, targetrectR] = EyelinkDrawCalTarget(el, targetX, targetY);
+		targetrect = EyelinkDrawCalTarget(el, targetX, targetY);
 		targetvisible = 1;
 		otx = targetX;		% record position for future tests
 		oty = targetY;
-		if el.targetbeep==1
+		if el.targetbeep == 1
 			EyelinkCalTargetBeep(el);	% optional beep to alert subject
 		end
 	end

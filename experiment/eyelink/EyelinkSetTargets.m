@@ -3,7 +3,7 @@ function EyelinkSetTargets(scr)
 
     % screen resolution (native for planar)
     
-    screenResStr = [ '0,0,' num2str(scr.with_pix) ',' num2str(scr.height_pix)];
+    screenResStr = [ '0,0,' num2str(scr.width_pix) ',' num2str(scr.height_pix)];
     Eyelink('Command', ['screen_pixel_coords = ' screenResStr]);
 
     %effective screen size is reduced for native resolution on planar
