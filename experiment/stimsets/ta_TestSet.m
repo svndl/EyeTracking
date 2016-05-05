@@ -8,6 +8,7 @@ function stimset = ta_TestSet(videoMode)
     % info.cues
     % info.dynamic
     % info.direction
+    % info.dotSize, etc ...
    
     
     % define simple stimset#2
@@ -28,8 +29,8 @@ function stimset = ta_TestSet(videoMode)
     cdot.handle = 'mixedDotFrames';
     cdot.name = 'CDOT';
     
-    %params = {fc, cdot, decorr, anti};
-    params = {fc};
+    params = {fc, cdot, decorr, anti};
+    %params = {fc};
     
     directions = {'towards', 'away'};
     

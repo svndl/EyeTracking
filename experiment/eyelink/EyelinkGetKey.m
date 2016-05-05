@@ -91,22 +91,22 @@ function [key, el] = EyelinkGetKey(el)
 % 	end
 	
 
-	if 1==isequal(keyCodes, el.lastKeyCodes)
+	if 1 == isequal(keyCodes, el.lastKeyCodes)
 		return;
 	end
 	el.lastKeyCodes=keyCodes;
 
-	if keyIsDown==0 % no keypress available
+	if keyIsDown == 0 % no keypress available
 		return;
 	end
 
 
-	if keyCodes(el.modifierkey) & keyCodes( el.quitkey )
-		key=el.TERMINATE_KEY;
+	if keyCodes(el.modifierkey) && keyCodes( el.quitkey )
+		key = el.TERMINATE_KEY;
 		return;
 	end
 
-	el.getkeytime=secs;
+	el.getkeytime = secs;
 	if ~isfield( el, 'keysCached') || isempty(el.keysCached) || (el.keysCached == 0)
 		el;
 		error( 'Please call el=EyelinkInitDefaults before calling EyelinkGetKey' );

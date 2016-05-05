@@ -108,7 +108,7 @@ function outScr = setupFixation(inScr)
 
     outScr.calicolor = [0 0 0];                      
 
-	caliRadiusDeg	= 8;
+	caliRadiusDeg	= 5;
 	outScr.clbRadiusX = outScr.Xscale*ceil(caliRadiusDeg*60*(1/outScr.pix2arcmin));
 	outScr.clbRadiusY = outScr.Yscale*outScr.clbRadiusX/2;
 	

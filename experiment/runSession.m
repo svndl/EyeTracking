@@ -4,7 +4,11 @@ function runSession
     subject.name = 'AY';
     subject.ipd = 6.5;    
     
-    displayName = 'LG_OLED_TB';     
+    displayName = 'LG_OLED_TB';
+    
+    % Folder where you'll be saving the experiment data:
+    % data/paradigmStr/subjName+date/
+    
     paradigmStr = 'TowardsAwayAllCues';
     
     %% Setup session
@@ -35,6 +39,14 @@ function runSession
             display(err.message);
             display(err.stack(1).file);
             display(err.stack(1).line);
+        end
+    end
+    
+    if (mySession.recording)
+        for nC = 1:numel(conditions)
+            %transfer eyelink file and save
+            fileName = [mySession.subj.name '_cnd' num2str(nC)];
+            EyelinkTransferFile(mySession.saveDir, fileName);
         end
     end
     ExitSession(useEyelink);

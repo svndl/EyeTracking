@@ -1,4 +1,4 @@
-function EyelinkRunCalibration(session, scr, el)
+function msg = EyelinkRunCalibration(session, scr, el)
   
     EyelinkSetTargets(scr)                     % setup target locations on screen
     
@@ -6,14 +6,17 @@ function EyelinkRunCalibration(session, scr, el)
     fileCalibration = [session.subj.name '_cali'];
     Eyelink('Openfile', [fileCalibration '.edf']);
     
-    %%%%% CALIBRATE EYETRACKER %%%%%
+    % Calibrate/Validate EYETRACKER %
     %pressing v will start validation
     %press esc when finished
-    EyelinkCalibrationSteps(el, 'c');
     
+    EyelinkCalibrationSteps(el, 'c');
+    EyelinkCalibrationSteps(el, 'v');
+
     % transfer file
     Eyelink('CloseFile');
 	try
+        Eyelink()
 		EyelinkTransferFile(session.saveDir, fileCalibration);
 	catch
 		disp('Could not transfer file, consider restarting ET session');

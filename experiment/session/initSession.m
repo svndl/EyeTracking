@@ -1,4 +1,4 @@
-function isOK = initSession(session, scr)   
+function [isOK] = initSession(session, scr)   
     try
         if (EyelinkInitialize)
             el = EyelinkSetup(scr);  
@@ -9,7 +9,7 @@ function isOK = initSession(session, scr)
 			%slight delay before calibration/validation
 			KbWait;							
 			WaitSecs(0.25);			
-			EyelinkRunCalibration(session, scr, el)
+			EyelinkRunCalibration(session, scr, el);
             isOK = 1;
         end
 	catch err

@@ -4,10 +4,11 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
        condition.info.name = condition.info.cues;
     end
     
-    msgDescription = cell2mat([{'trial ' num2str(trialNum) '/' num2str(condition.info.nTrials)} ' ' ...
-		condition.info.name ' ' condition.info.dynamics{:} ' ... direction = ' condition.info.direction{:}]);    
+    msgTrialDescription = [condition.info.name ':' ...
+		condition.info.dynamics{:} ':'...
+        condition.info.direction{:} ':' num2str(trialNum)];    
 	
-    display(msgDescription);
+    display(msgTrialDescription);
     
 	%% pre-generate stimulus frames
     [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
@@ -19,21 +20,20 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 	KeysWait(keys, useEyelink);                                     
 
     dotUpdate = scr.frameRate/condition.info.dotUpdateHz;
-    
     if (useEyelink)
         display('Eyelink Recording Started');
+        
+        condition.info.msgEyelinkStart = ['STARTTIME:' msgTrialDescription];
     
-        condition.info.msgEyelink = ['STARTTIME ' condition.info.name ':' ...
-		condition.info.dynamics{:} ':'...
-        condition.info.direction{:} ':' num2str(trialNum)];
-    
-        Eyelink('Message',  condition.info.msgEyelink);
+        Eyelink('Message',  condition.info.msgEyelinkStart);
 		Eyelink('StartRecording');  
     end
     
 	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate);
     if (useEyelink)
-        display('Eyelink Recording Ended');        
+        condition.info.msgEyelinkStop = ['STOPTIME:' msgTrialDescription];       
+        display('Eyelink Recording Ended');
+        Eyelink('Message',  condition.info.msgEyelinkStop);        
 		Eyelink('StopRecording');
     end
     

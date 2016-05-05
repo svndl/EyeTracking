@@ -1,11 +1,11 @@
 function saveCondition(sessionInfo, conditionInfo, scr, nC, trials)
 	conditionInfo.display = scr;
 	try
-        if (sessionInfo.recording) 
-			%transfer eyelink file and save
-            fileName = [sessionInfo.subj.name '_cnd' num2str(nC)];
-			EyelinkTransferFile(sessionInfo.saveDir, fileName);
-        end
+%         if (sessionInfo.recording) 
+% 			%transfer eyelink file and save
+%             fileName = [sessionInfo.subj.name '_cnd' num2str(nC)];
+% 			EyelinkTransferFile(sessionInfo.saveDir, fileName);
+%         end
         saveStr = ['cnd' num2str(nC) 't1-' num2str(conditionInfo.nTrials) '.mat'];
         save(fullfile(sessionInfo.saveDir, saveStr), 'conditionInfo', 'trials');
     catch err
