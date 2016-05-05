@@ -1,4 +1,5 @@
 function EyelinkTransferFile(saveDirPath, fileName)
+    ListenChar(0);
     Eyelink('SetOfflineMode');
     Eyelink('WaitForModeReady', 500);
     try
@@ -20,4 +21,5 @@ function EyelinkTransferFile(saveDirPath, fileName)
         Eyelink('ReceiveFile', fileName);        
 		fprintf('Problem receiving data file ''%s''\n', fileName );
     end
+    GetChar();
 end
