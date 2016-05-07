@@ -1,20 +1,18 @@
-function sessions = loadProject(pathToProject)
+function projectInfo = loadProject(pathToProject)
 
-    list_subj = dir2(pathToProject);
-    nSubj = numel(list_subj);
+    projectMatFile = [pathToProject '.mat'];
     
+    if (~exist(projectMatFile, 'file'))
+        list_sessions = dir2(pathToProject);
+        nS = numel(list_sessions);
+        projectInfo = cell(nS, 1);
     
-    sessions = cell(nSubj, 1);
-    
-    for ns = 1:nSubj
-        sessionFolder = fullfile(pathToProject, list_subj(ns).name);
-        sessionMatFile = [sessionFolder '.mat'];
-        if (~exist(sessionMatFile, 'file'))
-            sessionInfo = loadSession(sessionFolder);
-            save(sessionMatFile, 'sessionInfo');
-        else
-            load(sessionMatFile);
+        for ns = 1:nS
+            sessionFolder = fullfile(pathToProject, list_sessions(ns).name);
+            projectInfo{ns} = loadSession(sessionFolder);
         end
-        sessions{ns} = sessionInfo;
+        save(projectMatFile, 'projectInfo');
+    else
+        load(projectMatFile);
     end
 end

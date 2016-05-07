@@ -24,13 +24,13 @@ function calibrationErr = loadEyelinkCalibration(filename)
         
             if strfind(Line,'!CAL VALIDATION HV13 LR LEFT');
             
-                avgL = str2num(cell2mat(regexp(Line,'(?<=ERROR )[^]+(?= avg.)', 'match')));
-                maxL = str2num(cell2mat(regexp(Line,'(?<=avg. )[^]+(?= max)', 'match')));
+                avgL = str2double(cell2mat(regexp(Line,'(?<=ERROR )[^]+(?= avg.)', 'match')));
+                maxL = str2double(cell2mat(regexp(Line,'(?<=avg. )[^]+(?= max)', 'match')));
                 
             elseif strfind(Line,'!CAL VALIDATION HV13 LR RIGHT');
             
-                avgR = str2num(cell2mat(regexp(Line,'(?<=ERROR )[^]+(?= avg.)', 'match')));
-                maxR = str2num(cell2mat(regexp(Line,'(?<=avg. )[^]+(?= max)', 'match')));
+                avgR = str2double(cell2mat(regexp(Line,'(?<=ERROR )[^]+(?= avg.)', 'match')));
+                maxR = str2double(cell2mat(regexp(Line,'(?<=avg. )[^]+(?= max)', 'match')));
                 
             end
         end

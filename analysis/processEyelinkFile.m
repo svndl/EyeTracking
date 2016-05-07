@@ -1,73 +1,58 @@
-function trials = processEyelinkFile(pathToFile, elInfo)
+function trials = processEyelinkFile(pathToFile)
+    % Parses *.asc eyelink trial
 
-
-    eld     = loadEyelinkFile(pathToFile); 
+    eyelinkData = loadEyelinkFile(pathToFile); 
      % find all trial start/stop flags
-    starts  = find(~cellfun(@isempty,strfind(eld.f2,'STARTTIME')));                                
-    stops   = find(~cellfun(@isempty,strfind(eld.f2,'STOPTIME')));                                  
+    starts  = find(~cellfun(@isempty, strfind(eyelinkData.f1,'START')));                                
+    stops   = find(~cellfun(@isempty, strfind(eyelinkData.f1,'END')));                                  
     
-     % eld structure fields to use; fields 1-4 are data, 5-6 are meta
-    fields  = {'f2', 'f3', 'f5', 'f6', 'f1', 'f8'};                                                    
-    vals    = {'LEx', 'LEy', 'REx', 'REy', 'meta', 'qual'};                                              
-
+    % 6 lines after the start: 
+    % {START(1), PRESCALER(2), VPRESCALER(3), PUPIL(4), EVENTS(5), SAMPLES(6), INPUT(7), (8)..data..} 
+    
+    dataStarts = starts + 6 + 1;
+    dataStops = stops - 1;
+    
+    % eld structure fields to use; fields 1-4 are data, 5-6 are meta
+    
+    vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'meta', 'qual'};                                                  
+    fields = {'f1', 'f2', 'f3', 'f5', 'f6', 'f1', 'f8'};                                                    
+    
+    trials = cell(numel(starts), 1);
+ 
     for s = 1:length(starts)
     
-        % parse startline into trial info
-        [condition, dynamics, direction, trialnum] = eyelink_parse_startline(eld.f2(starts(s)));       
+        try
+            % exclude saccades and fixation   
+            dataEvents = '[A-Z]';
+            timeSamples = eyelinkData.(fields{1})( dataStarts(s):dataStops(s));
+            validIDX = cellfun(@isempty, regexp(timeSamples, dataEvents));
     
-        for x = 1:length(fields)
-            data{x} = eld.(fields{x})( starts(s) + 1:stops(s) - 1);
-        end
+            data = zeros(sum(validIDX), numel(fields));
+            data(:, 1) = cellfun(@str2num, timeSamples(validIDX));    
     
-        % indices to keep
-        Datalines = ~isnan(str2double(data{5}));
-    
-        GoodQuallines   = strcmp(data{6},'.....') & ~strcmp(data{1},'.') & ~strcmp(data{2},'.') & ~strcmp(data{3},'.') & ~strcmp(data{4},'.');
-    
-        isGood = 1;
-    
-        for d = 1:4
-        
-            data_clean{d} = data{d};                                                % copy data in array for cleaning
-            data_clean{d}(~GoodQuallines) = {'1e100'};                              % replace NaNs with very small value
-            data_clean{d} = data_clean{d}(Datalines);                               % remove indices that a meta lines
-            data_clean{d} = data_clean{d}...                                        % omit a few extra measurements
-                (1:round(el.sampleRate*(res.preludeSec(f)+res.cycleSec(f)))+1);
-        
-            %data_nums = cellfun(@str2double,data_clean{d});                            % convert data to numbers
-            data_nums = sscanf(sprintf('%s ',data_clean{d}{:}),'%f');
-        
-            data_nums(data_nums == 1e100) = NaN;                                    % replace bad values with NaNs
-        
-            trials.data(tcnt) = data_nums;                               % store cleaned eye position href data
-
-            if sum(isnan(data_nums)) > 0                                            % flag this trial is there's bad data
-                isGood = 0;
+            % parse startline into trial info
+            for x = 2:length(fields) - 1            
+                samples = eyelinkData.(fields{x})( dataStarts(s):dataStops(s));
+                data(:, x) = cellfun(@str2num, samples(validIDX));
             end
-        end
-    
-        trials.condition        = cell2mat(condition);
-        trials.dynamics         = cell2mat(dynamics);
-        trials.direction        = cell2mat(direction);
-        trials.trialnum(tcnt)   = trialnum;
-        trials.isGood(tcnt)     = isGood;
-    
-        % duration of recording for this trial    
-        trials.recordingDurationSec(tcnt) = length(data{1}(Datalines))./elInfo.sampleRate;  
-        % timepoints of recording for this trial        
-        trials.recordingTimePointsSec(tcnt) = (0:1)/(elInfo.sampleRate:(res.preludeSec(f) + res.cycleSec(f)));  
         
-        tcnt = tcnt + 1;
+            qualSamples = eyelinkData.(fields{end})( dataStarts(s):dataStops(s));       
+            qualIdx = ismember(qualSamples(validIDX), '.....');        
+            goodTrials = data(qualIdx, :);
+        
+            goodTrials(goodTrials == 1e100) = NaN;
+        catch err
+            display(['processEyelinkFile Error trial #'  num2str(s)  ' file ' ...
+                pathToFile ' caused by:']);
+            display(err.message);
+            display(err.stack(1).file);
+            display(err.stack(1).line);
+                        
+            % keep whatever we have parsed so far
+            goodTrials = data;
+        end  
+        trials{s}.data = goodTrials;
+        trials{s}.timestamps = [dataStarts(s), dataStops(s)];
+        trials{s}.headers = vals; 
     end
-end
-
-
-function parseEyelinkMsg(startLine)
-    [~,startline] = strtok(startline,' ');
-    [~,startline] = strtok(startline,' ');
-
-    [condition,startline] = strtok(startline,' ');
-    [dynamics,startline] = strtok(startline,' ');
-    [direction,trialnum] = strtok(startline,' ');
-    trialnum = str2num(cell2mat(trialnum));
 end
