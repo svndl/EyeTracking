@@ -1,5 +1,4 @@
-function saveCondition(sessionInfo, conditionInfo, scr, nC, trials)
-	conditionInfo.display = scr;
+function saveCondition(sessionInfo, conditionInfo, nC, trials)
 	try
 %         if (sessionInfo.recording) 
 % 			%transfer eyelink file and save

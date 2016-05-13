@@ -1,8 +1,10 @@
 function [isOK] = initSession(session, scr)   
     try
         if (EyelinkInitialize)
-            el = EyelinkSetup(scr);  
-			drawInitScreen(el, scr)    
+            el = EyelinkSetup(scr);
+            % save eyelink info ?
+            
+			drawInitScreen(el, scr);    
 	
 			display('Experimenter press Space when cameras are ready');
 			

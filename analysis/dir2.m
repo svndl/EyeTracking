@@ -17,6 +17,9 @@ while k <= length(listing)
     if any(strcmp(listing(k).name(1), {'.', '..'}))
         inds(end + 1) = k;
     end
+    if (listing(k).isdir)
+        inds(end + 1) = k;
+    end
     k = k + 1;
 end
 

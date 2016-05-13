@@ -27,7 +27,6 @@ function runSession
     %% Conditions
     conditions = ta_TestSet(myScr);
     mySession.recording = useEyelink;
-    
     %% run experiment
     for s = 1:numel(conditions)    
         try
@@ -49,5 +48,7 @@ function runSession
             EyelinkTransferFile(mySession.saveDir, fileName);
         end
     end
+    % Save session info  
+    saveSession(mySession, myScr);
     ExitSession(useEyelink);
 end

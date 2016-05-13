@@ -23,7 +23,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
     if (useEyelink)
         display('Eyelink Recording Started');
         
-        condition.info.msgEyelinkStart = ['STARTTIME:' msgTrialDescription];
+        condition.info.msgEyelinkStart = ['STARTTIME:' num2str(GetSecs) ':' msgTrialDescription];
     
         Eyelink('Message',  condition.info.msgEyelinkStart);
 		Eyelink('StartRecording');  
@@ -31,9 +31,10 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
     
 	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate);
     if (useEyelink)
-        condition.info.msgEyelinkStop = ['STOPTIME:' msgTrialDescription];       
         display('Eyelink Recording Ended');
-        Eyelink('Message',  condition.info.msgEyelinkStop);        
+        %add stop message?
+        condition.info.msgEyelinkStop = ['STOPTTIME:' num2str(GetSecs) ':' msgTrialDescription];
+        Eyelink('Message',  condition.info.msgEyelinkStop);
 		Eyelink('StopRecording');
     end
     

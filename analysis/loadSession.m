@@ -1,37 +1,39 @@
-function sessionInfo = loadSession(pathToSession)
+function sessionData = loadSession(pathToSession)
     
-
-    sessionMatFile = [pathToSession '.mat'];
+    display(['Loading... ' pathToSession]);
+    
+    sessionMatFile = [strtok(pathToSession, '.') '.mat'];
     
     if (exist(sessionMatFile, 'file'))
         load(sessionMatFile);
     else
-        [eyelinkDataFiles, eyelinkCalibFiles, sessionFiles] = lookForFiles(pathToSession);        
+        [eyelinkDataFiles, eyelinkCalibFiles, conditionFiles] = lookForFiles(pathToSession);        
         
-        nCndSession = numel(sessionFiles);
-        sessionInfo = cell(nCndSession, 1);
+        nCndSession = numel(conditionFiles);
+        sessionData = cell(nCndSession, 1);
     
-        elInfo = loadEyelinkInfo;
         calibError = cell(numel(eyelinkCalibFiles), 1);
+        sessionInfoFile = [strtok(pathToSession, '.') filesep 'sessionInfo.mat'];
         
         %process calibrartion first
         for nc =1:numel(eyelinkCalibFiles)
             calibError{nc} = loadEyelinkCalibration(fullfile(pathToSession, eyelinkCalibFiles{nc}));
         end
-            
+        
+        load(sessionInfoFile)    
         %for each condition look if there is an eyelink file 
         for c = 1:nCndSession
-            dataEyelink = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}));
-            %load session timimng
-            load(sessionFiles{c});
-            checkTiming
+            display(['Loading condition ' num2str(c) '/' num2str(nCndSession)]);
+            eyelinkRec = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}));
+            % conditionInfo, trials
+            load(conditionFiles{c});
+            
+            sessionData{c}.info = conditionInfo;
+            sessionData{c}.data = eyelinkRec;
+           [sessionData{c}.timecourse, sessionData{c}.pos, sessionData{c}.vel] = processTrialData(eyelinkRec, sessionInfo.subj.ipd);
         end
-        save(sessionMatFile, 'sessionInfo');
+        save(sessionMatFile, 'sessionData');
     end
-end
-function checkTiming()
-
-
 end
 
 function convert2asc(filepath)

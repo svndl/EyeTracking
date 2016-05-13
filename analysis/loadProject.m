@@ -1,14 +1,14 @@
 function projectInfo = loadProject(pathToProject)
 
     projectMatFile = [pathToProject '.mat'];
-    
+    foldersOnly = 1;
     if (~exist(projectMatFile, 'file'))
-        list_sessions = dir2(pathToProject);
+        list_sessions = lsdir(pathToProject, foldersOnly);
         nS = numel(list_sessions);
         projectInfo = cell(nS, 1);
     
         for ns = 1:nS
-            sessionFolder = fullfile(pathToProject, list_sessions(ns).name);
+            sessionFolder = fullfile(pathToProject, list_sessions{ns});
             projectInfo{ns} = loadSession(sessionFolder);
         end
         save(projectMatFile, 'projectInfo');

@@ -3,8 +3,8 @@ function trials = processEyelinkFile(pathToFile)
 
     eyelinkData = loadEyelinkFile(pathToFile); 
      % find all trial start/stop flags
-    starts  = find(~cellfun(@isempty, strfind(eyelinkData.f1,'START')));                                
-    stops   = find(~cellfun(@isempty, strfind(eyelinkData.f1,'END')));                                  
+    starts  = find(~cellfun(@isempty, strfind(eyelinkData.f1, 'START')));                                
+    stops   = find(~cellfun(@isempty, strfind(eyelinkData.f1, 'END')));                                  
     
     % 6 lines after the start: 
     % {START(1), PRESCALER(2), VPRESCALER(3), PUPIL(4), EVENTS(5), SAMPLES(6), INPUT(7), (8)..data..} 
@@ -32,14 +32,16 @@ function trials = processEyelinkFile(pathToFile)
     
             % parse startline into trial info
             for x = 2:length(fields) - 1            
-                samples = eyelinkData.(fields{x})( dataStarts(s):dataStops(s));
-                data(:, x) = cellfun(@str2num, samples(validIDX));
+                samples = eyelinkData.(fields{x})(dataStarts(s):dataStops(s));
+                %replace '.' with NaN
+                data(:, x) = str2num_Nan(samples(validIDX));
+                %data(:, x) = cellfun(@str2num, samples(validIDX));
             end
         
-            qualSamples = eyelinkData.(fields{end})( dataStarts(s):dataStops(s));       
-            qualIdx = ismember(qualSamples(validIDX), '.....');        
-            goodTrials = data(qualIdx, :);
-        
+            %qualSamples = eyelinkData.(fields{end})( dataStarts(s):dataStops(s));       
+            %qualIdx = ismember(qualSamples(validIDX), '.....');        
+            %goodTrials = data(qualIdx, :);
+            goodTrials = data; 
             goodTrials(goodTrials == 1e100) = NaN;
         catch err
             display(['processEyelinkFile Error trial #'  num2str(s)  ' file ' ...
@@ -50,9 +52,23 @@ function trials = processEyelinkFile(pathToFile)
                         
             % keep whatever we have parsed so far
             goodTrials = data;
-        end  
+        end
         trials{s}.data = goodTrials;
         trials{s}.timestamps = [dataStarts(s), dataStops(s)];
         trials{s}.headers = vals; 
+    end
+end
+
+function numArray = str2num_Nan(cellArray)
+    nElems = numel(cellArray);
+    numArray = NaN*ones(size(cellArray));
+    
+    for k = 1:nElems
+       elem = cellArray{k};
+       try
+           numArray(k) = str2num(elem);
+       catch
+           %leave the NaN out
+       end
     end
 end
