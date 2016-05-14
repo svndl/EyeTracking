@@ -64,39 +64,43 @@ function gui_loadProject
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
                  'string',gui.conditions,'value', gui.default_pos);
-             
+            
+    gui.pbPlot = uicontrol('style','push',...
+                 'units','normalized',...
+                 'position',[0.05 0.6 0.2 0.05],...
+                 'backgroundcolor','w',...
+                 'HorizontalAlign','center',...
+                 'string','Plot condition',...
+                 'fontsize',14,'fontweight','bold');             
     
     %% Condition info            
-     cndData = loadConditionData(gui);
-     
+     cndData = loadConditionData(gui);     
      displayCndInfo(gui, cndData.info);
-             
-    %% Describing conditions info (all text)         
-             
-%     gui.pb = uicontrol('style','push',...
-%                  'units','pix',...
-%                  'position',[550 110 60 30],...
-%                  'backgroundcolor','w',...
-%                  'HorizontalAlign','left',...
-%                  'string','Save X',...
-%                  'fontsize',14,'fontweight','bold');             
-%     
-%      gui.left = axes('units','normalized',...
-%             'position',[50 200 800 800], 'xtick',[],'ytick',[], 'box', 'on');
-%         
-%      gui.right = axes('units','normalized',...
-%             'position',[1000 200 800 800], 'xtick',[],'ytick',[], 'box', 'on');
+                          
     
-    %align([S.left S.right],'distribute','bottom');    
-    set(gui.popProj,'callback',{@popProj_call, gui});  % Set the popup callback.
-    set(gui.popSsn,'callback',{@popSsn_call, gui});  % Set the popup callback.
-    set(gui.popCnd,'callback',{@popCnd_call, gui});  % Set the popup callback.
+     gui.left = axes('units','normalized', ...
+            'position',[0.38 0.05 0.6 0.43], ...
+            'XColor',[0 0 .7], ...
+            'YColor',[0 0 .7], ...            
+            'xtick',[],'ytick',[], 'box', 'on');
+        
+        
+     gui.right = axes('units','normalized', ...
+            'position',[0.38 0.5 0.6 0.43], ...
+            'XColor',[.7 0 0], ...
+            'YColor',[.7 0 0], ...                        
+            'xtick',[],'ytick',[], 'box', 'on');
+
+    set(get(gui.left, 'XLabel'), 'String', 'Time (milliseconds)');
+    set(get(gui.left, 'YLabel'), 'String', 'Left Eye(deg)');
     
-%     set(gui.pb, 'callback', {@pb_call, gui});
-%     set(gui.edX,'call',{@edX_call, gui});  % Sharedclose all Callback.
-%     set(gui.edY,'call',{@edY_call, gui});  % Sharedclose all Callback.
-%     set(gui.edHX,'call',{@edHX_call, gui});  % Sharedclose all Callback.
-%     set(gui.edHY,'call',{@edHY_call, gui});  % Sharedclose all Callback.
+    set(get(gui.right, 'XLabel'), 'String', 'Time (milliseconds)')
+    set(get(gui.right, 'YLabel'), 'String', 'Right Eye(deg)')    
+    
+    set(gui.popProj, 'callback', {@popProj_call, gui});  % Set the popup callback.
+    set(gui.popSsn, 'callback', {@popSsn_call, gui});  % Set the popup callback.
+    set(gui.popCnd, 'callback', {@popCnd_call, gui});  % Set the popup callback.
+    set(gui.pbPlot, 'callback', {@pb_call, gui});
 end
 
 function [] = popProj_call(varargin)
@@ -125,10 +129,33 @@ function [] = popCnd_call(varargin)
     displayCndInfo(S, cndData.info);
 end
 
+%%
+function [] = pb_call(varargin)
+    S = varargin{3};
+    data = loadConditionData(S);
+    %get plot type
+    set(0,'CurrentFigure',S.fh);
+    
+    set(S.fh,'CurrentAxes',S.left); 
+    plot(data.pos.L, '-b'); hold on;
+    plot(data.vel.L, '*b'); hold on;
+    legend({'position', 'velocity'});
+%     plot(data.pos.vergence.L, '-.-b'); hold on;
+%     plot(data.pos.version.L, '*b'); hold on;
+    
+    set(S.fh,'CurrentAxes',S.right);   
+    plot(data.pos.R, '-r'); hold on;
+    plot(data.vel.R, '*r'); hold on;
+    legend({'position', 'velocity'});
+   
+%     plot(data.vergence.R, '-.-r'); hold on;
+%     plot(data.version.R, '*r'); hold on;
+end
 function updateSsnList(S)
     S.sessions = getSessionsList(fullfile(S.data, S.currProj));
     S.currSsn = S.sessions{S.default_pos};    
     updateCndList(S);
+    updateCallbacks(S);        
 end
 function updateCndList(S)
     if (~strcmp(S.currSsn, 'All'))
@@ -136,20 +163,15 @@ function updateCndList(S)
         S.currCnd = S.conditions{S.default_pos};
         cndData = loadConditionData(S);     
         displayCndInfo(S, cndData.info); 
+        updateCallbacks(S); 
     end
 end
 
 function updateCallbacks(S)
-% 
-    set(S.popProj, 'callback', {@popProj_call, S});  % update the popup callback.    
-    set(S.popSsn, 'callback', {@popProj_call, S});  % update the popup callback.    
-    set(S.popCnd, 'callback', {@popProj_call, S});  % update the popup callback.    
-
-%     set(S.edX, 'callback', {@edX_call, S});  % update the edit callback.
-%     set(S.edHX, 'callback', {@edHX_call, S});  % update the edit callback.    
-%     set(S.edY, 'callback', {@edY_call, S});  % update the edit callback.
-%     set(S.edHY, 'callback', {@edHY_call, S});  % update the edit callback.    
-%     set(S.pb, 'callback', {@pb_call, S});
+    set(S.popProj, 'callback', {@popProj_call, S}); 
+    set(S.popSsn, 'callback', {@popSsn_call, S});   
+    set(S.popCnd, 'callback', {@popCnd_call, S});
+    set(S.pbPlot, 'callback', {@pb_call, S});
 end
 
 function data = loadConditionData(S)
@@ -162,22 +184,16 @@ function data = loadConditionData(S)
 end
 
 function displayCndInfo(S, data)
-    uicontrol('style','text',...
-                 'unit','normalized',...
-                 'position',[0.05 0.45 0.2 0.2],...
-                 'backgroundc',get(S.fh,'color'),...
-                 'fontsize', 14, ...
-                 'string', 'Condition Info','visible', 'on');
-    
     list_fields = fields(data);
+    
     % don't process the last 'display' field
     for f = 1:numel(list_fields) - 1
         % text
-        uicontrol('style','text',...
+       uicontrol('style','text',...
                  'unit','normalized',...
-                 'position',[0.05 0.45 - 0.03*f 0.2 0.2],...
+                 'position',[0.05 0.45 - 0.03*f 0.2 0.15],...
                  'backgroundc',get(S.fh,'color'),...
-                 'fontsize', 12, ...
+                 'fontsize', 12, 'HorizontalAlignment','left', ...
                  'string', list_fields{f}, 'visible', 'on');
         
         %data
@@ -189,10 +205,12 @@ function displayCndInfo(S, data)
         end
         uicontrol('style','text',...
                  'unit','normalized',...
-                 'position',[0.2 0.45 - 0.03*f 0.2 0.2],...
+                 'position',[0.17 0.45 - 0.03*f 0.2 0.15],...
                  'backgroundc',get(S.fh,'color'),...
-                 'fontsize', 12, ...
+                 'fontsize', 12, 'HorizontalAlignment','left', ...
                  'string', dataStr, 'visible', 'on');
+             
     end
+    updateCallbacks(S);
 end
 
