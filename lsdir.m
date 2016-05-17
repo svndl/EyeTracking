@@ -4,7 +4,7 @@ function dirContents = lsdir(dirPath, folderOnly)
     list_names = {listing(:).name};
     isDir = [listing(:).isdir];
     
-    validIdx = (~ismember(list_names, {'.', '..'}));
+    validIdx = (~ismember(list_names, {'.', '..', '_'}));
     if (folderOnly)
         validIdx = validIdx.*isDir;
     end

@@ -104,16 +104,16 @@ function gui_loadProject
 end
 
 function [] = popProj_call(varargin)
-% Callback for popupmenu.
-    S = varargin{3};  % Get the structure.
-    P = get(S.popProj, 'val'); % Get the users choice from the popup     
+% Callback for Projects popupmenu.
+    S = varargin{3}; 
+    P = get(S.popProj, 'val');
     S.currProj = S.projects{P};
     updateSsnList(S);
 end    
 function [] = popSsn_call(varargin)
-% Callback for popupmenu.
-    S = varargin{3};  % Get the structure.
-    P = get(S.popSsn, 'val'); % Get the users choice from the popup     
+% Callback for Sessions popupmenu.
+    S = varargin{3}; 
+    P = get(S.popSsn, 'val'); 
     S.currSsn = S.sessions{P};
     if (~strcmp(S.currSsn, 'All'))
         updateCndList(S);
@@ -121,7 +121,7 @@ function [] = popSsn_call(varargin)
 end
 
 function [] = popCnd_call(varargin)
-% Callback for popupmenu.
+% Callback for Conditions popupmenu.
     S = varargin{3};  % Get the structure.
     P = get(S.popCnd, 'val'); % Get the users choice from the popup     
     S.currCnd = S.conditions{P};
@@ -132,18 +132,25 @@ end
 %%
 function [] = pb_call(varargin)
     S = varargin{3};
+    
+    S.currProj = S.projects{get(S.popProj, 'val')};
+    S.currSsn = S.sessions{get(S.popSsn, 'val')};
+    S.currCnd = S.conditions{get(S.popCnd, 'val')};
+    
     data = loadConditionData(S);
     %get plot type
-    set(0,'CurrentFigure',S.fh);
+    set(0,'CurrentFigure', S.fh);
     
-    set(S.fh,'CurrentAxes',S.left); 
+    set(S.fh,'CurrentAxes', S.left); 
+    cla(S.left); 
     plot(data.pos.L, '-b'); hold on;
     plot(data.vel.L, '*b'); hold on;
     legend({'position', 'velocity'});
 %     plot(data.pos.vergence.L, '-.-b'); hold on;
 %     plot(data.pos.version.L, '*b'); hold on;
     
-    set(S.fh,'CurrentAxes',S.right);   
+    set(S.fh,'CurrentAxes',S.right);
+    cla(S.right);
     plot(data.pos.R, '-r'); hold on;
     plot(data.vel.R, '*r'); hold on;
     legend({'position', 'velocity'});
@@ -163,8 +170,8 @@ function updateCndList(S)
         S.currCnd = S.conditions{S.default_pos};
         cndData = loadConditionData(S);     
         displayCndInfo(S, cndData.info); 
-        updateCallbacks(S); 
     end
+    updateCallbacks(S);     
 end
 
 function updateCallbacks(S)
@@ -176,7 +183,27 @@ end
 
 function data = loadConditionData(S)
     if strcmp(S.currSsn, 'All')
-    %load and average all data
+    %load and average all data        
+        for s = 1:numel(S.sessions) - 1
+            dataSession = loadSession(fullfile(S.data, S.currProj, S.sessions{s}));
+            dataC = dataSession{ismember(S.conditions, S.currCnd)};
+            posL(s, :, :) = dataC.pos.L;
+            posR(s, :, :) = dataC.pos.R;
+            velL(s, :, :) = dataC.vel.L;
+            velR(s, :, :) = dataC.vel.R;
+            posVergence(s, :, :) = dataC.pos.Vergence;
+            posVersion(s, :, :) = dataC.pos.Version;
+            velVergence(s, :, :) = dataC.vel.Vergence;
+            velVersion(s, :, :) = dataC.vel.Version;
+        end
+        data.pos.L = squeeze(mean(posL, 1));
+        data.pos.R = squeeze(mean(posR, 1));
+        data.pos.vergence = squeeze(mean(posVergence, 1));
+        data.pos.version = squeeze(mean(posVersion, 1));
+        data.vel.L = squeeze(mean(velL, 1));
+        data.vel.R = squeeze(mean(velR, 1));
+        data.vel.vergence = squeeze(mean(velVergence, 1));
+        data.vel.version = squeeze(mean(velVersion, 1)); 
     else
         dataSession = loadSession(fullfile(S.data, S.currProj, S.currSsn));
         data = dataSession{ismember(S.conditions, S.currCnd)};

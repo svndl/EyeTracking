@@ -1,5 +1,5 @@
 function projectInfo = loadProject(pathToProject)
-
+% loads the project (all sessions located within pathToProject)
     projectMatFile = [pathToProject '.mat'];
     foldersOnly = 1;
     if (~exist(projectMatFile, 'file'))

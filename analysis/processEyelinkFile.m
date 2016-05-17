@@ -12,8 +12,9 @@ function trials = processEyelinkFile(pathToFile)
     dataStarts = starts + 6 + 1;
     dataStops = stops - 1;
     
-    % eld structure fields to use; fields 1-4 are data, 5-6 are meta
-    
+    % eld structure fields to use
+    % left eye gaze coordiantes('Lx', 'Ly')
+    % right eye gaze coordiantes('Rx', 'Ry')
     vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'meta', 'qual'};                                                  
     fields = {'f1', 'f2', 'f3', 'f5', 'f6', 'f1', 'f8'};                                                    
     
@@ -54,7 +55,6 @@ function trials = processEyelinkFile(pathToFile)
             goodTrials = data;
         end
         trials{s}.data = goodTrials;
-        trials{s}.timestamps = [dataStarts(s), dataStops(s)];
         trials{s}.headers = vals; 
     end
 end
@@ -66,7 +66,7 @@ function numArray = str2num_Nan(cellArray)
     for k = 1:nElems
        elem = cellArray{k};
        try
-           numArray(k) = str2num(elem);
+           numArray(k) = str2double(elem);
        catch
            %leave the NaN out
        end

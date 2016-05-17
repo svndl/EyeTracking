@@ -1,4 +1,4 @@
-function [timecourse, pos, vel] = processTrialData(trialData, ipd)
+function [timecourse, pos, vel] = processTrialData(trialData, ipd, trialDuration)
 
 %    vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'meta', 'qual'};
 %    data = { 1      2     3     4     5     6       7}
@@ -11,11 +11,11 @@ function [timecourse, pos, vel] = processTrialData(trialData, ipd)
         yData{nt} = trialData{nt}.data(:, 2:5);
     end;
     
-    [timecourse, trials] = resampleData(xData, yData);
+    elInfo = loadEyelinkInfo;
+    timepoints = elInfo.sampleRate*trialDuration;
+    [timecourse, trials] = resampleData(xData, yData, timepoints);
     
     trialsAvg = nanmean(trials, 3);
-    
-    elInfo = loadEyelinkInfo;
     dataCm = trialsAvg.*elInfo.href2cm;
     
     pos.L = screen2deg(dataCm(:, 1:2), elInfo, ipd);

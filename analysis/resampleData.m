@@ -1,10 +1,11 @@
-function [xNew, yNew] = resampleData(xData, yData)
+function [xNew, yNew] = resampleData(xData, yData, trialDuration)
 % data is a cell aray of vectors of different lengths
 % xData is a cell array storing xPoints, 
 % yData is a cell array that stores yPoints
 % Agorithm: take maximum duration of xData and resample yData
 %      
-   maxPoints = max(cellfun(@numel, xData));
+   maxPoints = trialDuration;
+   
    xNew = linspace(1, maxPoints, maxPoints);
    nY = size(yData, 1);
    
