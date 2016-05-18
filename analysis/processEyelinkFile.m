@@ -13,10 +13,10 @@ function trials = processEyelinkFile(pathToFile)
     dataStops = stops - 1;
     
     % eld structure fields to use
-    % left eye gaze coordiantes('Lx', 'Ly')
-    % right eye gaze coordiantes('Rx', 'Ry')
-    vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'meta', 'qual'};                                                  
     fields = {'f1', 'f2', 'f3', 'f5', 'f6', 'f1', 'f8'};                                                    
+    
+    % we'll keep HREF position only 
+    vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry'};                                                  
     
     trials = cell(numel(starts), 1);
  
@@ -28,11 +28,11 @@ function trials = processEyelinkFile(pathToFile)
             timeSamples = eyelinkData.(fields{1})( dataStarts(s):dataStops(s));
             validIDX = cellfun(@isempty, regexp(timeSamples, dataEvents));
     
-            data = zeros(sum(validIDX), numel(fields));
-            data(:, 1) = cellfun(@str2num, timeSamples(validIDX));    
+            data = zeros(sum(validIDX), numel(vals));
+            data(:, 1) = cellfun(@str2double, timeSamples(validIDX));    
     
             % parse startline into trial info
-            for x = 2:length(fields) - 1            
+            for x = 2:length(vals)            
                 samples = eyelinkData.(fields{x})(dataStarts(s):dataStops(s));
                 %replace '.' with NaN
                 data(:, x) = str2num_Nan(samples(validIDX));

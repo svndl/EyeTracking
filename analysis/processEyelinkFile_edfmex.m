@@ -35,25 +35,19 @@ function trials = processEyelinkFile_edfmex(pathToFile)
     idx_stops = stops - starts(1);
     
     duration = stops - starts;
-            
-    % gaze coordinates
-    gazeX = [eyelinkData.FSAMPLE.gx]';
-    gazeY = [eyelinkData.FSAMPLE.gy]';
-    
+             
     % headref coordinates
     hrefX = [eyelinkData.FSAMPLE.hx]';
     hrefY = [eyelinkData.FSAMPLE.hy]';
-    
-    % gaze velocity 
-    gazeVelX = [eyelinkData.FSAMPLE.gxvel]';
-    gazeVelY = [eyelinkData.FSAMPLE.gyvel]';
-    
+        
     % headref velocity
     hrefVelX = [eyelinkData.FSAMPLE.hxvel]';
     hrefVelY = [eyelinkData.FSAMPLE.hyvel]';    
         
-    trials = cell(numel(starts), 1);    
-    fields = {'time', 'gX', 'gY', 'hrX', 'hrY', 'gvX', 'gvY', 'hvX', 'hvY', 'pX', 'pY',}; 
+    trials = cell(numel(starts), 1);
+    
+    % we'll keep HREF pos and speed 
+    fields = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'Lvx', 'Lvy', 'Rvx', 'Rvy'}; 
 
     for s = 1:length(starts)    
         try
@@ -61,13 +55,10 @@ function trials = processEyelinkFile_edfmex(pathToFile)
             idx_t = idx_starts(s):idx_stops(s);
             timeSamples = (1:duration(s))';
             % data is arranged by var_left(x, y) var_right(x, y) 
-            goodTrials = [timeSamples gazeX(idx_t, 1) gazeY(idx_t, 1) ...
-                gazeX(idx_t, 2) gazeY(idx_t, 2) ...
+            goodTrials = [timeSamples 
                 hrefX(idx_t, 1) hrefY(idx_t, 1) ...
                 hrefX(idx_t, 2) hrefY(idx_t, 2) ...
-                gazeVelX(idx_t, 1) gazeVelY(idx_t, 1) ...
-                hrefVelX(idx_t, 2) hrefVelY(idx_t, 2) ...
-                gazeVelX(idx_t, 1) gazeVelY(idx_t, 1) ...
+                hrefVelX(idx_t, 1) hrefVelY(idx_t, 1) ...
                 hrefVelX(idx_t, 2) hrefVelY(idx_t, 2)];
         catch err
             display(['processEyelinkFile Error trial #'  num2str(s)  ' file ' ...

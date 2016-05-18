@@ -23,5 +23,5 @@ function vAngle = computeVelocity(x, sampleRate)
     end
 
     % Turn differential into derivative, pad with NaNs
-    vAngle = [(SG1/spacing); NaN*ones(HalfWindowF + 1, 2)];
+    vAngle = [(SG1/spacing); NaN*ones(HalfWindowF + 1, 1)];
 end

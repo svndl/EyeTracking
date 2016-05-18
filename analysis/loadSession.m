@@ -25,19 +25,21 @@ function sessionData = loadSession(pathToSession)
         %for each condition look if there is an eyelink file 
         for c = 1:nCndSession
             display(['Loading condition ' num2str(c) '/' num2str(nCndSession)]);
-            
+            load(conditionFiles{c});
+            % conditionInfo, trials            
+            sessionData{c}.info = conditionInfo;
+            trialDuration = conditionInfo.cycleSec + conditionInfo.preludeSec;
+
+            % load eyelink data
             if (useEdfFile)
+                % use edfmex loader for the raw file
                 rawFile = [strtok(eyelinkDataFiles{c}, '.') '.edf'];
                 eyelinkRec = processEyelinkFile_edfmex(fullfile(pathToSession, 'raw', rawFile));
             else
+                % use 
                 eyelinkRec = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}));
             end
             
-            % conditionInfo, trials
-            load(conditionFiles{c});
-            
-            sessionData{c}.info = conditionInfo;
-            trialDuration = conditionInfo.cycleSec + conditionInfo.preludeSec;
             sessionData{c}.data = eyelinkRec;
             % convert data samples to degrees and calculate vergence/version 
             % velocity of vergence/version

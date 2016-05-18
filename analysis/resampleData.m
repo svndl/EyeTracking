@@ -14,7 +14,7 @@ function [xNew, yNew] = resampleData(xData, yData, trialDuration)
    for y = 1:nY
        try
            cleanedData = inpaint_nans(yData{y}, 3);
-           yNew(:, :, y) = interp1(xData{y}, cleanedData, xNew, 'spline');
+           yNew(:, :, y) = interp1(1:xData(y), cleanedData, xNew, 'spline');
        catch
            % Nans catching, do nothing at this point
        end

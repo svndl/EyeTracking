@@ -80,22 +80,21 @@ function gui_loadProject
     
      gui.left = axes('units','normalized', ...
             'position',[0.38 0.05 0.6 0.43], ...
-            'XColor',[0 0 .7], ...
-            'YColor',[0 0 .7], ...            
             'xtick',[],'ytick',[], 'box', 'on');
-        
-        
+%             'XColor',[0 0 .7], ...
+%             'YColor',[0 0 .7], ...            
+       
      gui.right = axes('units','normalized', ...
             'position',[0.38 0.5 0.6 0.43], ...
-            'XColor',[.7 0 0], ...
-            'YColor',[.7 0 0], ...                        
             'xtick',[],'ytick',[], 'box', 'on');
+%             'XColor',[.7 0 0], ...
+%             'YColor',[.7 0 0], ...                        
 
     set(get(gui.left, 'XLabel'), 'String', 'Time (milliseconds)');
-    set(get(gui.left, 'YLabel'), 'String', 'Left Eye(deg)');
+    set(get(gui.left, 'YLabel'), 'String', 'Position Eyes(deg)');
     
     set(get(gui.right, 'XLabel'), 'String', 'Time (milliseconds)')
-    set(get(gui.right, 'YLabel'), 'String', 'Right Eye(deg)')    
+    set(get(gui.right, 'YLabel'), 'String', 'Velocity Eyes(deg)')    
     
     set(gui.popProj, 'callback', {@popProj_call, gui});  % Set the popup callback.
     set(gui.popSsn, 'callback', {@popSsn_call, gui});  % Set the popup callback.
@@ -144,19 +143,19 @@ function [] = pb_call(varargin)
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
     plot(data.pos.L, '-b'); hold on;
-    plot(data.vel.L, '*b'); hold on;
-    legend({'position', 'velocity'});
-%     plot(data.pos.vergence.L, '-.-b'); hold on;
-%     plot(data.pos.version.L, '*b'); hold on;
+    plot(data.pos.R, '-r'); hold on;
+    plot(data.pos.Vergence, '-.k'); hold on;
+    plot(data.pos.Version, '.k'); hold on;
+    
+    legend({'position L', 'position R', 'vergence', 'version'});
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    plot(data.pos.R, '-r'); hold on;
-    plot(data.vel.R, '*r'); hold on;
-    legend({'position', 'velocity'});
-   
-%     plot(data.vergence.R, '-.-r'); hold on;
-%     plot(data.version.R, '*r'); hold on;
+    plot(data.vel.L, '-b'); hold on;
+    plot(data.vel.R, '-r'); hold on;
+    plot(data.vel.Vergence, '-.k'); hold on;
+    plot(data.vel.Version, '.k'); hold on;
+    legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
 end
 function updateSsnList(S)
     S.sessions = getSessionsList(fullfile(S.data, S.currProj));
