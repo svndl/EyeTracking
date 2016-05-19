@@ -1,4 +1,4 @@
-## This is a readme file describing the structure and functionality for running and analyzing Eyetracking experiments.
+## This is a readme file describing the data structure and functions for running Eyetracking experiments.
 
 # Data organization
 
