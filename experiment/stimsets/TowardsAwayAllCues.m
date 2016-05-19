@@ -1,4 +1,4 @@
-function stimset = ta_TestSet(videoMode)
+function stimset = TowardsAwayAllCues(videoMode)
     % condition structure:
     % conditions.fhandle : function handle that will return dotFrames, dotColor and dotSize
     % conditions.fparams: arguments to function handle
