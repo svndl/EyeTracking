@@ -7,12 +7,12 @@ function runSession
     displayName = 'LG_OLED_TB';
     
     % Folder where you'll be saving the experiment data:
-    % data/paradigmStr/subjName+date/
+    % data/myStimset/subjName+date/
     
-    paradigmStr = 'TowardsAwayAllCues';
+    myStimset = 'TowardsAwayAllCues';
     
     %% Setup session
-    [mySession, myScr] = setupSession(displayName, subject, paradigmStr);
+    [mySession, myScr] = setupSession(displayName, subject, myStimset);
       
     %% are we recording?
     useEyelink = 1;
@@ -25,7 +25,7 @@ function runSession
     end
     
     %% Conditions
-    conditions = ta_TestSet(myScr);
+    conditions = myStimset(myScr);
     mySession.recording = useEyelink;
     %% run experiment
     for s = 1:numel(conditions)    
