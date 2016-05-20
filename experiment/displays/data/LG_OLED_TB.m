@@ -18,4 +18,7 @@ function dspl = LG_OLED_TB
     dspl.skipSync       = 1;
     dspl.signRight      = 1;
     
+    dspl.white = 180;
+    dspl.gray = 127;
+    dspl.black = 0;
 end

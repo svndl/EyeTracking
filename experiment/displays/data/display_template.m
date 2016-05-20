@@ -13,8 +13,14 @@ function dspl = display_template
 
     dspl.stimCenterYCm     = 0;                               % height adjustment of stimulus to center in prisms
 
-    dspl.topbottom         = 0;                               % does this display take top/bottom stereo format
-
+    dspl.topbottom         = 0;                               % use top/bottom stereo format
+    dspl.leftright         = 0;                               % use left/right stereo format
+    
     dspl.skipSync          = 0;                               % 0 if this is a testing display that PTB doesn't like timing of
     dspl.signRight         = 1;                               % 1 if displays are oriented the same, -1 if displays are mirrored
+    
+    dspl.white = 180;
+    dspl.gray = 127;
+    dspl.black = 0;
+
 end

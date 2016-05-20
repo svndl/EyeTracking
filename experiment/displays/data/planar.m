@@ -14,6 +14,7 @@ function dspl = planar
     dspl.stimCenterYCm  = 0;
 
     dspl.topbottom      = 0;
+    dspl.leftright      = 0;
 
     dspl.skipSync       = 1;
     dspl.signRight      = -1;             % displays are mirrored so flip the right image

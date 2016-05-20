@@ -3,12 +3,7 @@ function [session, scr] = setupSession(display, subj, stimsetStr)
     	
     directories = setPath;             
     timeStamp = datestr(clock,'mm_dd_yy_HHMMSS');
-	
-    %% Screen, Keyboard
-    displayParams.white = 180;
-    displayParams.gray = 127;
-    displayParams.black = 0;
-    	
+	    	
     %% mkdir
     session.saveDir = fullfile(directories.data, stimsetStr, [subj.name timeStamp]);
     if(~exist(session.saveDir, 'dir'))

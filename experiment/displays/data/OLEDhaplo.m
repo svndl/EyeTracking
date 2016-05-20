@@ -19,7 +19,12 @@ function dspl = OLEDhaplo
         (dspl.screenElevationCm + (dspl.height_cm/2));      % height adjustment of stimulus to center in prisms
 
     dspl.topbottom         = 0;                               % does this display take top/bottom stereo format
+    dspl.leftright         = 0;                             
 
     dspl.skipSync          = 0;                               % 0 if this is a testing display that PTB doesn't like timing of
     dspl.signRight         = 1;                               % 1 if displays are oriented the same, -1 if displays are mirrored
+    
+    dspl.white = 180;
+    dspl.gray = 127;
+    dspl.black = 0;
 end

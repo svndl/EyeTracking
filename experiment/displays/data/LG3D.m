@@ -13,7 +13,12 @@ function dspl = LG3D
     dspl.stimCenterYCm  = 0;
 
     dspl.topbottom      = 1;
-
+    dspl.leftright      = 0;
+        
     dspl.skipSync       = 1;
     dspl.signRight      = 1;
+
+    dspl.white = 180;
+    dspl.gray = 127;
+    dspl.black = 0;
 end
