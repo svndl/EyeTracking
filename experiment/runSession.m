@@ -25,7 +25,7 @@ function runSession
     end
     
     %% Conditions
-    conditions = myStimset(myScr);
+    conditions = feval(myStimset, myScr);
     mySession.recording = useEyelink;
     %% run experiment
     for s = 1:numel(conditions)    
