@@ -64,16 +64,17 @@ function eyelinkData = loadEyelinkFile(filename, startRow, endRow)
     % processing code is included. To generate code which works for
     % unimportable data, select unimportable cells in a file and regenerate the
     % script.
+     eyelinkData = cat(2, dataArray{:, 1:10});
 
-    %% Allocate imported array to column variable names
-    eyelinkData.f1 = dataArray{:, 1};
-    eyelinkData.f2 = dataArray{:, 2};
-    eyelinkData.f3 = dataArray{:, 3};
-    eyelinkData.f4 = dataArray{:, 4};
-    eyelinkData.f5 = dataArray{:, 5};
-    eyelinkData.f6 = dataArray{:, 6};
-    eyelinkData.f7 = dataArray{:, 7};
-    eyelinkData.f8 = dataArray{:, 8};
-    eyelinkData.f9 = dataArray{:, 9};
-    eyelinkData.f10 = dataArray{:, 10};
+%     %% Allocate imported array to column variable names
+%     eyelinkData.f1 = dataArray{:, 1};
+%     eyelinkData.f2 = dataArray{:, 2};
+%     eyelinkData.f3 = dataArray{:, 3};
+%     eyelinkData.f4 = dataArray{:, 4};
+%     eyelinkData.f5 = dataArray{:, 5};
+%     eyelinkData.f6 = dataArray{:, 6};
+%     eyelinkData.f7 = dataArray{:, 7};
+%     eyelinkData.f8 = dataArray{:, 8};
+%     eyelinkData.f9 = dataArray{:, 9};
+%     eyelinkData.f10 = dataArray{:, 10};
 end

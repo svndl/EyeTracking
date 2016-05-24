@@ -49,7 +49,21 @@ function outScr = setupPTB(inScr)
 	Screen('Flip', wPtr);
 
 	outScr.frameRate = Screen('NominalFrameRate', wPtr);
+    
+    % find out interframe interval and flip time
+    nFlips = 30;
+    vbl_k = zeros(nFlips, 1);
+    ifi_k = zeros(nFlips, 1);
+    
+    for k = 1:nFlips
+        vbl_k(k) = Screen('Flip', wPtr);
+        ifi_k(k) = Screen('GetFlipInterval', wPtr);
+    end
+    
+    outScr.vbl = mean(vbl_k);
+    outScr.ifi = mean(ifi_k);
 
+    
 	% PTB can't seem to get the frame rate of this display\
     if (~outScr.frameRate)
 		outScr.frameRate = 60;

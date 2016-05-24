@@ -14,8 +14,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
     [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
     
     %% draw fixation
-	drawFixation(scr, 1, 0);
-	drawFixation(scr, 1, 1);
+	drawFixation_Stereo(scr, 1);
     
 	KeysWait(keys, useEyelink);                                     
 
@@ -29,7 +28,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
 		Eyelink('StartRecording');  
     end
     
-	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate);
+	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, condition.info.nonius);
     if (useEyelink)
         display('Eyelink Recording Ended');
         %add stop message?

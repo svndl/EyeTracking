@@ -9,13 +9,13 @@ function runSession
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'TowardsAwayAllCues';
+    myStimset = 'TestTiming';
     
     %% Setup session
     [mySession, myScr] = setupSession(displayName, subject, myStimset);
       
     %% are we recording?
-    useEyelink = 1;
+    useEyelink = 0;
     
     %% Inint session
     if (useEyelink)
@@ -32,7 +32,7 @@ function runSession
         try
             trials = runCondition(mySession, myScr, conditions{s}, s);
             drawConditionEndScr(s, numel(conditions), myScr);
-            saveCondition(mySession, conditions{s}.info, myScr, s, trials);            
+            saveCondition(mySession, conditions{s}.info, s, trials);            
         catch err
             display(['runSession Error condition #'  num2str(s)  ' caused by:']);
             display(err.message);

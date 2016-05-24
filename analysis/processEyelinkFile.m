@@ -1,19 +1,37 @@
-function trials = processEyelinkFile(pathToFile)
-    % Parses *.asc eyelink trial
+function trials = processEyelinkFile(pathToFile, varargin)
 
-    eyelinkData = loadEyelinkFile(pathToFile); 
-     % find all trial start/stop flags
-    starts  = find(~cellfun(@isempty, strfind(eyelinkData.f1, 'START')));                                
-    stops   = find(~cellfun(@isempty, strfind(eyelinkData.f1, 'END')));                                  
+    % Parses *.asc eyelink trial
+    if (nargin > 1)
+        startCol = varargin{1};
+        endCol = varargin{2};
+        strSearchStart = varargin{3};
+        strSearchEnd = varargin{4};
+        deltaStart = 1;
+        deltaStop = -1;        
+    else
+        startCol = 1;
+        endCol = 1;
+        strSearchStart = 'START';
+        strSearchEnd = 'END';
+        % 6 lines after the start: 
+        % {START(1), PRESCALER(2), VPRESCALER(3), PUPIL(4), EVENTS(5), SAMPLES(6), INPUT(7), (8)..data..} 
+        deltaStart = 7;
+        deltaStop = -1;
+    end
     
-    % 6 lines after the start: 
-    % {START(1), PRESCALER(2), VPRESCALER(3), PUPIL(4), EVENTS(5), SAMPLES(6), INPUT(7), (8)..data..} 
+    startIdx = 1;
+    endIdx = inf;
     
-    dataStarts = starts + 6 + 1;
-    dataStops = stops - 1;
+    eyelinkData = loadEyelinkFile(pathToFile, startIdx, endIdx);
     
-    % eld structure fields to use
-    fields = {'f1', 'f2', 'f3', 'f5', 'f6', 'f1', 'f8'};                                                    
+    % find all trial start/stop flags
+    starts  = find(~cellfun(@isempty, strfind(eyelinkData(:, startCol), strSearchStart)));                                
+    stops   = find(~cellfun(@isempty, strfind(eyelinkData(:, endCol), strSearchEnd)));                                  
+    
+    
+    dataStarts = starts + deltaStart;
+    dataStops = stops + deltaStop;
+    
     
     % we'll keep HREF position only 
     vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry'};                                                  
@@ -25,7 +43,7 @@ function trials = processEyelinkFile(pathToFile)
         try
             % exclude saccades and fixation   
             dataEvents = '[A-Z]';
-            timeSamples = eyelinkData.(fields{1})( dataStarts(s):dataStops(s));
+            timeSamples = eyelinkData(dataStarts(s):dataStops(s), 1);
             validIDX = cellfun(@isempty, regexp(timeSamples, dataEvents));
     
             data = zeros(sum(validIDX), numel(vals));
@@ -33,7 +51,7 @@ function trials = processEyelinkFile(pathToFile)
     
             % parse startline into trial info
             for x = 2:length(vals)            
-                samples = eyelinkData.(fields{x})(dataStarts(s):dataStops(s));
+                samples = eyelinkData(dataStarts(s):dataStops(s), x);
                 %replace '.' with NaN
                 data(:, x) = str2num_Nan(samples(validIDX));
                 %data(:, x) = cellfun(@str2num, samples(validIDX));
