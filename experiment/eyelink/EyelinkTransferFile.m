@@ -21,5 +21,5 @@ function EyelinkTransferFile(saveDirPath, fileName)
         Eyelink('ReceiveFile', fileName);        
 		fprintf('Problem receiving data file ''%s''\n', fileName );
     end
-    GetChar();
+    %GetChar();
 end
