@@ -2,7 +2,7 @@
 
 ## Display
 
-* Fix the nonius lines and fixation
+* FIXED nonius lines and fixation
 
 ## Eyelink
 
