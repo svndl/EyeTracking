@@ -9,7 +9,7 @@ function gui_loadProject
     
     gui.sessions = getSessionsList(fullfile(gui.data, gui.currProj));
     % add 'ALL'
-    gui.sessions{end + 1} = 'All';
+    gui.sessions{end + 1} = 'all';
     gui.currSsn = gui.sessions{gui.default_pos};
     
     gui.conditions = getConditionsList(fullfile(gui.data, gui.currProj, gui.currSsn));
@@ -114,7 +114,7 @@ function [] = popSsn_call(varargin)
     S = varargin{3}; 
     P = get(S.popSsn, 'val'); 
     S.currSsn = S.sessions{P};
-    if (~strcmp(S.currSsn, 'All'))
+    if (~strcmp(S.currSsn, 'all'))
         updateCndList(S);
     end
 end
@@ -158,13 +158,14 @@ function [] = pb_call(varargin)
     legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
 end
 function updateSsnList(S)
-    S.sessions = getSessionsList(fullfile(S.data, S.currProj));
+    newSsnList = getSessionsList(fullfile(S.data, S.currProj));
+    % add 'all' session
+    S.sessions = [newSsnList {'all'}];
     S.currSsn = S.sessions{S.default_pos};    
     updateCndList(S);
-    updateCallbacks(S);        
 end
 function updateCndList(S)
-    if (~strcmp(S.currSsn, 'All'))
+    if (~strcmp(S.currSsn, 'all'))
         S.conditions = getConditionsList(fullfile(S.data, S.currProj, S.currSsn));
         S.currCnd = S.conditions{S.default_pos};
         cndData = loadConditionData(S);     
@@ -175,13 +176,16 @@ end
 
 function updateCallbacks(S)
     set(S.popProj, 'callback', {@popProj_call, S}); 
-    set(S.popSsn, 'callback', {@popSsn_call, S});   
+    set(S.popSsn, 'callback', {@popSsn_call, S});
+    set(S.popSsn, 'string', S.sessions);
+    set(S.popSsn, 'value', S.default_pos);
     set(S.popCnd, 'callback', {@popCnd_call, S});
+    set(S.popCnd, 'string', S.conditions);
     set(S.pbPlot, 'callback', {@pb_call, S});
 end
 
 function data = loadConditionData(S)
-    if strcmp(S.currSsn, 'All')
+    if strcmp(S.currSsn, 'all')
     %load and average all data        
         for s = 1:numel(S.sessions) - 1
             dataSession = loadSession(fullfile(S.data, S.currProj, S.sessions{s}));
@@ -197,12 +201,12 @@ function data = loadConditionData(S)
         end
         data.pos.L = squeeze(mean(posL, 1));
         data.pos.R = squeeze(mean(posR, 1));
-        data.pos.vergence = squeeze(mean(posVergence, 1));
-        data.pos.version = squeeze(mean(posVersion, 1));
+        data.pos.Vergence = squeeze(mean(posVergence, 1));
+        data.pos.Version = squeeze(mean(posVersion, 1));
         data.vel.L = squeeze(mean(velL, 1));
         data.vel.R = squeeze(mean(velR, 1));
-        data.vel.vergence = squeeze(mean(velVergence, 1));
-        data.vel.version = squeeze(mean(velVersion, 1)); 
+        data.vel.Vergence = squeeze(mean(velVergence, 1));
+        data.vel.Version = squeeze(mean(velVersion, 1)); 
     else
         dataSession = loadSession(fullfile(S.data, S.currProj, S.currSsn));
         data = dataSession{ismember(S.conditions, S.currCnd)};
