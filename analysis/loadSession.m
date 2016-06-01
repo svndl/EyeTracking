@@ -3,7 +3,7 @@ function sessionData = loadSession(pathToSession)
     display(['Loading... ' pathToSession]);
     
     sessionMatFile = [strtok(pathToSession, '.') '.mat'];
-    useEdfFile = 0;
+    useEdfFile = 1;
     
     if (exist(sessionMatFile, 'file'))
         load(sessionMatFile);
@@ -28,6 +28,7 @@ function sessionData = loadSession(pathToSession)
             load(conditionFiles{c});
             % conditionInfo, trials            
             sessionData{c}.info = conditionInfo;
+            sessionData{c}.timing = trials.timing;
             trialDuration = conditionInfo.cycleSec + conditionInfo.preludeSec;
 
             % load eyelink data
@@ -38,8 +39,10 @@ function sessionData = loadSession(pathToSession)
             else
                 % use 
                 eyelinkRec = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}));
+                [sessionData{c}.timecourse, sessionData{c}.pos, sessionData{c}.vel] =  ...
+               processTrialData(eyelinkRec, sessionInfo.subj.ipd, trialDuration);
+                
             end
-            
             sessionData{c}.data = eyelinkRec;
             % convert data samples to degrees and calculate vergence/version 
             % velocity of vergence/version

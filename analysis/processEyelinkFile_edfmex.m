@@ -31,11 +31,9 @@ function trials = processEyelinkFile_edfmex(pathToFile)
     
     starts = timeEvents([eyelinkData.RECORDINGS.state] == 1);
     stops = timeEvents([eyelinkData.RECORDINGS.state] == 0);
-    idx_starts = starts - starts(1) + 1;
-    idx_stops = stops - starts(1);
     
-    duration = stops - starts;
-             
+    elTime = eyelinkData.FSAMPLE.time;
+                 
     % headref coordinates
     hrefX = [eyelinkData.FSAMPLE.hx]';
     hrefY = [eyelinkData.FSAMPLE.hy]';
@@ -51,11 +49,14 @@ function trials = processEyelinkFile_edfmex(pathToFile)
 
     for s = 1:length(starts)    
         try
+            idx_start = sum(elTime <= starts(s));
+            idx_stop = sum(elTime <= stops(s));
+            duration = idx_stop - idx_start + 1;
             %indexes corresponding to the trial  
-            idx_t = idx_starts(s):idx_stops(s);
-            timeSamples = (1:duration(s))';
+            idx_t = (idx_start:idx_stop)';
+            timeSamples = (1:duration)';
             % data is arranged by var_left(x, y) var_right(x, y) 
-            goodTrials = [timeSamples 
+            goodTrials = [timeSamples ... 
                 hrefX(idx_t, 1) hrefY(idx_t, 1) ...
                 hrefX(idx_t, 2) hrefY(idx_t, 2) ...
                 hrefVelX(idx_t, 1) hrefVelY(idx_t, 1) ...
@@ -66,9 +67,8 @@ function trials = processEyelinkFile_edfmex(pathToFile)
             display(err.message);
             display(err.stack(1).file);
             display(err.stack(1).line);
-                        
+            goodTrials = zeros(numel(hrefX), fields);            
             % keep whatever we have parsed so far
-            goodTrials = data;
         end
         trials{s}.data = goodTrials;
         trials{s}.headers = fields; 

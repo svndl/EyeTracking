@@ -9,7 +9,7 @@ function [timecourse, pos, vel] = processTrialData(trialData, ipd, trialDuration
     for nt = 1:nTrials
         % use duration for the X grid
         xData(nt) = numel(trialData{nt}.data(:, 1));
-        yData{nt} = trialData{nt}.data(:, 2:5);
+        yData{nt} = trialData{nt}.data(:, 2:end);
     end;
     
     elInfo = loadEyelinkInfo;

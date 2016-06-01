@@ -9,7 +9,7 @@ function runSession
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'TestTiming';
+    myStimset = 'SingleDotSteps';
     
     %% Setup session
     [mySession, myScr] = setupSession(displayName, subject, myStimset);
