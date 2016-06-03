@@ -35,17 +35,25 @@ function testTiming
     
     nFrames = size(dotFrames{1}.L.x, 1);
     
-    reqTime = reshape(cat(2, trials.timing(1:end).StimulusReqTime), [stimset.info.nTrials nFrames]);
-    dsplTime = reshape(cat(2, trials.timing(1:end).StimulusOnsetTime), [stimset.info.nTrials nFrames]);
-    ifiTime = reshape(cat(2, trials.timing(1:end).Ifi), [stimset.info.nTrials nFrames]);
-    subplot(4, 1, 1), plot(1:nFrames, [reqTime; dsplTime]), title('Req and actual Dspl time');
+    ifiTime = reshape(cat(2, trials.timing(1:end).Ifi), [nFrames stimset.info.nTrials ]);
+    vblTime = reshape(cat(2, trials.timing(1:end).VBLTimestamp), [nFrames stimset.info.nTrials ]);
+    flipTime = reshape(cat(2, trials.timing(1:end).FlipTimestamp), [nFrames stimset.info.nTrials ]);
     
-    subplot(4, 1, 2), plot(1:nFrames, diff(dsplTime - reqTime)), title('Frame difference interval');
+    ifiPTB = diff(vblTime);
+   
+    missedTime = reshape(cat(2, trials.timing(1:end).Missed), [nFrames stimset.info.nTrials ]);
     
-    subplot(4, 1, 3), plot(1:nFrames, ifiTime), title('Interframe interval');
+    close all;
+    subplot(3, 1, 1), plot(1:nFrames, ifiTime'), title('Interframe interval calculated'); hold on;
+    plot(1:nFrames, 1.2*1/60, '-r', 'LineWidth', 3), hold on;
+    plot(1:nFrames, 0.8*1/60, '-r', 'LineWidth', 3), hold on;
+    
+    subplot(3, 1, 2), hist(round(1000*ifiPTB(:))); title('PTB interframe interval')
+    %subplot(3, 1, 2), plot(1:stimset.info.nTrials, sum(missedTime>0)), title('Missed number of frames reported by PTB');hold on;    
     
     %trialDelay = sum(reqTime' - dsplTime');
     
     trialTime = cat(2, trials.timing(1:end).trialDuration);
-    subplot(4, 1, 4), plot(1:stimset.info.nTrials, trialTime, '*k'), title('Trial duration, s');
+    subplot(3, 1, 3), plot(1:stimset.info.nTrials, trialTime, '*k'), title('Trial duration, s'); hold on;
+    plot(1:stimset.info.nTrials, sum(ifiTime), '*r'), legend('Trial duration reported', 'Trial duration calculated');     
 end

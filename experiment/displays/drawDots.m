@@ -10,7 +10,7 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, noniusL
     t = GetSecs;
 
     %timing
-    waitframes = 1;
+    waitframes = 0.5;
     vbl = scr.vbl;
     ifi = scr.ifi;
    
@@ -28,17 +28,25 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, noniusL
     % ALL members of dotFrames should have the same number of elements 
     nDotsUpdate = size(dotFrames{1}.L.x, 1);
     
-    tic;
+    trialLoop = tic;
     EyelinkMsg('StartTrial');
-        
-    while(idxUpdate <= nDotsUpdate)
-        
+    images = zeros(scr.height_pix, scr.width_pix, 1, nDotFrames);
+    
+    %% Test Flip
+    for testFlip = 1:10
+        Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
+        Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
+        Screen('Flip', scr.wPtr);
+    end
+    
+    %% Real loop
+    while(idxUpdate <= nDotsUpdate)    
         % draw dot updates for each frame;
         for r = 1:dotUpdate
              
             % store eyelink time for the reference 
             timing.eyelink(idxFrame) = EyelinkGetTime;
-			
+			frameLoop = tic;
             for d = 1:nDotFrames
                 
                 lDots = [dotFrames{d}.L.x(idxUpdate, :); dotFrames{d}.L.y(idxUpdate, :)];
@@ -47,7 +55,6 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, noniusL
                 scrLCenter = [scr.xc_l scr.yc_l];
                 scrRCenter = [scr.xc_r scr.yc_r];
         
-                
                 %% draw dots left display
                 Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
                 Screen('DrawDots', scr.wPtr, lDots, dotSize{d}.L, dotColor{d}.L, scrLCenter, 0);
@@ -78,15 +85,21 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, noniusL
             timing.StimulusReqTime(idxFrame) = t + ((1/scr.frameRate)*(idxFrame - 1));
         
 			% flip screen and store timing info for this frame (negative Missed values mean frame was drawn on time)
-			[vbl, onsetTime, flipTimeStamp, missed, beampos] = Screen('Flip', scr.wPtr, vbl + (waitframes - 0.5) * ifi);
+			[vbl, onsetTime, flipTimeStamp, missed, beampos] = Screen('Flip', scr.wPtr, vbl + waitframes*ifi);
+            %images(:, :, :, idxUpdate) = rgb2gray(Screen('GetImage', scr.wPtr));
 			timing.VBLTimestamp(idxFrame) = vbl;
 			timing.StimulusOnsetTime(idxFrame) = onsetTime;
 			timing.FlipTimestamp(idxFrame) = flipTimeStamp;
 			timing.Missed(idxFrame)  = missed;
 			timing.Beampos(idxFrame) = beampos;
-			idxFrame = idxFrame + 1;       
+			timing.Ifi(idxFrame) = toc(frameLoop);
+			
+            idxFrame = idxFrame + 1;       
         end
         idxUpdate = idxUpdate + 1;
     end
-    toc;
+    Screen('DrawingFinished', scr.wPtr, 0);
+    Screen('Flip', scr.wPtr);
+    timing.trialDuration = toc(trialLoop);    
+    EyelinkMsg('StopTrial');
 end

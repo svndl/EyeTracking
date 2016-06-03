@@ -12,9 +12,11 @@ function outScr = setupPTB(inScr)
     outScr = inScr;
 
 	outScr.screenNumber = max(Screen('Screens'));      
-	PsychImaging('PrepareConfiguration');       
-    Screen('Preference', 'SkipSyncTests', 2);
-    
+	PsychImaging('PrepareConfiguration');
+    %Screen('Preference', 'SkipSyncTests', 1);
+    Screen('Preference', 'Verbosity', 4);
+    Screen('Preference', 'VisualDebugLevel', 0);  
+
     InitializeMatlabOpenGL;
     %topBottom mode 
     
@@ -27,13 +29,11 @@ function outScr = setupPTB(inScr)
     if (outScr.leftright)
         stereoMode = 4;
     end
- 
     % Open PTB graphics window, should be upscaled by a factor of 4 for antialiasing
     
     [wPtr, wRect] = PsychImaging('OpenWindow', outScr.screenNumber, 0, [], 32, 2, stereoMode);    
 
 	Screen(wPtr,'BlendFunction', GL_ONE, GL_ONE_MINUS_SRC_ALPHA); 
-    Screen('Preference', 'VisualDebugLevel', 1)  
 
 	% fill screen(s)
     if (stereoMode)
@@ -77,7 +77,7 @@ function outScr = setupPTB(inScr)
 	ListenChar(2);
 
 	% if using planar, must be in native resolution for accurate eyetracking
-	if strcmp(outScr.name,'planar')
+    if strcmp(outScr.name,'planar')
 		res = Screen('Resolution', outScr.screenNumber);
     
 		if res.width ~= 1600 || res.height ~= 1200 || res.pixelSize ~= 32 || res.hz ~= 60
@@ -98,8 +98,8 @@ function outScr = setupFixation(inScr)
     
     outScr.Xscale = 1;
     outScr.Yscale = 1;
-	
-	if (outScr.topbottom)
+    
+    if (outScr.topbottom)
 		outScr.Yscale = 1;
     end
 	
