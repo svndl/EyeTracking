@@ -1,4 +1,4 @@
-function testTiming
+function TestTiming
 %% Function will test PTB display timing (trial duration, dropped frames, etc...)  
 %% Define dot properties
 

@@ -1,7 +1,7 @@
 function runSession
     
     %% Subject
-    subject.name = 'AY';
+    subject.name = 'AMN';
     subject.ipd = 6.5;    
     
     displayName = 'LG_OLED_TB';
@@ -9,7 +9,7 @@ function runSession
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'SingleDotSteps';
+    myStimset = 'TowardsAwayAllCues';
     
     %% Setup session
     [mySession, myScr] = setupSession(displayName, subject, myStimset);
@@ -40,15 +40,17 @@ function runSession
             display(err.stack(1).line);
         end
     end
-    
+    ExitSession(useEyelink);
+    % Save session info     
+    saveSession(mySession, myScr);
+    %copy files from the Eyelink
     if (mySession.recording)
+        Eyelink('Initialize')      
         for nC = 1:numel(conditions)
             %transfer eyelink file and save
             fileName = [mySession.subj.name '_cnd' num2str(nC)];
             EyelinkTransferFile(mySession.saveDir, fileName);
         end
+        Eyelink('Shutdown');
     end
-    % Save session info  
-    saveSession(mySession, myScr);
-    ExitSession(useEyelink);
 end
