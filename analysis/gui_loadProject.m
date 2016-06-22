@@ -3,17 +3,22 @@ function gui_loadProject
     
     dirData = setPath;
     gui.data = dirData.data;
-    gui.default_pos = 1;
+    %% projects
+    gui.projPos = 1;
     gui.projects = getProjectsList(gui.data); 
-    gui.currProj =  gui.projects{gui.default_pos};
+    gui.currProj =  gui.projects{gui.projPos};
     
+    %% sessions
     gui.sessions = getSessionsList(fullfile(gui.data, gui.currProj));
     % add 'ALL'
     gui.sessions{end + 1} = 'all';
-    gui.currSsn = gui.sessions{gui.default_pos};
+    gui.ssnPos = 1;
+    gui.currSsn = gui.sessions{gui.ssnPos};
     
+    %% conditions
     gui.conditions = getConditionsList(fullfile(gui.data, gui.currProj, gui.currSsn));
-    gui.currCnd = gui.conditions{gui.default_pos};
+    gui.cndPos = 1;
+    gui.currCnd = gui.conditions{gui.cndPos};
  
     
     gui.fh = figure('units','normalized',...
@@ -35,7 +40,7 @@ function gui_loadProject
                  'position',[0.05 0.75 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string', gui.projects, 'value', gui.default_pos);
+                 'string', gui.projects, 'value', gui.projPos);
     %% Subjects
     uicontrol('style','text',...
                  'unit','normalized',...
@@ -49,7 +54,7 @@ function gui_loadProject
                  'position',[0.05 0.65 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string', gui.sessions,'value', gui.default_pos);
+                 'string', gui.sessions,'value', gui.ssnPos);
     %% Conditions
     uicontrol('style','text',...
                  'unit','normalized',...
@@ -63,7 +68,7 @@ function gui_loadProject
                  'position',[0.05 0.55 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string',gui.conditions,'value', gui.default_pos);
+                 'string',gui.conditions,'value', gui.cndPos);
             
     gui.pbPlot = uicontrol('style','push',...
                  'units','normalized',...
@@ -105,15 +110,15 @@ end
 function [] = popProj_call(varargin)
 % Callback for Projects popupmenu.
     S = varargin{3}; 
-    P = get(S.popProj, 'val');
-    S.currProj = S.projects{P};
+    S.projPos = get(S.popProj, 'val');
+    S.currProj = S.projects{S.projPos};
     updateSsnList(S);
 end    
 function [] = popSsn_call(varargin)
 % Callback for Sessions popupmenu.
     S = varargin{3}; 
-    P = get(S.popSsn, 'val'); 
-    S.currSsn = S.sessions{P};
+    S.ssnPos = get(S.popSsn, 'val'); 
+    S.currSsn = S.sessions{S.ssnPos};
     if (~strcmp(S.currSsn, 'all'))
         updateCndList(S);
     end
@@ -122,8 +127,8 @@ end
 function [] = popCnd_call(varargin)
 % Callback for Conditions popupmenu.
     S = varargin{3};  % Get the structure.
-    P = get(S.popCnd, 'val'); % Get the users choice from the popup     
-    S.currCnd = S.conditions{P};
+    S.cndPos = get(S.popCnd, 'val'); % Get the users choice from the popup     
+    S.currCnd = S.conditions{S.cndPos};
     cndData = loadConditionData(S);     
     displayCndInfo(S, cndData.info);
 end
@@ -131,11 +136,10 @@ end
 %%
 function [] = pb_call(varargin)
     S = varargin{3};
-    
     S.currProj = S.projects{get(S.popProj, 'val')};
     S.currSsn = S.sessions{get(S.popSsn, 'val')};
     S.currCnd = S.conditions{get(S.popCnd, 'val')};
-    
+        
     data = loadConditionData(S);
     %get plot type
     set(0,'CurrentFigure', S.fh);
@@ -161,35 +165,40 @@ function updateSsnList(S)
     newSsnList = getSessionsList(fullfile(S.data, S.currProj));
     % add 'all' session
     S.sessions = [newSsnList {'all'}];
-    S.currSsn = S.sessions{S.default_pos};    
+    S.currSsn = S.sessions{S.ssnPos};    
     updateCndList(S);
 end
 function updateCndList(S)
     if (~strcmp(S.currSsn, 'all'))
         S.conditions = getConditionsList(fullfile(S.data, S.currProj, S.currSsn));
-        S.currCnd = S.conditions{S.default_pos};
+        S.currCnd = S.conditions{S.cndPos};
         cndData = loadConditionData(S);     
         displayCndInfo(S, cndData.info); 
     end
-    updateCallbacks(S);     
+    %updateCallbacks(S);     
 end
 
 function updateCallbacks(S)
     set(S.popProj, 'callback', {@popProj_call, S}); 
     set(S.popSsn, 'callback', {@popSsn_call, S});
     set(S.popSsn, 'string', S.sessions);
-    set(S.popSsn, 'value', S.default_pos);
+    set(S.popSsn, 'value',  S.ssnPos);
     set(S.popCnd, 'callback', {@popCnd_call, S});
     set(S.popCnd, 'string', S.conditions);
     set(S.pbPlot, 'callback', {@pb_call, S});
 end
 
 function data = loadConditionData(S)
+    S.currProj = S.projects{get(S.popProj, 'val')};
+    S.ssnPos = get(S.popSsn, 'val');
+    S.currSsn = S.sessions{S.ssnPos};
+    S.cndPos = get(S.popCnd, 'val');
+    S.currCnd = S.conditions{S.cndPos};
     if strcmp(S.currSsn, 'all')
     %load and average all data        
         for s = 1:numel(S.sessions) - 1
             dataSession = loadSession(fullfile(S.data, S.currProj, S.sessions{s}));
-            dataC = dataSession{ismember(S.conditions, S.currCnd)};
+            dataC = dataSession{S.cndPos};
             posL(s, :, :) = dataC.pos.L;
             posR(s, :, :) = dataC.pos.R;
             velL(s, :, :) = dataC.vel.L;
@@ -209,7 +218,7 @@ function data = loadConditionData(S)
         data.vel.Version = squeeze(mean(velVersion, 1)); 
     else
         dataSession = loadSession(fullfile(S.data, S.currProj, S.currSsn));
-        data = dataSession{ismember(S.conditions, S.currCnd)};
+        data = dataSession{S.cndPos};
     end
 end
 
