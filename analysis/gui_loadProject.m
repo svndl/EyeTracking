@@ -219,6 +219,8 @@ function data = loadConditionData(S)
     else
         dataSession = loadSession(fullfile(S.data, S.currProj, S.currSsn));
         data = dataSession{S.cndPos};
+        plotTiming = 0;
+        checkSessionTiming(dataSession, plotTiming);
     end
 end
 
