@@ -22,6 +22,7 @@ function runSession
         if (~initSession(mySession, myScr))
             useEyelink = 0;
         end
+        mySession.eyelink_ts= EyelinkTimingFlags('message'); 
     end
     
     %% Conditions

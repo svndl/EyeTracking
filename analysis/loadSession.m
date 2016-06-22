@@ -3,7 +3,7 @@ function sessionData = loadSession(pathToSession)
     display(['Loading... ' pathToSession]);
     
     sessionMatFile = [strtok(pathToSession, '.') '.mat'];
-    useEdfFile = 1;
+    useEdfFile = 0;
     
     if (exist(sessionMatFile, 'file'))
         load(sessionMatFile);
@@ -21,7 +21,8 @@ function sessionData = loadSession(pathToSession)
             calibError{nc} = loadEyelinkCalibration(fullfile(pathToSession, eyelinkCalibFiles{nc}));
         end
         
-        load(sessionInfoFile)    
+        load(sessionInfoFile);
+        
         %for each condition look if there is an eyelink file 
         for c = 1:nCndSession
             display(['Loading condition ' num2str(c) '/' num2str(nCndSession)]);
@@ -37,8 +38,16 @@ function sessionData = loadSession(pathToSession)
                 rawFile = [strtok(eyelinkDataFiles{c}, '.') '.edf'];
                 eyelinkRec = processEyelinkFile_edfmex(fullfile(pathToSession, 'raw', rawFile));
             else
-                % use 
-                eyelinkRec = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}));
+                
+                if (isfield(sessionInfo, 'eyelink_ts'))
+                    EyelinkFlags = sessionInfo.eyelink_ts;
+                    search_args = {EyelinkFlags.startCol, EyelinkFlags.stopCol, EyelinkFlags.startFlag, EyelinkFlags.stopFlag};
+                else
+                    search_args = {};
+                end
+                
+                % use converted *asc files
+                eyelinkRec = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}), search_args{:});
                 [sessionData{c}.timecourse, sessionData{c}.pos, sessionData{c}.vel] =  ...
                processTrialData(eyelinkRec, sessionInfo.subj.ipd, trialDuration);
                 

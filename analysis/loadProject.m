@@ -6,7 +6,7 @@ function projectInfo = loadProject(pathToProject)
         list_sessions = lsdir(pathToProject, foldersOnly);
         nS = numel(list_sessions);
         projectInfo = cell(nS, 1);
-    
+        addpath(genpath(pathToProject));    
         for ns = 1:nS
             sessionFolder = fullfile(pathToProject, list_sessions{ns});
             projectInfo{ns} = loadSession(sessionFolder);

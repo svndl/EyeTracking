@@ -7,7 +7,12 @@ function trials = processEyelinkFile(pathToFile, varargin)
         strSearchStart = varargin{3};
         strSearchEnd = varargin{4};
         deltaStart = 1;
-        deltaStop = -1;        
+        deltaStop = -1;
+        %exaple usage: processEyelinkFile(pathToFile, ...
+        % 2(data column 2 to search for trial starts), ...
+        % 2(data column to search for trial ends), ...
+        % 'StartTrial' (MSG start trial), ...
+        % 'StopTrial' (MSG stop trial))
     else
         startCol = 1;
         endCol = 1;
