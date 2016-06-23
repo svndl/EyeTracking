@@ -2,7 +2,6 @@ function lateFrames = checkSessionTiming(sessionData, plotTiming)
     
     %% load session matfile
     %% for each conditions, get frame display statistic 
-    close all;
     nCnd = numel(sessionData);
     lateFrames = cell(nCnd, 1);
     for nc = 1:nCnd

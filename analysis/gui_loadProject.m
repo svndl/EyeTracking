@@ -1,5 +1,4 @@
 function gui_loadProject
-    close all;
     
     dirData = setPath;
     gui.data = dirData.data;
