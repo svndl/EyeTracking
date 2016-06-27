@@ -26,7 +26,7 @@ function sessionData = loadSession(pathToSession)
         %for each condition look if there is an eyelink file 
         for c = 1:nCndSession
             display(['Loading condition ' num2str(c) '/' num2str(nCndSession)]);
-            load(conditionFiles{c});
+            load(fullfile(pathToSession,conditionFiles{c}));
             % conditionInfo, trials            
             sessionData{c}.info = conditionInfo;
             sessionData{c}.timing = trials.timing;
@@ -63,7 +63,7 @@ function sessionData = loadSession(pathToSession)
 end
 
 function convert2asc(filepath)
-    command = ['edf2asc ' filepath];
+    command = ['edf2asc -sg -vel -res -s ' filepath];
 	[~, ~] = system(command);
 end
 
