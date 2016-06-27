@@ -20,7 +20,7 @@ function TestTiming
             
             dotUpdate = scr.frameRate/stimset.info.dotUpdateHz;
             WaitSecs(.5);
-            trials.timing(t) = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, stimset.info.nonius);
+            trials.timing(t) = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, stimset.info.nonius, '');
             WaitSecs(.5);
             display(['done trial ' num2str(t) '/' num2str(stimset.info.nTrials)]);
         catch err
