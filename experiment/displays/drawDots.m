@@ -42,7 +42,7 @@ function timing = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, noniusL
         for r = 1:dotUpdate
             frameLoop = tic; 
             % store eyelink time for the reference 
-            timing.eyelink(idxFrame) = EyelinkGetTime;
+            timing.eyelink(idxFrame) = EyelinkGetTrackerTime;
             for d = 1:nDotFrames
                 
                 lDots = [dotFrames{d}.L.x(idxUpdate, :); dotFrames{d}.L.y(idxUpdate, :)];

@@ -1,4 +1,4 @@
-function tSec = EyelinkGetTime
+function tSec = EyelinkGetTrackerTime
 % function will return current tracker time (in seconds)
 % since the tracker application started.
 

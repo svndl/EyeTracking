@@ -27,9 +27,10 @@ function [ifiPTB, lateFrames] = checkCndTiming(cndTiming, dotUpdateHz)
 %     reqTime = reshape(cat(2, cndTiming(1:end).StimulusReqTime), [nFrames nTrials]);
 %     dsplTime = reshape(cat(2, cndTiming(1:end).StimulusOnsetTime), [nFrames nTrials]);
     vblTime = reshape(cat(2, cndTiming(1:end).VBLTimestamp), [nFrames nTrials]);
-    
+    missed = reshape(cat(2, cndTiming(1:end).Missed), [nFrames nTrials]);
     ifiPTB = (1000*diff(vblTime));   
     lateFrames = sum((ifiPTB > 1.1*1000/dotUpdateHz));
+    missedFrames = sum(missed>0)
 end
 function samplesPerCnd = checkEyelinkData(cndEyeData)
     nTrials = numel(cndEyeData);
