@@ -33,7 +33,8 @@ function outScr = setupPTB(inScr)
     
     [wPtr, wRect] = PsychImaging('OpenWindow', outScr.screenNumber, 0, [], 32, 2, stereoMode);    
 
-	Screen(wPtr,'BlendFunction', GL_ONE, GL_ONE_MINUS_SRC_ALPHA); 
+	%Screen(wPtr,'BlendFunction', GL_ONE, GL_ONE_MINUS_SRC_ALPHA); 
+	Screen(wPtr,'BlendFunction', GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
 	% fill screen(s)
     if (stereoMode)

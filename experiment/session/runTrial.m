@@ -18,7 +18,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
     
 	KeysWait(keys, useEyelink);                                     
 
-    dotUpdate = scr.frameRate/condition.info.dotUpdateHz;
+    dotUpdate = round(scr.frameRate/condition.info.dotUpdateHz);
     if (useEyelink)
         display('Eyelink Recording Started');
   		Eyelink('StartRecording');  
