@@ -1,5 +1,6 @@
 function gui_loadProject
-    
+    close all;
+    clear all;
     dirData = setPath;
     gui.data = dirData.data;
     %% projects
@@ -145,19 +146,19 @@ function [] = pb_call(varargin)
     
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
-    plot(data.pos.L, '-b'); hold on;
-    plot(data.pos.R, '-r'); hold on;
-    plot(data.pos.Vergence, '-.k'); hold on;
-    plot(data.pos.Version, '.k'); hold on;
+    plot(-data.pos.Lavg(:, 1), '-b'); hold on;
+    plot(-data.pos.Ravg(:, 1), '-r'); hold on;
+    plot(-data.pos.Vergence(:, 1), '-.k'); hold on;
+    plot(-data.pos.Version(:, 1), '.k'); hold on;
     
     legend({'position L', 'position R', 'vergence', 'version'});
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    plot(data.vel.L, '-b'); hold on;
-    plot(data.vel.R, '-r'); hold on;
-    plot(data.vel.Vergence, '-.k'); hold on;
-    plot(data.vel.Version, '.k'); hold on;
+    plot(-data.vel.Lavg(:, 1), '-b'); hold on;
+    plot(-data.vel.Ravg(:, 1), '-r'); hold on;
+    plot(-data.vel.Vergence(:, 1), '-.k'); hold on;
+    plot(-data.vel.Version(:, 1), '.k'); hold on;
     legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
 end
 function updateSsnList(S)
@@ -187,7 +188,7 @@ function updateCallbacks(S)
     set(S.pbPlot, 'callback', {@pb_call, S});
 end
 
-function data = loadConditionData(S)
+function dataOut = loadConditionData(S)
     S.currProj = S.projects{get(S.popProj, 'val')};
     S.ssnPos = get(S.popSsn, 'val');
     S.currSsn = S.sessions{S.ssnPos};
@@ -198,28 +199,28 @@ function data = loadConditionData(S)
         for s = 1:numel(S.sessions) - 1
             dataSession = loadSession(fullfile(S.data, S.currProj, S.sessions{s}));
             dataC = dataSession{S.cndPos};
-            posL(s, :, :) = dataC.pos.L;
-            posR(s, :, :) = dataC.pos.R;
-            velL(s, :, :) = dataC.vel.L;
-            velR(s, :, :) = dataC.vel.R;
+            posL(s, :, :) = dataC.pos.Lavg;
+            posR(s, :, :) = dataC.pos.Ravg;
+            velL(s, :, :) = dataC.vel.Lavg;
+            velR(s, :, :) = dataC.vel.Ravg;
             posVergence(s, :, :) = dataC.pos.Vergence;
             posVersion(s, :, :) = dataC.pos.Version;
             velVergence(s, :, :) = dataC.vel.Vergence;
             velVersion(s, :, :) = dataC.vel.Version;
         end
-        data.pos.L = squeeze(mean(posL, 1));
-        data.pos.R = squeeze(mean(posR, 1));
-        data.pos.Vergence = squeeze(mean(posVergence, 1));
-        data.pos.Version = squeeze(mean(posVersion, 1));
-        data.vel.L = squeeze(mean(velL, 1));
-        data.vel.R = squeeze(mean(velR, 1));
-        data.vel.Vergence = squeeze(mean(velVergence, 1));
-        data.vel.Version = squeeze(mean(velVersion, 1)); 
+        dataOut.pos.Lavg = squeeze(mean(posL, 1));
+        dataOut.pos.Ravg = squeeze(mean(posR, 1));
+        dataOut.pos.Vergence = squeeze(mean(posVergence, 1));
+        dataOut.pos.Version = squeeze(mean(posVersion, 1));
+        dataOut.vel.Lavg = squeeze(mean(velL, 1));
+        dataOut.vel.Ravg = squeeze(mean(velR, 1));
+        dataOut.vel.Vergence = squeeze(mean(velVergence, 1));
+        dataOut.vel.Version = squeeze(mean(velVersion, 1)); 
     else
         dataSession = loadSession(fullfile(S.data, S.currProj, S.currSsn));
-        data = dataSession{S.cndPos};
-        plotTiming = 0;
-        checkSessionTiming(dataSession, plotTiming);
+        dataOut = dataSession{S.cndPos};
+        dataOut.info.missedFrames = dataOut.missedFrames;
+        dataOut.info.samples = dataOut.samples;
     end
 end
 
@@ -227,7 +228,7 @@ function displayCndInfo(S, data)
     list_fields = fields(data);
     
     % don't process the last 'display' field
-    for f = 1:numel(list_fields) - 1
+    for f = 1:numel(list_fields)
         % text
        uicontrol('style','text',...
                  'unit','normalized',...
@@ -250,7 +251,7 @@ function displayCndInfo(S, data)
                  'fontsize', 12, 'HorizontalAlignment','left', ...
                  'string', dataStr, 'visible', 'on');
              
-    end
+    end    
     updateCallbacks(S);
 end
 

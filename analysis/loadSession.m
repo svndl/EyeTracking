@@ -3,110 +3,88 @@ function sessionData = loadSession(pathToSession)
     display(['Loading... ' pathToSession]);
     
     sessionMatFile = [strtok(pathToSession, '.') '.mat'];
-    useEdfFile = 0;
+    
     
     if (exist(sessionMatFile, 'file'))
         load(sessionMatFile);
+        for c = 1:numel(sessionData)
+            plotSummary(sessionData{c}, pathToSession, c)
+        end
     else
-        [eyelinkDataFiles, eyelinkCalibFiles, conditionFiles] = lookForFiles(pathToSession);        
+        matFiles = getFileList(pathToSession, 'mat', 'cnd');        
         
-        nCndSession = numel(conditionFiles);
+        % look for edf files first
+        eyelinkFiles = getFileList(pathToSession, 'edf', 'cnd');
+
+        % use the non-empty list
+        if (isempty(eyelinkFiles))
+            eyelinkFiles = getFileList(pathToSession, 'asc', 'cnd');
+        end
+            
+        eyelinkCalibFiles = getFileList(pathToSession, 'edf', 'cali');        
+
+        
+        nCndSession = numel(matFiles);
         sessionData = cell(nCndSession, 1);
     
-        calibError = cell(numel(eyelinkCalibFiles), 1);
-        sessionInfoFile = [strtok(pathToSession, '.') filesep 'sessionInfo.mat'];
+        sessionInfoFile = [strtok(pathToSession, '.') filesep 'sessionInfo.mat'];    
+        load(sessionInfoFile);
         
-        %process calibrartion first
+        % check calibration
+        
         for nc =1:numel(eyelinkCalibFiles)
             calibError{nc} = loadEyelinkCalibration(fullfile(pathToSession, eyelinkCalibFiles{nc}));
         end
-        
-        load(sessionInfoFile);
+       
         
         %for each condition look if there is an eyelink file 
         for c = 1:nCndSession
             display(['Loading condition ' num2str(c) '/' num2str(nCndSession)]);
-            load(fullfile(pathToSession,conditionFiles{c}));
+            load(fullfile(pathToSession, matFiles{c}));
             % conditionInfo, trials            
             sessionData{c}.info = conditionInfo;
             sessionData{c}.timing = trials.timing;
+            
             trialDuration = conditionInfo.cycleSec + conditionInfo.preludeSec;
-
-            % load eyelink data
-            if (useEdfFile)
-                % use edfmex loader for the raw file
-                rawFile = [strtok(eyelinkDataFiles{c}, '.') '.edf'];
-                eyelinkRec = processEyelinkFile_edfmex(fullfile(pathToSession, 'raw', rawFile));
-            else
-                
-                if (isfield(sessionInfo, 'eyelink_ts'))
-                    EyelinkFlags = sessionInfo.eyelink_ts;
-                    search_args = {EyelinkFlags.startCol, EyelinkFlags.stopCol, EyelinkFlags.startFlag, EyelinkFlags.stopFlag};
-                else
-                    search_args = {};
-                end
-                
-                % use converted *asc files
-                eyelinkRec = processEyelinkFile(fullfile(pathToSession, eyelinkDataFiles{c}), search_args{:});
-                [sessionData{c}.timecourse, sessionData{c}.pos, sessionData{c}.vel] =  ...
-               processTrialData(eyelinkRec, sessionInfo.subj.ipd, trialDuration);
-                
-            end
-            sessionData{c}.data = eyelinkRec;
-            % convert data samples to degrees and calculate vergence/version 
-            % velocity of vergence/version
+            % convert edf to asc and extract data
+            trialData = getEyelinkData(pathToSession, eyelinkFiles{c}, sessionInfo);
+            %check trial timing and eyelink trial duration
+                        
+            [sessionData{c}.missedFrames, sessionData{c}.samples] = checkBlockTiming(trials.timing, trialData);
+            
            [sessionData{c}.timecourse, sessionData{c}.pos, sessionData{c}.vel] =  ...
-               processTrialData(eyelinkRec, sessionInfo.subj.ipd, trialDuration);
+               convertEyelinkData(trialData, sessionInfo.subj.ipd, trialDuration);
+           
+           plotSummary(sessionData{c}, pathToSession, c);
         end
         save(sessionMatFile, 'sessionData');
     end
 end
 
-function convert2asc(filepath)
-    command = ['edf2asc -sg -vel -res -s ' filepath];
-	[~, ~] = system(command);
-end
+function plotSummary(data, pathToSession, cnd)
 
-function archive(filepath, filename)
+    figure;
+    subplot(2, 1, 1)
+    xlabel('Time samples');
+    ylabel('Degrees per second');
 
-    dirRaw = fullfile(filepath, 'raw');
-    if (~exist(dirRaw, 'dir'))
-        mkdir(dirRaw);
-    end
+    plot(-data.pos.Lavg(:, 1), '-b'); hold on;
+    plot(-data.pos.Ravg(:, 1), '-r'); hold on;
+    plot(-data.pos.Vergence(:, 1), '-.k'); hold on;
+    plot(-data.pos.Version(:, 1), '.k'); hold on;
     
-    command = ['mv ' [filepath filesep filename] ' ' [dirRaw filesep filename]];
-	[~, ~] = system(command);   
-end
-
-function [eyelinkFiles, eyelinkCalibFiles, sessionFiles] = lookForFiles(pathToSession)
-
-    % new names 
-    listSessionFiles_new = dir([pathToSession filesep 'cnd*.mat']);
-    % old files
-    listSessionFiles_old = dir([pathToSession filesep '*.mat']);
-  
-    %eyelink files
-    listEyelinkRawFiles = dir([pathToSession filesep '*.edf']);
-    if (~isempty(listEyelinkRawFiles))
-        for ef = 1:numel(listEyelinkRawFiles)
-            %move raw files out of the way 
-            %converter(fullfile(pathToSession, listEyelinkRawFiles(ef).name));
-            convert2asc(fullfile(pathToSession, listEyelinkRawFiles(ef).name));
-            archive(pathToSession, listEyelinkRawFiles(ef).name);
-        end
-    end
-
-    EyelinkFilesASC = dir([pathToSession filesep '*cnd*.asc']);
-    EyelinkCalibFilesASC = dir([pathToSession filesep '*cali*.asc']);    
+    legend({'position L', 'position R', 'vergence', 'version'});
     
-    %remove calibration 
-    eyelinkFiles = {EyelinkFilesASC.name};
+    subplot(2, 1, 2)
+    xlabel('Time samples');
+    ylabel('Degrees per second');
+   
+    plot(-data.vel.Lavg(:, 1), '-b'); hold on;
+    plot(-data.vel.Ravg(:, 1), '-r'); hold on;
+    plot(-data.vel.Vergence(:, 1), '-.k'); hold on;
+    plot(-data.vel.Version(:, 1), '.k'); hold on;
     
-    eyelinkCalibFiles = {EyelinkCalibFilesASC.name};
-    %dealing with the old data format
-    if (isempty(listSessionFiles_new))
-        sessionFiles = {listSessionFiles_old.name};
-    else
-        sessionFiles = {listSessionFiles_new.name};
-    end        
+    legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
+    saveas(gcf, fullfile(pathToSession, num2str(cnd)), 'fig');
+    close gcf;
 end
