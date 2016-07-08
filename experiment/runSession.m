@@ -27,6 +27,9 @@ function runSession
     
     %% Conditions
     conditions = feval(myStimset, myScr);
+    [trials, cndSeq] = generateTrials(conditions);
+
+    useRand = 1;
     mySession.recording = useEyelink;
     %% run experiment
     for s = 1:numel(conditions)    
@@ -54,4 +57,6 @@ function runSession
         end
         Eyelink('Shutdown');
     end
+    
+    gui_loadSession(mySession.saveDir)
 end
