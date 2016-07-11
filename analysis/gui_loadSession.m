@@ -1,7 +1,15 @@
-function gui_loadProject(sessionPath)
+function gui_loadSession(varargin)
     close all;
     dirData = setPath;
     gui.data = dirData.data;
+    
+    
+    if(~nargin)
+        dirname = uigetdir(gui.data);
+        sessionPath = dirname;        
+    else
+        sessionPath = varargin{1};
+    end
     gui.session = loadSession(sessionPath);
     
     %% conditions
