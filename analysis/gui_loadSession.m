@@ -145,24 +145,32 @@ function [] = pb_call(varargin)
     S.currCnd = S.conditions{get(S.popCnd, 'val')};
         
     data = loadConditionData(S);
+    stimPos = calcStimsetTrajectory(data.info);
     %get plot type
     set(0,'CurrentFigure', S.fh);
     
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
-    plot(-data.pos.Lavg(:, 1), '-b'); hold on;
-    plot(-data.pos.Ravg(:, 1), '-r'); hold on;
-    plot(-data.pos.Vergence(:, 1), '-.k'); hold on;
-    plot(-data.pos.Version(:, 1), '.k'); hold on;
+    plot(-smooth(data.pos.Lavg(:, 1), 20), '-b'); hold on;
+    plot(-smooth(data.pos.Ravg(:, 1), 20), '-r'); hold on;
+    plot(-stimPos.l, '-ob'); hold on;
+    plot(-stimPos.r, '-or'); hold on;
+    
+%     plot(-data.pos.Vergence(:, 1), '-.k'); hold on;
+%     plot(-data.pos.Version(:, 1), '.k'); hold on;
     
     legend({'position L', 'position R', 'vergence', 'version'});
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    plot(-data.vel.Lavg(:, 1), '-b'); hold on;
-    plot(-data.vel.Ravg(:, 1), '-r'); hold on;
-    plot(-data.vel.Vergence(:, 1), '-.k'); hold on;
-    plot(-data.vel.Version(:, 1), '.k'); hold on;
+    plot(-smooth(data.vel.Lavg(:, 1), 20), '-b'); hold on;
+    plot(-smooth(data.vel.Ravg(:, 1), 20), '-r'); hold on;
+    % mean velocity
+%     plot(mean(data.vel.Lavg(251:end, 1), '.b')); hold on;
+%     plot(mean(data.vel.Ravg(251:end, 1), '.r')); hold on;
+    %plot(-data.vel.Vergence(:, 1), '-.k'); hold on;
+    %plot(-data.vel.Version(:, 1), '.k'); hold on;
+ %plot(data.info.rampSpeedDegSec*ones(size(data.vel.Vergence(:, 1), 1), 1), '-g');
     legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
 end
 % function updateSsnList(S)

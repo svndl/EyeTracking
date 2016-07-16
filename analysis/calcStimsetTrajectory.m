@@ -12,29 +12,23 @@ function pos = calcStimsetTrajectory(stimsetInfo)
 
     % number of points for prelude/motion
     preludeSamples = uint8(1e+03*stimsetInfo.preludeSec);
-    motionSamples = uint8(1e+03*stimsetInfo.cycleSec); 
+    motionSamples = uint32(1e+03*stimsetInfo.cycleSec); 
 
     % pre-allocate vectors for trajectory
-    prelude = zeros(preludeSamples, 1);
+    prelude = zeros(1, preludeSamples);
 
     %step or ramp 
     isStep = sum(ismember(stimsetInfo.dynamics, 'step'));
     isRamp = sum(ismember(stimsetInfo.dynamics, 'ramp'));
     
     %pre-calculate ramp motion (simple linspace)
-    ramp = linspace(0, stimsetInfo.rampSpeedDeg, motionSamples);
+    ramp = linspace(0, stimsetInfo.rampSpeedDegSec, motionSamples);
     
     %pre-calculate the step motion
     %convert to degrees (divide by 60) and divide by 2 for each eye 
     %(each eye gets 1/2 of the disparity)   
-    step = repmat(stimsetInfo.dispArcmin/120, [motionSamples 1]); 
-    
-    % next step is to figure out if we need to calculated 3D or 2D motion
-    % we'll use first element of stimsetInfo.direction
-    
-    is3dMotion = ismember(stimsetInfo.direction{1}, 'towards') + ...
-        ismember(stimsetInfo.direction{1}, 'away');
-    
+    step = repmat(stimsetInfo.dispArcmin/120, [1 motionSamples]); 
+        
     % check if direction is the same or opposite
     sameDirection = 1;
     
@@ -47,11 +41,11 @@ function pos = calcStimsetTrajectory(stimsetInfo)
     signR = directionSigns(stimsetInfo.direction{1}, 'R');
      
     %left eye motion
-    motionL = isStep*step*signL + isRamp*sameDirection*ramp;
+    motionL = signL*(isStep*step + isRamp*sameDirection*ramp);
     
     %right eye: same as left eye if motion is 2D, mirror-flipped if motion
     % is 3d
-    motionR = 
+    motionR =  signR*(isStep*step + isRamp*sameDirection*ramp);
     
     %
     pos.l = [prelude motionL];
