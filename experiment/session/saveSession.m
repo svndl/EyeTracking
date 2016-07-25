@@ -1,4 +1,4 @@
-function saveSession(sessionInfo, videoInfo)
+function saveSession(sessionInfo)
 	try
 %         if (sessionInfo.recording) 
 % 			%transfer eyelink file and save
@@ -6,11 +6,11 @@ function saveSession(sessionInfo, videoInfo)
 % 			EyelinkTransferFile(sessionInfo.saveDir, fileName);
 %         end
         saveStr = 'sessionInfo.mat';
-        save(fullfile(sessionInfo.saveDir, saveStr), 'sessionInfo', 'videoInfo');
+        save(fullfile(sessionInfo.saveDir, saveStr), 'sessionInfo');
     catch err
         display(err.message);
         display(err.stack(1).file);
         display(err.stack(1).line);        
-		save(saveStr, 'sessionInfo', 'videoInfo');
+		save(saveStr, 'sessionInfo');
 	end
 end

@@ -284,13 +284,11 @@ function el = EyelinkSetup(scr)
 		% else
 		%     el.callback = [];
 		% end
-    
-		if exist('PsychEyelinkDispatchCallback') %#ok<EXIST>
+        if exist('PsychEyelinkDispatchCallback') %#ok<EXIST>
 			el.callback = 'PsychEyelinkDispatchCallback';
 		else
 			el.callback = [];
-		end
-    
-    
-		EyelinkUpdateDefaults(el);
+        end
+        
+        %%EyelinkUpdateDefaults(el);
 end

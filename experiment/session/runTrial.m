@@ -1,4 +1,4 @@
-function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useEyelink)
+function [trialTiming, response] = runTrial(mySession, condition)
 
     if (~isfield(condition.info, 'name'))
        condition.info.name = condition.info.cues;
@@ -6,7 +6,7 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
     
     msgTrialDescription = [condition.info.name ':' ...
 		condition.info.dynamics{:} ':'...
-        condition.info.direction{:} ':' num2str(trialNum)];    
+        condition.info.direction{:}];    
 	
     display(msgTrialDescription);
     
@@ -14,29 +14,29 @@ function [trialTiming, response] = runTrial(trialNum, scr, keys, condition, useE
     [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
     
     %% draw fixation
-	drawFixation_Stereo(scr, 1);
+	drawFixation_Stereo(mySession.scr);
     
-	KeysWait(keys, useEyelink);                                     
+	KeysWait(mySession.keys, mySession.recording);                                     
 
-    dotUpdate = round(scr.frameRate/condition.info.dotUpdateHz);
-    if (useEyelink)
+    dotUpdate = round(mySession.scr.frameRate/condition.info.dotUpdateHz);
+    if (mySession.recording)
         display('Eyelink Recording Started');
   		Eyelink('StartRecording');  
     end
     
-	trialTiming = drawDots(dotFrames, dotColor, dotSize, scr, dotUpdate, condition.info.nonius, msgTrialDescription);
-    if (useEyelink)
+	trialTiming = drawDots(dotFrames, dotColor, dotSize, mySession.scr, dotUpdate, condition.info.nonius, msgTrialDescription);
+    if (mySession.recording)
         display('Eyelink Recording Ended');
 		Eyelink('StopRecording');
     end
     
 	% clear screen at end
-	drawTrialEndScreen(scr);
+	drawTrialEndScreen(mySession.scr);
     
 	% get subject responses
 	response = 'Mis';
-    while keys.isDown == 0
-		[keys, response] = KeysGetResponse(keys, useEyelink);
+    while mySession.keys.isDown == 0
+		[mySession.keys, response] = KeysGetResponse(mySession.keys, mySession.recording);
     end
-	keys.isDown = 0;
+	mySession.keys.isDown = 0;
 end

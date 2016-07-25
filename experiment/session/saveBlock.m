@@ -1,9 +1,9 @@
-function saveCondition(sessionInfo, conditionInfo, nC, trials)
+function saveBlock(sessionInfo, trials, blockNum)
 	try
-        saveStr = ['cnd' num2str(nC)];
+        saveStr = [sessionInfo.runSequence num2str(blockNum)];
         m = matfile(fullfile(sessionInfo.saveDir, saveStr), 'Writable', true);
         m.trials = trials;
-        m.conditionInfo = conditionInfo;
+        m.trialSequence = sessionInfo.stimSequence(:, blockNum);
     catch err
 		display(['Could not save the session in requested folder, saving here as ' saveStr]);
         display(err.message);

@@ -1,17 +1,17 @@
-function [isOK] = initSession(session, scr)   
+function [isOK] = initSession(session)   
     try
         if (EyelinkInitialize)
-            el = EyelinkSetup(scr);
+            EyelinkUpdateDefaults(session.el);
             % save eyelink info ?
             
-			drawInitScreen(el, scr);    
+			drawInitScreen(session.el, session.scr);    
 	
 			display('Experimenter press Space when cameras are ready');
 			
 			%slight delay before calibration/validation
 			KbWait;							
 			WaitSecs(0.25);			
-			EyelinkRunCalibration(session, scr, el);
+			EyelinkRunCalibration(session);
             isOK = 1;
         end
 	catch err

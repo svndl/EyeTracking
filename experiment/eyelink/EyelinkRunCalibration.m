@@ -1,6 +1,6 @@
-function msg = EyelinkRunCalibration(session, scr, el)
+function msg = EyelinkRunCalibration(session)
   
-    EyelinkSetTargets(scr)                     % setup target locations on screen
+    EyelinkSetTargets(session.scr)                     % setup target locations on screen
     
     % open file to record calibation data to
     fileCalibration = [session.subj.name '_cali'];
@@ -10,8 +10,8 @@ function msg = EyelinkRunCalibration(session, scr, el)
     %pressing v will start validation
     %press esc when finished
     
-    EyelinkCalibrationSteps(el, 'c');
-    EyelinkCalibrationSteps(el, 'v');
+    EyelinkCalibrationSteps(session.el, 'c');
+    EyelinkCalibrationSteps(session.el, 'v');
 
     % transfer file
     Eyelink('CloseFile');

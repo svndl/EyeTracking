@@ -13,7 +13,7 @@ function outScr = setupPTB(inScr)
 
 	outScr.screenNumber = max(Screen('Screens'));      
 	PsychImaging('PrepareConfiguration');
-    %Screen('Preference', 'SkipSyncTests', 1);
+    Screen('Preference', 'SkipSyncTests', 2);
     Screen('Preference', 'Verbosity', 4);
     Screen('Preference', 'VisualDebugLevel', 0);  
 
@@ -93,7 +93,7 @@ end
 function outScr = setupFixation(inScr)  
     outScr = inScr;
     outScr.cm2pix    = outScr.width_pix/outScr.width_cm;                           
-	outScr.pix2arcmin = 2*60*atand(0.5/(outScr.viewDistCm*outScr.cm2pix));          
+	outScr.pix2arcmin = 60*atand(1/(outScr.viewDistCm*outScr.cm2pix));          
 
 	display(['1 pixel = ' num2str(outScr.pix2arcmin,2) ' arcmin']);
     

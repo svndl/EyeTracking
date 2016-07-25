@@ -13,7 +13,7 @@ function params = calcStimsetParams(stimset, videoMode)
     % deal with periodic motion
     
 	if (~stimset.isPeriodic)
-        rampEndDispDeg      = 2*(stimset.rampSpeedDegSec*stimset.cycleSec);
+        rampEndDispDeg      = (stimset.rampSpeedDegSec*stimset.cycleSec);
         params.nFrames = round(stimset.dotUpdateHz*stimset.cycleSec);
     else
         rampEndDispDeg = stimset.rampSpeedDegSec;
