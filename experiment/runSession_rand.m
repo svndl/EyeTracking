@@ -23,7 +23,7 @@ function runSession_rand
         if (~initSession(mySession))
             useEyelink = 0;
         end
-        mySession.eyelink_ts= EyelinkTimingFlags('message'); 
+        mySession.eyelink_ts = EyelinkTimingFlags('message'); 
     end
     
     mySession.recording = useEyelink;
@@ -36,7 +36,7 @@ function runSession_rand
             trials = runBlock(mySession, b);
             saveBlock(mySession, trials, b);
         catch err
-            display(['runSession Error Condition #'  num2str(currCndNum)  ' caused by:']);
+            display(['runSession Error block #'  num2str(b)  ' caused by:']);
             display(err.message);
             display(err.stack(1).file);
             display(err.stack(1).line);
@@ -49,7 +49,7 @@ function runSession_rand
         Eyelink('Initialize')      
         for nb = 1:1:mySession.nBlocks
             %transfer eyelink file and save
-            fileName = [mySession.subj.name mySession.runSequence num2str(nb)];
+            fileName = [mySession.subj.name '_' mySession.runSequence num2str(nb)];
             EyelinkTransferFile(mySession.saveDir, fileName);
         end
         Eyelink('Shutdown');

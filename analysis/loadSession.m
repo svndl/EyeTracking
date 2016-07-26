@@ -26,7 +26,7 @@ function sessionData = loadSession(pathToSession)
             
             % reject bad trials
             isTrialOK = rejectBadTrials(cndTrackingQ, cndTiming); 
-            
+            display(['Cnd ' num2str(c) ': Accepted trials ' num2str(sum(isTrialOK)) '/' num2str(cndInfo.nTrials)]);
             [timecourse, pos, vel] =  ...
                 convertEyelinkData(cndTrackingData(isTrialOK), sessionInfo.subj.ipd, trialDuration);
             %plotSummary(pos, vel, pathToSession, c);

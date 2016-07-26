@@ -4,11 +4,12 @@ function trials = runBlock(mySession, BlkNum)
 % output args
 	% Open file for recording    
     if (mySession.recording) 
-        eyelinkFile = [mySession.subj.name '_' mySession.runSequence num2str(s) '.edf'];
+        eyelinkFile = [mySession.subj.name '_' mySession.runSequence num2str(t) '.edf'];
         Eyelink('Openfile', eyelinkFile);				
     end
     currBlk = mySession.stimSequence(:, BlkNum);
     for t = 1:numel(currBlk)
+        display(['Running block ' num2str(BlkNum) ' trial ' num2str(t)]);
         currCndNum = currBlk(t);
         condition = mySession.conditions{currCndNum};
         try 
