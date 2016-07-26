@@ -16,6 +16,7 @@ function session = setupSession(display, subj, stimsetStr, varargin)
     %% setup stimulus
     [myConditions, myTriaslCount, myStimSequence, runSequence] = setupStimulus(myScr, stimsetStr, varargin);
     
+    session.subj = subj;
     session.keys = myKeys;
     session.sound = mySound;
     session.scr = myScr;

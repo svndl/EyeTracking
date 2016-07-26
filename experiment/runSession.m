@@ -9,7 +9,7 @@ function runSession
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'TowardsAwayAllCues';
+    myStimset = 'SDRampsP';
     
     %% Setup session
     [mySession, myScr] = setupSession(displayName, subject, myStimset);
@@ -27,24 +27,36 @@ function runSession
     
     %% Conditions
     conditions = feval(myStimset, myScr);
-    [trials, cndSeq] = generateTrials(conditions);
+    [~, cndSeq] = generateTrials(conditions);
 
-    useRand = 1;
+    %useRand = 1;
+    nCnd = numel(conditions);
+    savedInfo = cell(nCnd, 1);
+    trialCounter = ones(nCnd, 1);
+    nTrials = numel(cndSeq);
+    randCndSeq = randperm(nTrials);
     mySession.recording = useEyelink;
     %% run experiment
-    for s = 1:numel(conditions)    
+    for t = 1:nTrials
+        currCndNum = cndSeq(randCndSeq(t));
         try
-            trials = runCondition(mySession, myScr, conditions{s}, s);
-            drawConditionEndScr(s, numel(conditions), myScr);
-            saveCondition(mySession, conditions{s}.info, s, trials);            
+            tr = runCondition(mySession, myScr, conditions{currCndNum}, trialCounter(currCndNum), currCndNum);
+            savedInfo{currCndNum}.trials(trialCounter(currCndNum)) = tr;
+            savedInfo{currCndNum}.info = conditions{currCndNum}.info;
+            trialCounter(currCndNum) = trialCounter(currCndNum) + 1;            
         catch err
-            display(['runSession Error condition #'  num2str(s)  ' caused by:']);
+            display(['runSession Error Condition #'  num2str(currCndNum)  ' caused by:']);
             display(err.message);
             display(err.stack(1).file);
             display(err.stack(1).line);
         end
     end
     ExitSession(useEyelink);
+    
+    % save condition info (trials, info)
+    for nC = 1:numel(conditions)
+        saveCondition(mySession, savedInfo{nC}.info, nC, savedInfo{currCndNum}.trials);
+    end    
     % Save session info     
     saveSession(mySession, myScr);
     %copy files from the Eyelink
@@ -57,6 +69,11 @@ function runSession
         end
         Eyelink('Shutdown');
     end
-    
-    gui_loadSession(mySession.saveDir)
+    if (useEyelink)
+        prompt = 'Do you want to process this session? y/n [y]: ';
+        str = input(prompt, 's');
+        if (strcmp(str, 'y') || strcmp(str, 'Y'))
+            gui_loadSession(mySession.saveDir);
+        end
+    end;
 end
