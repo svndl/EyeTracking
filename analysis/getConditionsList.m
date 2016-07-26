@@ -1,12 +1,12 @@
-function conditions = getConditionsList(sessionDir)
-
-    cndList = dir([sessionDir filesep 'cnd*.mat']);
+function myConditions = getConditionsList(sessionDir)
     
     
-    conditions = cell(numel(cndList), 1);
-    for n = 1:numel(cndList)
-       load(fullfile(sessionDir, cndList(n).name), 'conditionInfo'); 
-        conditions{n} = [num2str(n) ':' conditionInfo.name ': ' ...
-            conditionInfo.dynamics{:} ':' conditionInfo.direction{:}];
+    load([sessionDir filesep 'sessionInfo.mat']);
+    
+    
+    myConditions = cell(numel(sessionInfo.conditions), 1);
+    for n = 1:numel(sessionInfo.conditions)
+        myConditions{n} = [num2str(n) ':' sessionInfo.conditions{n}.info.name ': ' ...
+            sessionInfo.conditions{n}.info.dynamics{:} ':' sessionInfo.conditions{n}.info.direction{:}];
     end
 end

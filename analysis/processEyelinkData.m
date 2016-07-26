@@ -1,4 +1,4 @@
-function trials = processEyelinkData(eyelinkData, varargin)
+function [trials, isSampleOK] = processEyelinkData(eyelinkData, varargin)
 % function parses contents of *.asc eyelink file 
 % input arguments
 % eyelinkData: cell matrix with raw data
@@ -26,26 +26,40 @@ function trials = processEyelinkData(eyelinkData, varargin)
     
     %last data sample is one line before the stop marker
     deltaStop = -1;
-
+    useIntersection = 0;
     %% custom start/stop markers 
     if (~isempty(varargin{1}))
         startCol = varargin{1}{1};        
         endCol = varargin{1}{2};
         strSearchStart = varargin{1}{3};
         strSearchEnd = varargin{1}{4};
+        if (size(varargin{1}, 2) > 4)
+            useIntersection = 1;
+            strSearchStart_1 =  varargin{1}{5};
+            strSearchEnd_1 = varargin{1}{6};
+        end
+            
         deltaStart = 1;
     end
     
     %% find all trial start/stop indices
-    starts  = find(~cellfun(@isempty, strfind(eyelinkData(:, startCol), strSearchStart)));                                
+    starts  = find(~cellfun(@isempty, strfind(eyelinkData(:, startCol), strSearchStart)));   
     stops   = find(~cellfun(@isempty, strfind(eyelinkData(:, endCol), strSearchEnd)));                                  
     
+    %% look for strSearchStart/strSearchStop and extra argument ('left + right')
+    if (useIntersection)
+        starts = intersect(starts, ...
+            find(~cellfun(@isempty, strfind(eyelinkData(:, startCol), strSearchStart_1))));
+        stops = intersect(stops, ...
+            find(~cellfun(@isempty, strfind(eyelinkData(:, endCol), strSearchEnd_1))));   
+    end
     
     dataStarts = starts + deltaStart;
     dataStops = stops + deltaStop;
    
     %% convert data from str to num and break it into trials
     trials = cell(numel(starts), 1);
+    isSampleOK = cell(numel(starts), 1);
     nCols = size(eyelinkData, 2);
     
     for s = 1:length(starts)
@@ -55,23 +69,20 @@ function trials = processEyelinkData(eyelinkData, varargin)
             timeSamples = eyelinkData(dataStarts(s):dataStops(s), 1);
             validIDX = cellfun(@isempty, regexp(timeSamples, dataEvents));
     
-            data = zeros(sum(validIDX), nCols);
+            data = zeros(sum(validIDX), nCols - 1);
             % exclude lines with saccades and fixations
             data(:, 1) = cellfun(@str2double, timeSamples(validIDX));    
     
-            % parse startline into trial info
-            for x = 2:nCols            
+            % process numeric samples
+            for x = 2:nCols - 1             
                 samples = eyelinkData(dataStarts(s):dataStops(s), x);
                 %replace '.' with NaN
                 data(:, x) = str2num_Nan(samples(validIDX));
-                %data(:, x) = cellfun(@str2num, samples(validIDX));
             end
-        
-            %qualSamples = eyelinkData.(fields{end})( dataStarts(s):dataStops(s));       
-            %qualIdx = ismember(qualSamples(validIDX), '.....');        
-            %goodTrials = data(qualIdx, :);
+            % process sample quality
+            qualSamples = eyelinkData(dataStarts(s):dataStops(s), nCols);       
+            isSampleOK{s} = ismember(qualSamples(validIDX), '.....');        
             goodTrials = data; 
-            goodTrials(goodTrials == 1e100) = NaN;
         catch err
             display(['processEyelinkFile Error trial #'  num2str(s)...
                 ' caused by:']);

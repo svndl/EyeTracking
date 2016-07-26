@@ -207,8 +207,8 @@ function dataOut = loadConditionData(S)
 
         dataSession = S.session;
         dataOut = dataSession{S.cndPos};
-        dataOut.info.missedFrames = dataOut.missedFrames;
-        dataOut.info.samples = dataOut.samples;
+%         dataOut.info.missedFrames = dataOut.missedFrames;
+%         dataOut.info.samples = dataOut.samples;
 end
 
 function displayCndInfo(S, data)
