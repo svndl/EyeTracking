@@ -5,7 +5,14 @@ function fcdot = FullCue_dots
     fcdot.dynamics = {'ramp'};
 	fcdot.isPeriodic = 0;
 
-    fcdot.nonius          = 1;      % nonius on during trial (1) or not(0)
+    fcdot.nonius.enable    = 1;      % nonius on during trial (1) or not(0)
+    fcdot.nonius.heightDeg = 3;
+    fcdot.nonius.widthDeg  = 0.25;
+    
+    fcdot.nonius.upDeg     = 2;
+    fcdot.nonius.fixDotDeg = 1;
+    fcdot.nonius.color = 255;
+    
 
 	% dot field properties
 	fcdot.stimRadDeg      = 20;     % stimulus field radius

@@ -12,6 +12,7 @@ function [trialTiming, response] = runTrial(mySession, condition)
     
 	%% pre-generate stimulus frames
     [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
+    noniusLines = getNoniusLines(condition.info.nonius, mySession.scr);
     
     %% draw fixation
 	drawFixation_Stereo(mySession.scr);
@@ -23,8 +24,10 @@ function [trialTiming, response] = runTrial(mySession, condition)
         display('Eyelink Recording Started');
   		Eyelink('StartRecording');  
     end
+    % run trial
+	trialTiming = drawDots(dotFrames, dotColor, dotSize, mySession.scr,...
+        dotUpdate, noniusLines, msgTrialDescription);
     
-	trialTiming = drawDots(dotFrames, dotColor, dotSize, mySession.scr, dotUpdate, condition.info.nonius, msgTrialDescription);
     if (mySession.recording)
         display('Eyelink Recording Ended');
 		Eyelink('StopRecording');

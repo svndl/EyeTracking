@@ -37,9 +37,11 @@ function runSession_rand
             saveBlock(mySession, trials, b);
         catch err
             display(['runSession Error block #'  num2str(b)  ' caused by:']);
-            display(err.message);
-            display(err.stack(1).file);
-            display(err.stack(1).line);
+            display(err.message);            
+            for e = 1: numel(err.stack)
+                display(err.stack(e).file);
+                display(err.stack(e).line);
+            end
         end
     end
     ExitSession(useEyelink);
