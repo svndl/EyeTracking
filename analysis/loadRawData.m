@@ -12,7 +12,13 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
         disp('Cannot process the session without session Info file, exiting');
         exit();
     end
-    %% get the list of mat and edf files available
+    % support the old code
+    if (~isfield(sessionInfo, 'runSequence'))
+        sessionInfo.runSequence = 'cnd';
+        sessionInfo.nBlocks = numel(sessionInfoFile.conditions);
+    end
+
+    %% get the list of mat and edf files available    
     matFiles = getFileList(pathToSession, 'mat', sessionInfo.runSequence);
     
     % look for edf files first
@@ -38,8 +44,8 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
     index = cell(sessionInfo.nBlocks, 1);
     
     %% Load raw data by trials
-    for b = 1:sessionInfo.nBlocks
-        display(['Loading block ' num2str(b) '/' num2str(sessionInfo.nBlocks)]);
+    for b = 1:numel(matFiles)
+        display(['Loading block ' num2str(b) '/' num2str(numel(matFiles))]);
         load(fullfile(pathToSession, matFiles{b}));
         index{b} = trialSequence;
         nT = numel(trialSequence);
