@@ -4,7 +4,7 @@ function trials = runBlock(mySession, BlkNum)
 % output args
 	% Open file for recording    
     if (mySession.recording) 
-        eyelinkFile = [mySession.subj.name '_' mySession.runSequence num2str(t) '.edf'];
+        eyelinkFile = [mySession.subj.name '_' mySession.runSequence num2str(BlkNum) '.edf'];
         Eyelink('Openfile', eyelinkFile);				
     end
     currBlk = mySession.stimSequence(:, BlkNum);

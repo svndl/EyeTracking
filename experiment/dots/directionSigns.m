@@ -7,10 +7,10 @@ function ds = directionSigns(direction, eye)
         case 'away'
             signs.L = -1;
             signs.R = 1;
-        case 'left'
+        case {'up', 'left'}
             signs.L = -1;
             signs.R = -1;
-        case 'right'
+        case {'down', 'right'}
             signs.L = 1;
             signs.R = 1;
     end

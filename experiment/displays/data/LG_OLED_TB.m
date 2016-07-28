@@ -1,7 +1,7 @@
 function dspl = LG_OLED_TB
     % LG OLED 3D TV
     dspl.name           = 'LG_OLED_TB';
-    dspl.viewDistCm     = 80;
+    dspl.viewDistCm     = 57.3;
 
     dspl.width_cm       = 120;
     dspl.height_cm      = 70;

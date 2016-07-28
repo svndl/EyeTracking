@@ -125,7 +125,7 @@ function outScr = setupFixation(inScr)
 
 	caliRadiusDeg	= 5;
 	outScr.clbRadiusX = outScr.Xscale*ceil(caliRadiusDeg*60*(1/outScr.pix2arcmin));
-	outScr.clbRadiusY = outScr.Yscale*outScr.clbRadiusX/2;
+	outScr.clbRadiusY = outScr.Yscale*outScr.clbRadiusX;
 	
 	fixationRadiusDeg = 1;
 	outScr.fxRadius = (60*fixationRadiusDeg)/outScr.pix2arcmin;

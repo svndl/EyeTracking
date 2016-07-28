@@ -11,10 +11,23 @@ function dotFrames = SingleDot(stmInfo)
     %sign shift: right eye(away, right) = 1; 
     %sign shift: right eye(towards, left) = - 1
     
-    dotFrames.L.x = dots.x + directionSigns(stmInfo.direction{1}, 'L')*shift.x;	
-	dotFrames.L.y = zeros(size(dotFrames.L.x, 1), 1);
+    where = stmInfo.direction{1};
+    Lx = dots.x + directionSigns(where, 'L')*shift.x;	
+    Ly = zeros(size(Lx, 1), 1);
     
-    dotFrames.R.x = dots.x + directionSigns(stmInfo.direction{1}, 'R')*shift.x;	
-	dotFrames.R.y = zeros(size(dotFrames.R.x, 1), 1);
+    Rx = dots.x + directionSigns(where, 'R')*shift.x;	
+    Ry = zeros(size(Rx, 1), 1);       
     
+    % up-down hack
+    if (strcmp(where, 'up') || strcmp(where, 'down'))
+       Ly = Lx;
+       Lx = zeros(size(Ly, 1), 1);
+       Ry = Rx;
+       Rx = zeros(size(Ry, 1), 1);
+    end
+    
+    dotFrames.L.x = Lx;
+    dotFrames.L.y = Ly;
+    dotFrames.R.x = Rx;
+    dotFrames.R.y = Ry;
 end

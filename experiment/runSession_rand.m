@@ -9,10 +9,10 @@ function runSession_rand
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'TowardsAwayAllCues';
+    myStimset = 'UpDownLeftRight';
     
     %% Setup session
-    runType = 'cnd';
+    runType = 'blk';
     mySession = setupSession(displayName, subject, myStimset, runType);
       
     %% are we recording?
