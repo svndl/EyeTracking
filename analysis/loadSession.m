@@ -39,33 +39,4 @@ function sessionData = loadSession(pathToSession)
         end
         save(sessionMatFile, 'sessionData');
     end
-    
-end
-
-function plotSummary(pos, vel, pathToSession, cnd)
-
-    figure;
-    subplot(2, 1, 1)
-    xlabel('Time samples');
-    ylabel('Degrees per second');
-
-    plot(-pos.Lavg(:, 1), '-b'); hold on;
-    plot(-pos.Ravg(:, 1), '-r'); hold on;
-    plot(-pos.Vergence(:, 1), '-.k'); hold on;
-    plot(-pos.Version(:, 1), '.k'); hold on;
-    
-    legend({'position L', 'position R', 'vergence', 'version'});
-    
-    subplot(2, 1, 2)
-    xlabel('Time samples');
-    ylabel('Degrees per second');
-   
-    plot(-vel.Lavg(:, 1), '-b'); hold on;
-    plot(-vel.Ravg(:, 1), '-r'); hold on;
-    plot(-vel.Vergence(:, 1), '-.k'); hold on;
-    plot(-vel.Version(:, 1), '.k'); hold on;
-    
-    legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
-    saveas(gcf, fullfile(pathToSession, num2str(cnd)), 'fig');
-    close gcf;
 end

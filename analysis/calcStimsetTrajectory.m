@@ -11,7 +11,7 @@ function pos = calcStimsetTrajectory(stimsetInfo)
 %  motion
 
     % number of points for prelude/motion
-    preludeSamples = uint8(1e+03*stimsetInfo.preludeSec);
+    preludeSamples = uint32(1e+03*stimsetInfo.preludeSec);
     motionSamples = uint32(1e+03*stimsetInfo.cycleSec); 
 
     % pre-allocate vectors for trajectory
@@ -32,13 +32,15 @@ function pos = calcStimsetTrajectory(stimsetInfo)
     % check if direction is the same or opposite
     sameDirection = 1;
     
-    if (numel(unique(stimsetInfo.direction)) == 2 && numel(stimsetInfo.direction )== 2)
+    where = stimsetInfo.direction;
+    
+    if (numel(unique(where)) == 2 && numel(where)== 2)
         sameDirection = -1;
     end 
     
     % Find out signs for directions in left and right eyes 
-    signL = directionSigns(stimsetInfo.direction{1}, 'L');
-    signR = directionSigns(stimsetInfo.direction{1}, 'R');
+    signL = directionSigns(where{1}, 'L');
+    signR = directionSigns(where{1}, 'R');
      
     %left eye motion
     motionL = signL*(isStep*step + isRamp*sameDirection*ramp);
@@ -48,7 +50,24 @@ function pos = calcStimsetTrajectory(stimsetInfo)
     motionR =  signR*(isStep*step + isRamp*sameDirection*ramp);
     
     %
-    pos.l = [prelude motionL];
-    pos.r = [prelude motionR];
+    if (strcmp(where{1}, 'up') || strcmp(where{1}, 'down'));
+        yL = [prelude motionL];
+        yR = [prelude motionR];
+
+        xL = zeros(size(yL));
+        xR = zeros(size(yR));        
+    else
+        xL = [prelude motionL];
+        xR = [prelude motionR];
+
+        yL = zeros(size(xL));
+        yR = zeros(size(xR));
+    end
+        
+    pos.l.x = xL;
+    pos.r.x = xR;
+    
+    pos.l.y = yL;
+    pos.r.y = yR;
 end
 
