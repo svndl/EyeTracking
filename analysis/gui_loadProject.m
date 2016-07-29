@@ -1,23 +1,31 @@
-function gui_loadProject
+function gui_loadProject(varargin)
+%% will load ONE selected project
+
     close all;
     dirData = setPath;
     gui.data = dirData.data;
-    %% projects
-    gui.projPos = 1;
-    gui.projects = getProjectsList(gui.data); 
-    gui.currProj =  gui.projects{gui.projPos};
+       
+    if(~nargin)
+        dirname = uigetdir(gui.data);
+        ProjectName = dirname;        
+    else
+        ProjectName = varargin{1};
+    end
     
-    %% sessions
-    gui.sessions = getSessionsList(fullfile(gui.data, gui.currProj));
-    % add 'ALL'
-    gui.sessions{end + 1} = 'all';
-    gui.ssnPos = 1;
-    gui.currSsn = gui.sessions{gui.ssnPos};
+    gui.projectData = loadProject(ProjectName);
+    gui.projPath = ProjectName;
+
+    %% Titles sessions + 'all'
+    gui.sessionsList = getSessionsList(ProjectName);
+    gui.sessionsStr{end + 1} = 'all';
     
-    %% conditions
-    gui.conditions = getConditionsList(fullfile(gui.data, gui.currProj, gui.currSsn));
-    gui.cndPos = 1;
-    gui.currCnd = gui.conditions{gui.cndPos};
+    gui.sessionPos = 1;
+    gui.currentSessionStr = gui.sessionsList{gui.sessionPos};
+    
+    %% Titles conditions 
+    gui.conditions = getConditionsList(fullfile(gui.proj, gui.currentSessionStr));
+    gui.conditionPos = 1;
+    gui.currentSessionStr = gui.conditions{gui.conditionPos};
  
     
     gui.fh = figure('units','normalized',...
@@ -32,14 +40,8 @@ function gui_loadProject
                  'position',[0.05 0.8 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize', 16, 'fontweight','bold',... 
-                 'string', 'List of Projects','visible', 'on');
+                 'string', ProjectName, 'visible', 'on');
 
-    gui.popProj = uicontrol('style','pop',...
-                 'unit','normalized',...
-                 'position',[0.05 0.75 0.2 0.2],...
-                 'backgroundc',get(gui.fh,'color'),...
-                 'fontsize',12,'fontweight','bold',... 
-                 'string', gui.projects, 'value', gui.projPos);
     %% Subjects
     uicontrol('style','text',...
                  'unit','normalized',...
@@ -77,42 +79,53 @@ function gui_loadProject
                  'string','Plot condition',...
                  'fontsize',14,'fontweight','bold');             
     
-    %% Condition info            
-     cndData = loadConditionData(gui);     
-     displayCndInfo(gui, cndData.info);
-                          
-    
+     % plot left eye trajectories
      gui.left = axes('units','normalized', ...
-            'position',[0.38 0.05 0.6 0.43], ...
+            'position',[0.38 0.05 0.6 0.25], ...
             'xtick',[],'ytick',[], 'box', 'on');
-%             'XColor',[0 0 .7], ...
-%             'YColor',[0 0 .7], ...            
-       
-     gui.right = axes('units','normalized', ...
-            'position',[0.38 0.5 0.6 0.43], ...
-            'xtick',[],'ytick',[], 'box', 'on');
-%             'XColor',[.7 0 0], ...
-%             'YColor',[.7 0 0], ...                        
+%      uicontrol('style','text',...
+%                  'unit','normalized',...
+%                  'position',[0.62 0.3 0.09 0.05],...
+%                  'backgroundc',get(gui.fh,'color'),...
+%                  'fontsize', 16, 'fontweight','bold',... 
+%                  'string', 'Left Eye' ,'visible', 'on');
 
-    set(get(gui.left, 'XLabel'), 'String', 'Time (milliseconds)');
-    set(get(gui.left, 'YLabel'), 'String', 'Position Eyes(deg)');
+     % plot right eye trajectories
+     gui.right = axes('units','normalized', ...
+            'position',[0.38 0.37 0.6 0.25], ...
+            'xtick',[],'ytick',[], 'box', 'on');
+%      uicontrol('style','text',...
+%                  'unit','normalized',...
+%                  'position',[0.62 0.62 0.09 0.05],...
+%                  'backgroundc',get(gui.fh,'color'),...
+%                  'fontsize', 16, 'fontweight','bold',... 
+%                  'string', 'Right Eye', 'visible', 'on');
+        
+     %plot vergence/version             
+     gui.ver = axes('units','normalized', ...
+            'position',[0.38 0.7 0.6 0.25], ...
+            'xtick',[],'ytick',[], 'box', 'on');
+%      uicontrol('style','text',...
+%                  'unit','normalized',...
+%                  'position',[0.62 0.92 0.14 0.05],...
+%                  'backgroundc',get(gui.fh,'color'),...
+%                  'fontsize', 16, 'fontweight','bold',... 
+%                  'string', 'Vergence/Version','visible', 'on');
+        
+    fontSettings = {'fontsize', 14, 'fontweight','bold'};
+    set(get(gui.left, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
+    set(get(gui.left, 'YLabel'), 'String', 'Position Left Eye(deg)', fontSettings{:});
     
-    set(get(gui.right, 'XLabel'), 'String', 'Time (milliseconds)')
-    set(get(gui.right, 'YLabel'), 'String', 'Velocity Eyes(deg)')    
+    set(get(gui.right, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
+    set(get(gui.right, 'YLabel'), 'String', 'Position Right Eye(deg)', fontSettings{:})    
     
-    set(gui.popProj, 'callback', {@popProj_call, gui});  % Set the popup callback.
+    set(get(gui.ver, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
+    set(get(gui.ver, 'YLabel'), 'String', 'Vergence and version(deg)', fontSettings{:})    
+
     set(gui.popSsn, 'callback', {@popSsn_call, gui});  % Set the popup callback.
     set(gui.popCnd, 'callback', {@popCnd_call, gui});  % Set the popup callback.
     set(gui.pbPlot, 'callback', {@pb_call, gui});
 end
-
-function [] = popProj_call(varargin)
-% Callback for Projects popupmenu.
-    S = varargin{3}; 
-    S.projPos = get(S.popProj, 'val');
-    S.currProj = S.projects{S.projPos};
-    updateSsnList(S);
-end    
 function [] = popSsn_call(varargin)
 % Callback for Sessions popupmenu.
     S = varargin{3}; 
@@ -135,49 +148,48 @@ end
 %%
 function [] = pb_call(varargin)
     S = varargin{3};
-    S.currProj = S.projects{get(S.popProj, 'val')};
-    S.currSsn = S.sessions{get(S.popSsn, 'val')};
     S.currCnd = S.conditions{get(S.popCnd, 'val')};
         
     data = loadConditionData(S);
+    lX = squeeze(data.pos.L(:, 1, :));
+    lY = squeeze(data.pos.L(:, 2, :));
+            
+    rX = squeeze(data.pos.R(:, 1, :));
+    rY = squeeze(data.pos.R(:, 2, :));
+    
+    lvX = squeeze(data.vel.L(:, 1, :));
+    lvY = squeeze(data.vel.L(:, 2, :));
+            
+    rvX = squeeze(data.vel.R(:, 1, :));
+    rvY = squeeze(data.vel.R(:, 2, :));
+    
+    
+    stimPos = calcStimsetTrajectory(data.info);
     %get plot type
     set(0,'CurrentFigure', S.fh);
     
-    
-    % prelude time in ms
-    preludeMS = 1000*data.info.preludeSec;
-    
-    % calculate L&R dot speed  
-    %dotSpeed = 
-    
-    
+    % Fill left eye data
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
-    plot(-data.pos.Lavg(:, 1), '-b'); hold on;
-    plot(-data.pos.Ravg(:, 1), '-r'); hold on;
-    plot(-data.pos.Vergence(:, 1), '-.k'); hold on;
-    plot(-data.pos.Version(:, 1), '.k'); hold on;
-    
-    legend({'position L', 'position R', 'vergence', 'version'});
+    plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', stimPos.l);
+        
+    %% plot right eye
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    plot(-data.vel.Lavg(:, 1), '-b'); hold on;
-    plot(-data.vel.Ravg(:, 1), '-r'); hold on;
-    plot(-data.vel.Vergence(:, 1), '-.k'); hold on;
-    plot(-data.vel.Version(:, 1), '.k'); hold on;
-    legend({'velocity L', 'velocity R', 'vergence velocity', 'version velocity'});
+    plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', stimPos.r);    
+    %% plot vergence/version 
+     
+    set(S.fh,'CurrentAxes',S.ver);
+    cla(S.ver);
+    p1 = plotOneEye(data.timecourse, lX - lY, rX - rY, 'vergence', 'k', {}); hold on;
+    p2 = plotOneEye(data.timecourse, lvX - lvY, rvX - rvY, 'version', 'g', {}); hold on;
+    legend([p1 p2], {'Vergence', 'Version'});
 end
-function updateSsnList(S)
-    newSsnList = getSessionsList(fullfile(S.data, S.currProj));
-    % add 'all' session
-    S.sessions = [newSsnList {'all'}];
-    S.currSsn = S.sessions{S.ssnPos};    
-    updateCndList(S);
-end
+
 function updateCndList(S)
     if (~strcmp(S.currSsn, 'all'))
-        S.conditions = getConditionsList(fullfile(S.data, S.currProj, S.currSsn));
+        S.conditions = getConditionsList(fullfile(S.proj, S.currSsn));
         S.currCnd = S.conditions{S.cndPos};
         cndData = loadConditionData(S);     
         displayCndInfo(S, cndData.info); 
@@ -185,57 +197,60 @@ function updateCndList(S)
     %updateCallbacks(S);     
 end
 
+function dataOut = loadConditionData(S)
+    S.ssnPos = get(S.popSsn, 'val');
+    S.currSsn = S.sessions{S.ssnPos};
+    S.cndPos = get(S.popCnd, 'val');
+    S.currCnd = S.conditions{S.cndPos};
+    
+    if strcmp(S.currSsn, 'all')
+    %load and average all data
+        posL = [];
+        posR = [];
+        velL = [];
+        velR = [];
+        for s = 1:numel(S.sessions) - 1
+            dataSession = loadSession(fullfile(S.proj, S.sessions{s}));
+            dataC = dataSession{S.cndPos};
+            posL = cat(3, posL, dataC.pos.L);
+            posR = cat(3, posR, dataC.pos.R);
+            velL = cat(3, velL, dataC.vel.L);
+            velR = cat(3, velR, dataC.vel.R);
+        end
+        dataOut.pos.L = posL;
+        dataOut.pos.R = posR;
+        dataOut.vel.L = velL;
+        dataOut.vel.R = velR;
+        dataOut.info = dataSession{S.cndPos}.info;
+        dataOut.timecourse = dataSession{S.cndPos}.timecourse;
+    else
+        dataSession = loadSession(fullfile(S.proj, S.currSsn));
+        dataOut = dataSession{S.cndPos};
+    end
+end
+
 function updateCallbacks(S)
-    set(S.popProj, 'callback', {@popProj_call, S}); 
     set(S.popSsn, 'callback', {@popSsn_call, S});
-    set(S.popSsn, 'string', S.sessions);
     set(S.popSsn, 'value',  S.ssnPos);
+    
     set(S.popCnd, 'callback', {@popCnd_call, S});
     set(S.popCnd, 'string', S.conditions);
     set(S.pbPlot, 'callback', {@pb_call, S});
 end
 
-function dataOut = loadConditionData(S)
-    S.currProj = S.projects{get(S.popProj, 'val')};
-    S.ssnPos = get(S.popSsn, 'val');
-    S.currSsn = S.sessions{S.ssnPos};
-    S.cndPos = get(S.popCnd, 'val');
-    S.currCnd = S.conditions{S.cndPos};
-    if strcmp(S.currSsn, 'all')
-    %load and average all data        
-        for s = 1:numel(S.sessions) - 1
-            dataSession = loadSession(fullfile(S.data, S.currProj, S.sessions{s}));
-            dataC = dataSession{S.cndPos};
-            posL(s, :, :) = dataC.pos.Lavg;
-            posR(s, :, :) = dataC.pos.Ravg;
-            velL(s, :, :) = dataC.vel.Lavg;
-            velR(s, :, :) = dataC.vel.Ravg;
-            posVergence(s, :, :) = dataC.pos.Vergence;
-            posVersion(s, :, :) = dataC.pos.Version;
-            velVergence(s, :, :) = dataC.vel.Vergence;
-            velVersion(s, :, :) = dataC.vel.Version;
-        end
-        dataOut.pos.Lavg = squeeze(mean(posL, 1));
-        dataOut.pos.Ravg = squeeze(mean(posR, 1));
-        dataOut.pos.Vergence = squeeze(mean(posVergence, 1));
-        dataOut.pos.Version = squeeze(mean(posVersion, 1));
-        dataOut.vel.Lavg = squeeze(mean(velL, 1));
-        dataOut.vel.Ravg = squeeze(mean(velR, 1));
-        dataOut.vel.Vergence = squeeze(mean(velVergence, 1));
-        dataOut.vel.Version = squeeze(mean(velVersion, 1)); 
-    else
-        dataSession = loadSession(fullfile(S.data, S.currProj, S.currSsn));
-        dataOut = dataSession{S.cndPos};
-        dataOut.info.missedFrames = dataOut.missedFrames;
-        dataOut.info.samples = dataOut.samples;
-    end
-end
 
 function displayCndInfo(S, data)
     list_fields = fields(data);
+    % take out the nonius lines structure and display info
     
-    % don't process the last 'display' field
-    for f = 1:numel(list_fields) - 3
+    excludedFields = ismember(list_fields, 'nonius') + ...
+        ismember(list_fields, 'handle') + ...
+        ismember(list_fields, 'name');
+    
+     list_fields = list_fields(~excludedFields) ;
+
+    
+    for f = 1:numel(list_fields)
         % text
        uicontrol('style','text',...
                  'unit','normalized',...
@@ -261,8 +276,3 @@ function displayCndInfo(S, data)
     end    
     updateCallbacks(S);
 end
-function calculateStimsetTrajectory
-
-
-end
-
