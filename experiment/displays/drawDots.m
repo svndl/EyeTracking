@@ -133,9 +133,11 @@ function drawStimulus(scrPtr, xc, yc, eye, dots, dotSize, dotColor, scrCenter, n
         signShift = 1;
     end;
     
-    % get rid of zero dots
+    % temp workaround for getting rid of zero dots 
+    if (size(dots, 2) > 1)
+        dots(:, sum(dots) == 0) = [];
+    end
     
-    dots(:, sum(dots) == 0) = [];
     Screen('SelectStereoDrawBuffer', scrPtr, stereoBufferID);
     Screen('DrawDots', scrPtr, dots, dotSize, dotColor, ...
         scrCenter, 0);
