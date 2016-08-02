@@ -1,7 +1,8 @@
 function dotFrames = FullCue(stmInfo)
     % full cue has same dots for each eye
-	maxVal = min(stmInfo.xmax, stmInfo.ymax) / 2;
+	maxVal = min(stmInfo.xmax, stmInfo.ymax);
     %each frame has rand dot positions
+    
     dots.x = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames + numel(stmInfo.prelude) 1]);
     dots.y = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames + numel(stmInfo.prelude) 1]);
 

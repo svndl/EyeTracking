@@ -9,62 +9,49 @@ function runSession
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'SDRampsP';
+    myStimset = 'TowardsAwayAllCues';
     
     %% Setup session
-    [mySession, myScr] = setupSession(displayName, subject, myStimset);
+    runType = 'blk';
+    mySession = setupSession(displayName, subject, myStimset, runType);
       
     %% are we recording?
     useEyelink = 0;
     
     %% Inint session
     if (useEyelink)
-        if (~initSession(mySession, myScr))
+        if (~initSession(mySession))
             useEyelink = 0;
         end
-        mySession.eyelink_ts= EyelinkTimingFlags('message'); 
+        mySession.eyelink_ts = EyelinkTimingFlags('message'); 
     end
     
-    %% Conditions
-    conditions = feval(myStimset, myScr);
-    [~, cndSeq] = generateTrials(conditions);
-
-    %useRand = 1;
-    nCnd = numel(conditions);
-    savedInfo = cell(nCnd, 1);
-    trialCounter = ones(nCnd, 1);
-    nTrials = numel(cndSeq);
-    randCndSeq = randperm(nTrials);
     mySession.recording = useEyelink;
+    % Save session info     
+    saveSession(mySession);
+
     %% run experiment
-    for t = 1:nTrials
-        currCndNum = cndSeq(randCndSeq(t));
+    for b = 1:mySession.nBlocks
         try
-            tr = runCondition(mySession, myScr, conditions{currCndNum}, trialCounter(currCndNum), currCndNum);
-            savedInfo{currCndNum}.trials(trialCounter(currCndNum)) = tr;
-            savedInfo{currCndNum}.info = conditions{currCndNum}.info;
-            trialCounter(currCndNum) = trialCounter(currCndNum) + 1;            
+            trials = runBlock(mySession, b);
+            saveBlock(mySession, trials, b);
         catch err
-            display(['runSession Error Condition #'  num2str(currCndNum)  ' caused by:']);
-            display(err.message);
-            display(err.stack(1).file);
-            display(err.stack(1).line);
+            display(['runSession Error block #'  num2str(b)  ' caused by:']);
+            display(err.message);            
+            for e = 1: numel(err.stack)
+                display(err.stack(e).file);
+                display(err.stack(e).line);
+            end
         end
     end
     ExitSession(useEyelink);
     
-    % save condition info (trials, info)
-    for nC = 1:numel(conditions)
-        saveCondition(mySession, savedInfo{nC}.info, nC, savedInfo{currCndNum}.trials);
-    end    
-    % Save session info     
-    saveSession(mySession, myScr);
     %copy files from the Eyelink
     if (mySession.recording)
         Eyelink('Initialize')      
-        for nC = 1:numel(conditions)
+        for nb = 1:1:mySession.nBlocks
             %transfer eyelink file and save
-            fileName = [mySession.subj.name '_cnd' num2str(nC)];
+            fileName = [mySession.subj.name '_' mySession.runSequence num2str(nb)];
             EyelinkTransferFile(mySession.saveDir, fileName);
         end
         Eyelink('Shutdown');

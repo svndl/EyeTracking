@@ -28,12 +28,13 @@ function params = calcStimsetParams(stimset, videoMode)
 
 	% full x field of dots before circle crop	
 	
-	params.xmax            = 4*max([params.stimRadPix params.rampEndDispPix]);   
+	params.xmax            = max([params.stimRadPix params.rampEndDispPix]);   
 	params.ymax            = params.xmax;                                  
 	
-	params.numDots = round( stimset.dotDensity*(  params.xmax*(videoMode.pix2arcmin/60)*...
-		params.ymax*(videoMode.pix2arcmin/60) ) );
-
+% 	params.numDots = round( stimset.dotDensity*(  params.xmax*(videoMode.pix2arcmin/60)*...
+%       params.ymax*(videoMode.pix2arcmin/60) ) );
+% 
+    params.numDots = round(stimset.dotDensity*(params.stimRadSqPix/(pi*(params.dotSizePix/2)^2)));
 
 	%%  TIMING
 	% note: dot drawing is done frame-by-frame rather than using PTB WaitSecs,

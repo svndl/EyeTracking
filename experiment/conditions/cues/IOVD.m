@@ -1,6 +1,7 @@
 function dotFrames = IOVD(stmInfo)
     %different dots in each eye
-	maxVal = min(stmInfo.xmax, stmInfo.ymax) / 2;
+	maxVal = min(stmInfo.xmax, stmInfo.ymax);
+    
     dots1.x = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames + numel(stmInfo.prelude) 1]);
     dots1.y = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames + numel(stmInfo.prelude) 1]);
     
