@@ -10,7 +10,7 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
         load(sessionInfoFile);
     catch
         disp('Cannot process the session without session Info file, exiting');
-        exit();
+        return;
     end
     % support the old code
     if (~isfield(sessionInfo, 'runSequence'))

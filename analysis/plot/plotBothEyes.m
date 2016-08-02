@@ -20,6 +20,6 @@ function [lX, lY, rX, rY] = plotBothEyes(data, type, varargin)
             stimPosl); 
     
         subplot(2, 1, 2)
-        plotOneEye(timecourse, rX, rY, [type ' right'], 'r', ... 
+    plotOneEye(timecourse, rX, rY, [type ' right'], 'r', ... 
             stimPosr);
 end

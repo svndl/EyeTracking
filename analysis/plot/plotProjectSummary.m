@@ -25,7 +25,6 @@ function plotProjectSummary(varargin)
     
     for c = 1:nCnd
         
-        stimPos = calcStimsetTrajectory(projectData{1}{1}.info);
     
         %% merge project data
         posL = [];
@@ -40,6 +39,7 @@ function plotProjectSummary(varargin)
             velL = cat(3, velL, conditionData.vel.L);
             velR = cat(3, velR, conditionData.vel.R);
         end
+        stimPos = calcStimsetTrajectory(conditionData.info);
         pos.L = posL;
         pos.R = posR;
         vel.L = velL;

@@ -32,7 +32,7 @@ function plotSessionSummary(varargin)
         title('Left and Right eye trajectories');
         
         % plot L/R trajectories and stimset
-        plotBothEyes(data.pos, 'pos', stimPos);
+        [lX, lY, rX, rY] = plotBothEyes(data.pos, 'pos', stimPos);
         
         % save figure
         saveas(posLR, fullfile(figurePath, ['Eyes Trajectories_cnd' num2str(c)]), 'fig');
@@ -44,7 +44,7 @@ function plotSessionSummary(varargin)
         title('Left and Right eye velocity');
         
         
-        plotBothEyes(data.vel, 'vel');
+        [lvX, lvY, rvX, rvY] = plotBothEyes(data.vel, 'vel');
         saveas(velLR, fullfile(figurePath, ['Eyes Velo_cnd' num2str(c)]), 'fig');
         close gcf;
         

@@ -11,6 +11,7 @@ function projectInfo = loadProject(pathToProject)
             sessionFolder = fullfile(pathToProject, list_sessions{ns});
             projectInfo{ns} = loadSession(sessionFolder);
         end
+        projectInfo = projectInfo(~cellfun(@isempty, projectInfo));
         save(projectMatFile, 'projectInfo');
     else
         load(projectMatFile);
