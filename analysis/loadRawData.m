@@ -53,7 +53,7 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
         
         for t = 1:nT
             idx = (b - 1) *nT + t;
-            missedFrames{idx} = (trials.timing{t}.Missed > 0);
+            missedFrames{idx} = (trials.timing{t}.Missed > 0)';
             response{idx} = trials.response{t};
             eyetracking{idx} = raw{t};
             eyetrackingQ{idx} = rawQ{t};

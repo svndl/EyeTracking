@@ -17,15 +17,12 @@ function gui_loadProject(varargin)
 
     %% Titles sessions + 'all'
     gui.sessionsList = getSessionsList(ProjectName);
-    gui.sessionsStr{end + 1} = 'all';
-    
+    gui.sessionsList{end + 1} = 'all';    
     gui.sessionPos = 1;
-    gui.currentSessionStr = gui.sessionsList{gui.sessionPos};
     
     %% Titles conditions 
-    gui.conditions = getConditionsList(fullfile(gui.proj, gui.currentSessionStr));
+    gui.conditionsList = getConditionsList(fullfile(gui.projPath, gui.sessionsList{gui.sessionPos}));
     gui.conditionPos = 1;
-    gui.currentSessionStr = gui.conditions{gui.conditionPos};
  
     
     gui.fh = figure('units','normalized',...
@@ -55,7 +52,7 @@ function gui_loadProject(varargin)
                  'position',[0.05 0.65 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string', gui.sessions,'value', gui.ssnPos);
+                 'string', gui.sessionsList,'value', gui.sessionPos);
     %% Conditions
     uicontrol('style','text',...
                  'unit','normalized',...
@@ -69,7 +66,7 @@ function gui_loadProject(varargin)
                  'position',[0.05 0.55 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string',gui.conditions,'value', gui.cndPos);
+                 'string',gui.conditionsList,'value', gui.conditionPos);
             
     gui.pbPlot = uicontrol('style','push',...
                  'units','normalized',...
@@ -125,30 +122,34 @@ function gui_loadProject(varargin)
     set(gui.popSsn, 'callback', {@popSsn_call, gui});  % Set the popup callback.
     set(gui.popCnd, 'callback', {@popCnd_call, gui});  % Set the popup callback.
     set(gui.pbPlot, 'callback', {@pb_call, gui});
+    
+    % update condition info
+    dataOut = loadConditionData(gui);
+    displayCndInfo(gui, dataOut.info);
 end
 function [] = popSsn_call(varargin)
 % Callback for Sessions popupmenu.
     S = varargin{3}; 
-    S.ssnPos = get(S.popSsn, 'val'); 
-    S.currSsn = S.sessions{S.ssnPos};
-    if (~strcmp(S.currSsn, 'all'))
-        updateCndList(S);
-    end
+    dataOut = loadConditionData(S);
+    displayCndInfo(S, dataOut.info);
+    cla(S.left); 
+    cla(S.right); 
+    cla(S.ver); 
 end
 
 function [] = popCnd_call(varargin)
 % Callback for Conditions popupmenu.
-    S = varargin{3};  % Get the structure.
-    S.cndPos = get(S.popCnd, 'val'); % Get the users choice from the popup     
-    S.currCnd = S.conditions{S.cndPos};
+    S = varargin{3};
     cndData = loadConditionData(S);     
     displayCndInfo(S, cndData.info);
+    cla(S.left); 
+    cla(S.right); 
+    cla(S.ver);    
 end
 
 %%
 function [] = pb_call(varargin)
     S = varargin{3};
-    S.currCnd = S.conditions{get(S.popCnd, 'val')};
         
     data = loadConditionData(S);
     lX = squeeze(data.pos.L(:, 1, :));
@@ -165,53 +166,47 @@ function [] = pb_call(varargin)
     
     
     stimPos = calcStimsetTrajectory(data.info);
+    nSamples = numel(data.timecourse);
+    sl.x = takeLastN(stimPos.l.x, nSamples);
+    sl.y = takeLastN(stimPos.l.y, nSamples);
+    sr.x = takeLastN(stimPos.r.x, nSamples);
+    sr.y = takeLastN(stimPos.r.y, nSamples);
+    
+    sv.x =  sl.x - sr.x;
+    sv.y =  sl.y - sr.y;
+    
     %get plot type
     set(0,'CurrentFigure', S.fh);
     
     % Fill left eye data
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
-    plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', stimPos.l);
+    plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', sl);
         
     %% plot right eye
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', stimPos.r);    
+    plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', sr);    
     %% plot vergence/version 
      
     set(S.fh,'CurrentAxes',S.ver);
     cla(S.ver);
-    p1 = plotOneEye(data.timecourse, lX - lY, rX - rY, 'vergence', 'k', {}); hold on;
-    p2 = plotOneEye(data.timecourse, lvX - lvY, rvX - rvY, 'version', 'g', {}); hold on;
-    legend([p1 p2], {'Vergence', 'Version'});
+    plotOneEye(data.timecourse, lX - rX, lY - rY, 'vergence', 'k', sv); hold on;
 end
-
-function updateCndList(S)
-    if (~strcmp(S.currSsn, 'all'))
-        S.conditions = getConditionsList(fullfile(S.proj, S.currSsn));
-        S.currCnd = S.conditions{S.cndPos};
-        cndData = loadConditionData(S);     
-        displayCndInfo(S, cndData.info); 
-    end
-    %updateCallbacks(S);     
-end
-
 function dataOut = loadConditionData(S)
-    S.ssnPos = get(S.popSsn, 'val');
-    S.currSsn = S.sessions{S.ssnPos};
-    S.cndPos = get(S.popCnd, 'val');
-    S.currCnd = S.conditions{S.cndPos};
+    S.sessionPos = get(S.popSsn, 'val');
+    S.conditionPos = get(S.popCnd, 'val');
     
-    if strcmp(S.currSsn, 'all')
+    if strcmp(S.sessionsList{S.sessionPos}, 'all')
     %load and average all data
         posL = [];
         posR = [];
         velL = [];
         velR = [];
-        for s = 1:numel(S.sessions) - 1
-            dataSession = loadSession(fullfile(S.proj, S.sessions{s}));
-            dataC = dataSession{S.cndPos};
+        for s = 1:numel(S.projectData)
+            dataSession = S.projectData{s};
+            dataC = dataSession{S.conditionPos};
             posL = cat(3, posL, dataC.pos.L);
             posR = cat(3, posR, dataC.pos.R);
             velL = cat(3, velL, dataC.vel.L);
@@ -221,23 +216,12 @@ function dataOut = loadConditionData(S)
         dataOut.pos.R = posR;
         dataOut.vel.L = velL;
         dataOut.vel.R = velR;
-        dataOut.info = dataSession{S.cndPos}.info;
-        dataOut.timecourse = dataSession{S.cndPos}.timecourse;
+        dataOut.info = dataSession{S.conditionPos}.info;
+        dataOut.timecourse = dataSession{S.conditionPos}.timecourse;
     else
-        dataSession = loadSession(fullfile(S.proj, S.currSsn));
-        dataOut = dataSession{S.cndPos};
+        dataOut = S.projectData{S.sessionPos}{S.conditionPos};
     end
 end
-
-function updateCallbacks(S)
-    set(S.popSsn, 'callback', {@popSsn_call, S});
-    set(S.popSsn, 'value',  S.ssnPos);
-    
-    set(S.popCnd, 'callback', {@popCnd_call, S});
-    set(S.popCnd, 'string', S.conditions);
-    set(S.pbPlot, 'callback', {@pb_call, S});
-end
-
 
 function displayCndInfo(S, data)
     list_fields = fields(data);
@@ -274,5 +258,4 @@ function displayCndInfo(S, data)
                  'string', dataStr, 'visible', 'on');
              
     end    
-    updateCallbacks(S);
 end

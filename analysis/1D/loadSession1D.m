@@ -1,8 +1,8 @@
-function sessionData = loadSession(pathToSession)
+function sessionData = loadSession1D(pathToSession)
     
     display(['Loading... ' pathToSession]);
     
-    sessionMatFile = [strtok(pathToSession, '.') '.mat'];
+    sessionMatFile = [strtok(pathToSession, '.') '1D.mat'];
     
     
     if (exist(sessionMatFile, 'file'))
@@ -36,7 +36,7 @@ function sessionData = loadSession(pathToSession)
                 isTrialOK = rejectBadTrials(q, timing); 
                 display(['Cnd ' num2str(c) ': Accepted trials ' num2str(sum(isTrialOK)) '/' num2str(cndInfo.nTrials)]);
                 [timecourse, pos, vel] =  ...
-                    convertEyelinkData(tr(isTrialOK), sessionInfo.subj.ipd, cndInfo.cycleSec);
+                    convertEyelinkData1D(tr(isTrialOK), sessionInfo.subj.ipd, cndInfo.cycleSec);
 
                 % reject bad trials
 %                 isTrialOK = rejectBadTrials(cndTrackingQ, cndTiming); 

@@ -1,35 +1,58 @@
-function gui_loadSession(varargin)
+function gui_loadProject1D(varargin)
+%% will load ONE selected project
+
     close all;
     dirData = setPath;
     gui.data = dirData.data;
        
     if(~nargin)
         dirname = uigetdir(gui.data);
-        sessionPath = dirname;        
+        ProjectName = dirname;        
     else
-        sessionPath = varargin{1};
+        ProjectName = varargin{1};
     end
-    gui.session = loadSession(sessionPath);
     
-    %% conditions
-    gui.conditions = getConditionsList(sessionPath);
-    gui.cndPos = 1;
-    gui.currCnd = gui.conditions{gui.cndPos};
+    gui.projectData = loadProject1D(ProjectName);
+    gui.projPath = ProjectName;
+
+    %% Titles sessions + 'all'
+    gui.sessionsList = getSessionsList(ProjectName);
+    gui.sessionsList{end + 1} = 'all';    
+    gui.sessionPos = 1;
+    
+    %% Titles conditions 
+    gui.conditionsList = getConditionsList(fullfile(gui.projPath, gui.sessionsList{gui.sessionPos}));
+    gui.conditionPos = 1;
  
+    
     gui.fh = figure('units','normalized',...
               'position',[0 0 0.5 0.5],...
               'menubar','none',...
               'name','SceneEditor',...
               'numbertitle','off',...
               'resize','on');
-
+   
     uicontrol('style','text',...
                  'unit','normalized',...
                  'position',[0.05 0.8 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize', 16, 'fontweight','bold',... 
-                 'string', sessionPath,'visible', 'on');
-          
+                 'string', ProjectName, 'visible', 'on');
+
+    %% Subjects
+    uicontrol('style','text',...
+                 'unit','normalized',...
+                 'position',[0.05 0.7 0.2 0.2],...
+                 'backgroundc',get(gui.fh,'color'),...
+                 'fontsize', 16, 'fontweight','bold',... 
+                 'string', 'List of sessions','visible', 'on');
+
+    gui.popSsn  = uicontrol('style','pop',...
+                 'unit','normalized',...
+                 'position',[0.05 0.65 0.2 0.2],...
+                 'backgroundc',get(gui.fh,'color'),...
+                 'fontsize',12,'fontweight','bold',... 
+                 'string', gui.sessionsList,'value', gui.sessionPos);
     %% Conditions
     uicontrol('style','text',...
                  'unit','normalized',...
@@ -43,7 +66,7 @@ function gui_loadSession(varargin)
                  'position',[0.05 0.55 0.2 0.2],...
                  'backgroundc',get(gui.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string',gui.conditions,'value', gui.cndPos);
+                 'string',gui.conditionsList,'value', gui.conditionPos);
             
     gui.pbPlot = uicontrol('style','push',...
                  'units','normalized',...
@@ -53,11 +76,6 @@ function gui_loadSession(varargin)
                  'string','Plot condition',...
                  'fontsize',14,'fontweight','bold');             
     
-    %% Condition info            
-     cndData = loadConditionData(gui);     
-     displayCndInfo(gui, cndData.info);
-     %% Plot
-             
      % plot left eye trajectories
      gui.left = axes('units','normalized', ...
             'position',[0.38 0.05 0.6 0.25], ...
@@ -101,75 +119,95 @@ function gui_loadSession(varargin)
     set(get(gui.ver, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
     set(get(gui.ver, 'YLabel'), 'String', 'Vergence and version(deg)', fontSettings{:})    
 
+    set(gui.popSsn, 'callback', {@popSsn_call, gui});  % Set the popup callback.
     set(gui.popCnd, 'callback', {@popCnd_call, gui});  % Set the popup callback.
     set(gui.pbPlot, 'callback', {@pb_call, gui});
+    
+    % update condition info
+    dataOut = loadConditionData(gui);
+    displayCndInfo(gui, dataOut.info);
+end
+function [] = popSsn_call(varargin)
+% Callback for Sessions popupmenu.
+    S = varargin{3}; 
+    dataOut = loadConditionData(S);
+    displayCndInfo(S, dataOut.info);
+    cla(S.left); 
+    cla(S.right); 
+    cla(S.ver); 
 end
 
 function [] = popCnd_call(varargin)
 % Callback for Conditions popupmenu.
-    % Get the structure.
-    S = varargin{3};  
-    % Get the users choice from the popup        
-    S.cndPos = get(S.popCnd, 'val'); 
-    S.currCnd = S.conditions{S.cndPos};
+    S = varargin{3};
     cndData = loadConditionData(S);     
     displayCndInfo(S, cndData.info);
+    cla(S.left); 
+    cla(S.right); 
+    cla(S.ver);    
 end
 
+%%
 function [] = pb_call(varargin)
     S = varargin{3};
-    S.currCnd = S.conditions{get(S.popCnd, 'val')};
         
-    data = loadConditionData(S);
-    lX = squeeze(data.pos.L(:, 1, :));
-    lY = squeeze(data.pos.L(:, 2, :));
-            
-    rX = squeeze(data.pos.R(:, 1, :));
-    rY = squeeze(data.pos.R(:, 2, :));
+    data = loadConditionData(S);    
     
-    lvX = squeeze(data.vel.L(:, 1, :));
-    lvY = squeeze(data.vel.L(:, 2, :));
-            
-    rvX = squeeze(data.vel.R(:, 1, :));
-    rvY = squeeze(data.vel.R(:, 2, :));
-    
-    
-    stimPos = calcStimsetTrajectory(data.info);
+    %stimPos = calcStimsetTrajectory(data.info);
     %get plot type
     set(0,'CurrentFigure', S.fh);
     
     % Fill left eye data
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
-    %plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', stimPos.l);
-    plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', {});
+    plotOneEye1D(data.timecourse, data.L, 'Left eye', 'b', {});
         
     %% plot right eye
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    %plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', stimPos.r);
-    plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', {});
-    
-    
+    plotOneEye1D(data.timecourse, data.R, 'Right eye', 'r', {});    
     %% plot vergence/version 
      
     set(S.fh,'CurrentAxes',S.ver);
     cla(S.ver);
-    p1 = plotOneEye(data.timecourse, lX - lY, rX - rY, 'vergence', 'k', {}); hold on;
-    %p2 = plotOneEye(data.timecourse, lvX - lvY, rvX - rvY, 'version', 'g', {}); hold on;
-    %legend([p1 p2], {'Vergence', 'Version'});
+    plotOneEye1D(data.timecourse, data.L - data.R, 'vergence', 'k', {}); hold on;
+end
+function dataOut = loadConditionData(S)
+    S.sessionPos = get(S.popSsn, 'val');
+    S.conditionPos = get(S.popCnd, 'val');
+    
+    if strcmp(S.sessionsList{S.sessionPos}, 'all')
+    %load and average all data
+        posL = [];
+        posR = [];
+        velL = [];
+        velR = [];
+        for s = 1:numel(S.projectData)
+            dataSession = S.projectData{s};
+            dataC = dataSession{S.conditionPos};
+            posL = cat(3, posL, dataC.pos.L);
+            posR = cat(3, posR, dataC.pos.R);
+            velL = cat(3, velL, dataC.vel.L);
+            velR = cat(3, velR, dataC.vel.R);
+        end
+        dataOut.pos.L = posL;
+        dataOut.pos.R = posR;
+        dataOut.vel.L = velL;
+        dataOut.vel.R = velR;
+        dataOut.info = dataSession{S.conditionPos}.info;
+        dataOut.timecourse = dataSession{S.conditionPos}.timecourse;
+    else
+        dataOut = S.projectData{S.sessionPos}{S.conditionPos};
+    end
 end
 
 function updateCallbacks(S)
-    set(S.popCnd, 'callback', {@popCnd_call, S});
-    set(S.popCnd, 'string', S.conditions);
-    set(S.pbPlot, 'callback', {@pb_call, S});
-end
-
-function dataOut = loadConditionData(S)
-    dataSession = S.session;
-    dataOut = dataSession{S.cndPos};
+%     set(S.popSsn, 'callback', {@popSsn_call, S});
+%     set(S.popSsn, 'value',  S.sessionPos); 
+%     set(S.popCnd, 'callback', {@popCnd_call, S});
+%     set(S.popCnd, 'string', S.conditions);
+%     set(S.pbPlot, 'callback', {@pb_call, S});
 end
 
 function displayCndInfo(S, data)
@@ -209,4 +247,3 @@ function displayCndInfo(S, data)
     end    
     updateCallbacks(S);
 end
-

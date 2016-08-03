@@ -1,4 +1,4 @@
-function gui_loadSession(varargin)
+function gui_loadSession1D(varargin)
     close all;
     dirData = setPath;
     gui.data = dirData.data;
@@ -9,7 +9,7 @@ function gui_loadSession(varargin)
     else
         sessionPath = varargin{1};
     end
-    gui.session = loadSession(sessionPath);
+    gui.session = loadSession1D(sessionPath);
     
     %% conditions
     gui.conditions = getConditionsList(sessionPath);
@@ -121,44 +121,32 @@ function [] = pb_call(varargin)
     S.currCnd = S.conditions{get(S.popCnd, 'val')};
         
     data = loadConditionData(S);
-    lX = squeeze(data.pos.L(:, 1, :));
-    lY = squeeze(data.pos.L(:, 2, :));
+    l = data.pos.L;
+    r = data.pos.R;
             
-    rX = squeeze(data.pos.R(:, 1, :));
-    rY = squeeze(data.pos.R(:, 2, :));
+    lv = data.vel.L;
+    rv = data.vel.R;
     
-    lvX = squeeze(data.vel.L(:, 1, :));
-    lvY = squeeze(data.vel.L(:, 2, :));
-            
-    rvX = squeeze(data.vel.R(:, 1, :));
-    rvY = squeeze(data.vel.R(:, 2, :));
-    
-    
-    stimPos = calcStimsetTrajectory(data.info);
     %get plot type
     set(0,'CurrentFigure', S.fh);
     
     % Fill left eye data
     set(S.fh,'CurrentAxes', S.left); 
     cla(S.left); 
-    %plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', stimPos.l);
-    plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', {});
+    plotOneEye1D(data.timecourse, -l, 'Left eye', 'b', {});
         
     %% plot right eye
     
     set(S.fh,'CurrentAxes',S.right);
     cla(S.right);
-    %plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', stimPos.r);
-    plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', {});
+    plotOneEye1D(data.timecourse, -r, 'Right eye', 'r', {});
     
     
     %% plot vergence/version 
      
     set(S.fh,'CurrentAxes',S.ver);
     cla(S.ver);
-    p1 = plotOneEye(data.timecourse, lX - lY, rX - rY, 'vergence', 'k', {}); hold on;
-    %p2 = plotOneEye(data.timecourse, lvX - lvY, rvX - rvY, 'version', 'g', {}); hold on;
-    %legend([p1 p2], {'Vergence', 'Version'});
+    plotOneEye1D(data.timecourse, l-r, 'vergence', 'k', {}); hold on;
 end
 
 function updateCallbacks(S)

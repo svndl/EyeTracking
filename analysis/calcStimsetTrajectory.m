@@ -64,10 +64,10 @@ function pos = calcStimsetTrajectory(stimsetInfo)
         yR = zeros(size(xR));
     end
         
-    pos.l.x = xL;
-    pos.r.x = xR;
+    pos.l.x = xL';
+    pos.r.x = xR';
     
-    pos.l.y = yL;
-    pos.r.y = yR;
+    pos.l.y = yL';
+    pos.r.y = yR';
 end
 

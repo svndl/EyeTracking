@@ -1,4 +1,4 @@
-function plotProjectSummary(varargin)
+function plotSessionSummary(varargin)
 % function will plot session's summary: 
     
     % select session
@@ -6,53 +6,33 @@ function plotProjectSummary(varargin)
     dirData = setPath;
     if(~nargin)
         dirname = uigetdir(dirData.data);
-        projectPath = dirname;        
+        sessionPath = dirname;        
     else
-        projectPath = varargin{1};
+        sessionPath = varargin{1};
     end
     
     % figures will be saved in SESSION_DIR/figures
     
-    figurePath = fullfile(projectPath, 'figuresProject');
+    figurePath = fullfile(sessionPath, 'figures');
     if (~exist(figurePath, 'dir'))
         mkdir(figurePath);
     end
     
-    projectData = loadProject(projectPath);
-    
-    nCnd = numel(projectData{1});
+    sessionData = loadSession(sessionPath);    
+    nCnd = numel(sessionData);
     close all;
-    
     for c = 1:nCnd
-        
+        data = sessionData{c};
+        stimPos = calcStimsetTrajectory(data.info);
     
-        %% merge project data
-        posL = [];
-        posR = [];
-        velL = [];
-        velR = [];
-        for s = 1:numel(projectData)
-            sessoinData = projectData{s};
-            conditionData = sessoinData{c};
-            posL = cat(3, posL, conditionData.pos.L);
-            posR = cat(3, posR, conditionData.pos.R);
-            velL = cat(3, velL, conditionData.vel.L);
-            velR = cat(3, velR, conditionData.vel.R);
-        end
-        stimPos = calcStimsetTrajectory(conditionData.info);
-        pos.L = posL;
-        pos.R = posR;
-        vel.L = velL;
-        vel.R = velR;
-        
-        
         %% Plot L/R trajectories
+        
         %open new figure
         posLR = figure;
         title('Left and Right eye trajectories');
         
         % plot L/R trajectories and stimset
-        [lX, lY, rX, rY] = plotBothEyes(pos, 'pos', stimPos);
+        plotBothEyes(data.pos, 'pos', stimPos);
         
         % save figure
         saveas(posLR, fullfile(figurePath, ['Eyes Trajectories_cnd' num2str(c)]), 'fig');
@@ -64,19 +44,19 @@ function plotProjectSummary(varargin)
         title('Left and Right eye velocity');
         
         
-        [lvX, lvY, rvX, rvY] = plotBothEyes(vel, 'vel');
+        plotBothEyes(data.vel, 'vel');
         saveas(velLR, fullfile(figurePath, ['Eyes Velo_cnd' num2str(c)]), 'fig');
         close gcf;
         
         %% Plot L/R Vergence and Version
         ver_ver = figure;
         title('Vergence and Version');
-        timecourse = 1:size(lvX, 1);
+        
         subplot(2, 1, 1)
-        plotOneEye(timecourse, lX - rX, lY - rY, 'vergence', 'k', {});
+        plotOneEye(data.timecourse, data.pos.L - data.pos.R, 'vergence', 'k', {});
         
         subplot(2, 1, 2)
-        plotOneEye(timecourse, lvX - rvX, lvY - rvY, 'version', 'g', {});
+        plotOneEye(data.timecourse, mean(cat(2, data.pos.L, data.pos.R)), 'version', 'g', {});
         
         saveas(ver_ver, fullfile(figurePath, ['Eyes Vergence_cnd' num2str(c)]), 'fig');
         close gcf;     

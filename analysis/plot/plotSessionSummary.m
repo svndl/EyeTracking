@@ -53,10 +53,10 @@ function plotSessionSummary(varargin)
         title('Vergence and Version');
         
         subplot(2, 1, 1)
-        plotOneEye(data.timecourse, lX - lY, rX - rY, 'vergence', 'k', {});
+        plotOneEye(data.timecourse, lX - rX, lY - rY, 'vergence', 'k', {});
         
         subplot(2, 1, 2)
-        plotOneEye(data.timecourse, lvX - lvY, rvX - rvY, 'version', 'g', {});
+        plotOneEye(data.timecourse, lvX - rvX, lvY - rvY, 'version', 'g', {});
         
         saveas(ver_ver, fullfile(figurePath, ['Eyes Vergence_cnd' num2str(c)]), 'fig');
         close gcf;     
