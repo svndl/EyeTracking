@@ -20,28 +20,10 @@ function patch = plotOneEye(timecourse, eyeX, eyeY, legendName, color, stimsetPo
         p2 = plot(timecourse(1:25:end), -stimPosy(1:25:end), ':', 'color', yColor, ...
             'LineWidth', 1.5, 'MarkerSize', 5, 'Marker', '+'); hold on;
         legendRef = [legendRef p1 p2];
-        legendStr = {legendStr{:}, 'stimset x','stimset y'};
+        legendStr = [legendStr, {'stimset x','stimset y'}];
     end
     legend(legendRef, legendStr{:});
-    xlabel('Time samples');
-    ylabel('Degrees per second');
+%     xlabel('Time samples');
+%     ylabel('Degrees per second');
     patch = h1.patch;
-end
-function [xc, yc] = convertColor(inputColor)
-    switch (inputColor)
-        case 'r'
-            xc = [ 240 20 20 ];
-            yc = [ 200 50 150 ];
-        case 'b'
-            xc = [ 20 20 240 ];
-            yc = [ 0 174 239 ];
-        case 'k'
-            xc = [ 170 120 140 ];
-            yc = [ 125 120 125 ];
-        case 'g'
-            xc = [ 106 225 106 ];
-            yc = [ 76 225 74 ];
-    end
-    xc = xc/255;
-    yc = yc/255;
 end

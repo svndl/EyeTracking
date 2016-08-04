@@ -39,7 +39,14 @@ function plotProjectSummary(varargin)
             velL = cat(3, velL, conditionData.vel.L);
             velR = cat(3, velR, conditionData.vel.R);
         end
-        stimPos = calcStimsetTrajectory(conditionData.info);
+        nSamples = numel(data.timecourse);
+        s.l.x = takeLastN(stimPos.l.x, nSamples);
+        s.l.y = takeLastN(stimPos.l.y, nSamples);
+        s.r.x = takeLastN(stimPos.r.x, nSamples);
+        s.r.y = takeLastN(stimPos.r.y, nSamples);
+    
+        sv.x =  s.l.x - s.r.x;
+        sv.y =  s.l.y - s.r.y;
         pos.L = posL;
         pos.R = posR;
         vel.L = velL;
@@ -52,7 +59,7 @@ function plotProjectSummary(varargin)
         title('Left and Right eye trajectories');
         
         % plot L/R trajectories and stimset
-        [lX, lY, rX, rY] = plotBothEyes(pos, 'pos', stimPos);
+        [lX, lY, rX, rY] = plotBothEyes(pos, 'pos', s);
         
         % save figure
         saveas(posLR, fullfile(figurePath, ['Eyes Trajectories_cnd' num2str(c)]), 'fig');
@@ -64,7 +71,7 @@ function plotProjectSummary(varargin)
         title('Left and Right eye velocity');
         
         
-        [lvX, lvY, rvX, rvY] = plotBothEyes(vel, 'vel');
+        plotBothEyes(vel, 'vel');
         saveas(velLR, fullfile(figurePath, ['Eyes Velo_cnd' num2str(c)]), 'fig');
         close gcf;
         
@@ -73,10 +80,10 @@ function plotProjectSummary(varargin)
         title('Vergence and Version');
         timecourse = 1:size(lvX, 1);
         subplot(2, 1, 1)
-        plotOneEye(timecourse, lX - rX, lY - rY, 'vergence', 'k', {});
+        plotOneEye(timecourse, lX - rX, lY - rY, 'vergence', 'k', sv);
         
         subplot(2, 1, 2)
-        plotOneEye(timecourse, lvX - rvX, lvY - rvY, 'version', 'g', {});
+        plotOneEye(timecourse, cat(2, lX, rX), cat(2, lY, rY), 'version', 'g', {});
         
         saveas(ver_ver, fullfile(figurePath, ['Eyes Vergence_cnd' num2str(c)]), 'fig');
         close gcf;     

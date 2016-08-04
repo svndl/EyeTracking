@@ -3,259 +3,58 @@ function gui_loadProject(varargin)
 
     close all;
     dirData = setPath;
-    gui.data = dirData.data;
+    dataDir = dirData.data;
        
     if(~nargin)
-        dirname = uigetdir(gui.data);
+        dirname = uigetdir(dataDir);
         ProjectName = dirname;        
     else
         ProjectName = varargin{1};
     end
     
-    gui.projectData = loadProject(ProjectName);
-    gui.projPath = ProjectName;
-
-    %% Titles sessions + 'all'
-    gui.sessionsList = getSessionsList(ProjectName);
-    gui.sessionsList{end + 1} = 'all';    
-    gui.sessionPos = 1;
+    data = loadProject(ProjectName);
+    projPath = ProjectName;
     
-    %% Titles conditions 
-    gui.conditionsList = getConditionsList(fullfile(gui.projPath, gui.sessionsList{gui.sessionPos}));
-    gui.conditionPos = 1;
- 
+    %lists for gui    
+    sessionsList = getSessionsList(ProjectName);
+    sessionsList{end + 1} = 'all';
+    sessionPos = 1;
     
-    gui.fh = figure('units','normalized',...
-              'position',[0 0 0.5 0.5],...
-              'menubar','none',...
-              'name','SceneEditor',...
-              'numbertitle','off',...
-              'resize','on');
-   
-    uicontrol('style','text',...
-                 'unit','normalized',...
-                 'position',[0.05 0.8 0.2 0.2],...
-                 'backgroundc',get(gui.fh,'color'),...
-                 'fontsize', 16, 'fontweight','bold',... 
-                 'string', ProjectName, 'visible', 'on');
+    conditionsList = getConditionsList(fullfile(projPath, sessionsList{sessionPos}));
+    conditionPos = 1;
+    
+    %make a gui
+    guiProj = guiLayout(ProjectName, conditionsList, conditionPos);
+    
+    % copy data fields
+    guiProj.data = data;
+    guiProj.projPath = projPath;
+    guiProj.sessionsList = sessionsList;
+    guiProj.sessionPos = sessionPos;
 
-    %% Subjects
-    uicontrol('style','text',...
+    
+    % add to gui sessions
+    uicontrol('parent', guiProj.fh, 'style','text',...
                  'unit','normalized',...
-                 'position',[0.05 0.7 0.2 0.2],...
-                 'backgroundc',get(gui.fh,'color'),...
+                 'position',[0.05 0.7 0.15 0.15],...
+                 'backgroundc',get(guiProj.fh,'color'),...
                  'fontsize', 16, 'fontweight','bold',... 
-                 'string', 'List of sessions','visible', 'on');
+                 'string', 'Sessions','visible', 'on');
 
-    gui.popSsn  = uicontrol('style','pop',...
+    guiProj.popSsn  = uicontrol('parent', guiProj.fh, 'style', 'pop',...
                  'unit','normalized',...
-                 'position',[0.05 0.65 0.2 0.2],...
-                 'backgroundc',get(gui.fh,'color'),...
+                 'position',[0.05 0.67 0.15 0.15],...
+                 'backgroundc',get(guiProj.fh,'color'),...
                  'fontsize',12,'fontweight','bold',... 
-                 'string', gui.sessionsList,'value', gui.sessionPos);
-    %% Conditions
-    uicontrol('style','text',...
-                 'unit','normalized',...
-                 'position',[0.05 0.6 0.2 0.2],...
-                 'backgroundc',get(gui.fh,'color'),...
-                 'fontsize', 16, 'fontweight','bold',... 
-                 'string', 'Conditions','visible', 'on');
-
-    gui.popCnd = uicontrol('style','pop',...
-                 'unit','normalized',...
-                 'position',[0.05 0.55 0.2 0.2],...
-                 'backgroundc',get(gui.fh,'color'),...
-                 'fontsize',12,'fontweight','bold',... 
-                 'string',gui.conditionsList,'value', gui.conditionPos);
-            
-    gui.pbPlot = uicontrol('style','push',...
-                 'units','normalized',...
-                 'position',[0.05 0.6 0.2 0.05],...
-                 'backgroundcolor','w',...
-                 'HorizontalAlign','center',...
-                 'string','Plot condition',...
-                 'fontsize',14,'fontweight','bold');             
-    
-     % plot left eye trajectories
-     gui.left = axes('units','normalized', ...
-            'position',[0.38 0.05 0.6 0.25], ...
-            'xtick',[],'ytick',[], 'box', 'on');
-%      uicontrol('style','text',...
-%                  'unit','normalized',...
-%                  'position',[0.62 0.3 0.09 0.05],...
-%                  'backgroundc',get(gui.fh,'color'),...
-%                  'fontsize', 16, 'fontweight','bold',... 
-%                  'string', 'Left Eye' ,'visible', 'on');
-
-     % plot right eye trajectories
-     gui.right = axes('units','normalized', ...
-            'position',[0.38 0.37 0.6 0.25], ...
-            'xtick',[],'ytick',[], 'box', 'on');
-%      uicontrol('style','text',...
-%                  'unit','normalized',...
-%                  'position',[0.62 0.62 0.09 0.05],...
-%                  'backgroundc',get(gui.fh,'color'),...
-%                  'fontsize', 16, 'fontweight','bold',... 
-%                  'string', 'Right Eye', 'visible', 'on');
-        
-     %plot vergence/version             
-     gui.ver = axes('units','normalized', ...
-            'position',[0.38 0.7 0.6 0.25], ...
-            'xtick',[],'ytick',[], 'box', 'on');
-%      uicontrol('style','text',...
-%                  'unit','normalized',...
-%                  'position',[0.62 0.92 0.14 0.05],...
-%                  'backgroundc',get(gui.fh,'color'),...
-%                  'fontsize', 16, 'fontweight','bold',... 
-%                  'string', 'Vergence/Version','visible', 'on');
-        
-    fontSettings = {'fontsize', 14, 'fontweight','bold'};
-    set(get(gui.left, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
-    set(get(gui.left, 'YLabel'), 'String', 'Position Left Eye(deg)', fontSettings{:});
-    
-    set(get(gui.right, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
-    set(get(gui.right, 'YLabel'), 'String', 'Position Right Eye(deg)', fontSettings{:})    
-    
-    set(get(gui.ver, 'XLabel'), 'String', 'Time (milliseconds)', fontSettings{:});
-    set(get(gui.ver, 'YLabel'), 'String', 'Vergence and version(deg)', fontSettings{:})    
-
-    set(gui.popSsn, 'callback', {@popSsn_call, gui});  % Set the popup callback.
-    set(gui.popCnd, 'callback', {@popCnd_call, gui});  % Set the popup callback.
-    set(gui.pbPlot, 'callback', {@pb_call, gui});
+                 'string', guiProj.sessionsList,'value', guiProj.sessionPos);
+                          
+             
+    % update all callbacks now    
+    set(guiProj.popSsn, 'callback', {@popSsn_call, guiProj});
+    set(guiProj.popCnd, 'callback', {@popCnd_call, guiProj});
+    set(guiProj.pbPlot, 'callback', {@pbPlot_call, guiProj});
     
     % update condition info
-    dataOut = loadConditionData(gui);
-    displayCndInfo(gui, dataOut.info);
-end
-function [] = popSsn_call(varargin)
-% Callback for Sessions popupmenu.
-    S = varargin{3}; 
-    dataOut = loadConditionData(S);
-    displayCndInfo(S, dataOut.info);
-    cla(S.left); 
-    cla(S.right); 
-    cla(S.ver); 
-end
-
-function [] = popCnd_call(varargin)
-% Callback for Conditions popupmenu.
-    S = varargin{3};
-    cndData = loadConditionData(S);     
-    displayCndInfo(S, cndData.info);
-    cla(S.left); 
-    cla(S.right); 
-    cla(S.ver);    
-end
-
-%%
-function [] = pb_call(varargin)
-    S = varargin{3};
-        
-    data = loadConditionData(S);
-    lX = squeeze(data.pos.L(:, 1, :));
-    lY = squeeze(data.pos.L(:, 2, :));
-            
-    rX = squeeze(data.pos.R(:, 1, :));
-    rY = squeeze(data.pos.R(:, 2, :));
-    
-    lvX = squeeze(data.vel.L(:, 1, :));
-    lvY = squeeze(data.vel.L(:, 2, :));
-            
-    rvX = squeeze(data.vel.R(:, 1, :));
-    rvY = squeeze(data.vel.R(:, 2, :));
-    
-    
-    stimPos = calcStimsetTrajectory(data.info);
-    nSamples = numel(data.timecourse);
-    sl.x = takeLastN(stimPos.l.x, nSamples);
-    sl.y = takeLastN(stimPos.l.y, nSamples);
-    sr.x = takeLastN(stimPos.r.x, nSamples);
-    sr.y = takeLastN(stimPos.r.y, nSamples);
-    
-    sv.x =  sl.x - sr.x;
-    sv.y =  sl.y - sr.y;
-    
-    %get plot type
-    set(0,'CurrentFigure', S.fh);
-    
-    % Fill left eye data
-    set(S.fh,'CurrentAxes', S.left); 
-    cla(S.left); 
-    plotOneEye(data.timecourse, -lX, -lY, 'Left eye', 'b', sl);
-        
-    %% plot right eye
-    
-    set(S.fh,'CurrentAxes',S.right);
-    cla(S.right);
-    plotOneEye(data.timecourse, -rX, -rY, 'Right eye', 'r', sr);    
-    %% plot vergence/version 
-     
-    set(S.fh,'CurrentAxes',S.ver);
-    cla(S.ver);
-    plotOneEye(data.timecourse, lX - rX, lY - rY, 'vergence', 'k', sv); hold on;
-end
-function dataOut = loadConditionData(S)
-    S.sessionPos = get(S.popSsn, 'val');
-    S.conditionPos = get(S.popCnd, 'val');
-    
-    if strcmp(S.sessionsList{S.sessionPos}, 'all')
-    %load and average all data
-        posL = [];
-        posR = [];
-        velL = [];
-        velR = [];
-        for s = 1:numel(S.projectData)
-            dataSession = S.projectData{s};
-            dataC = dataSession{S.conditionPos};
-            posL = cat(3, posL, dataC.pos.L);
-            posR = cat(3, posR, dataC.pos.R);
-            velL = cat(3, velL, dataC.vel.L);
-            velR = cat(3, velR, dataC.vel.R);
-        end
-        dataOut.pos.L = posL;
-        dataOut.pos.R = posR;
-        dataOut.vel.L = velL;
-        dataOut.vel.R = velR;
-        dataOut.info = dataSession{S.conditionPos}.info;
-        dataOut.timecourse = dataSession{S.conditionPos}.timecourse;
-    else
-        dataOut = S.projectData{S.sessionPos}{S.conditionPos};
-    end
-end
-
-function displayCndInfo(S, data)
-    list_fields = fields(data);
-    % take out the nonius lines structure and display info
-    
-    excludedFields = ismember(list_fields, 'nonius') + ...
-        ismember(list_fields, 'handle') + ...
-        ismember(list_fields, 'name');
-    
-     list_fields = list_fields(~excludedFields) ;
-
-    
-    for f = 1:numel(list_fields)
-        % text
-       uicontrol('style','text',...
-                 'unit','normalized',...
-                 'position',[0.05 0.45 - 0.03*f 0.2 0.15],...
-                 'backgroundc',get(S.fh,'color'),...
-                 'fontsize', 12, 'HorizontalAlignment','left', ...
-                 'string', list_fields{f}, 'visible', 'on');
-        
-        %data
-        val = data.(list_fields{f});
-        if(isnumeric(val))
-            dataStr = num2str(val);
-        else
-            dataStr = val;
-        end
-        uicontrol('style','text',...
-                 'unit','normalized',...
-                 'position',[0.17 0.45 - 0.03*f 0.2 0.15],...
-                 'backgroundc',get(S.fh,'color'),...
-                 'fontsize', 12, 'HorizontalAlignment','left', ...
-                 'string', dataStr, 'visible', 'on');
-             
-    end    
+    dataOut = loadConditionData(guiProj);
+    displayCndInfo(guiProj, dataOut.info);
 end
