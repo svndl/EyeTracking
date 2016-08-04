@@ -23,7 +23,7 @@ function dotDisparities = mkDotShift(stm)
 	delayFrames = [];
     
 	disparities = stepDisparity + signDir(stm)*rampDisparity;
-	dotDisparities = [delayFrames, disparities]/2;	
+	dotDisparities = [delayFrames, disparities];	
 end
 
 function  sd = signDir(stm)
