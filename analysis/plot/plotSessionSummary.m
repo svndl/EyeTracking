@@ -40,6 +40,9 @@ function plotSessionSummary(varargin)
         title('Left and Right eye trajectories');
         
         % plot L/R trajectories and stimset
+        data.pos.L = -data.pos.L;
+        data.pos.R = -data.pos.R;
+        
         [lX, lY, rX, rY] = plotBothEyes(data.pos, 'pos', s);
         
         % save figure
@@ -61,10 +64,10 @@ function plotSessionSummary(varargin)
         title('Vergence and Version');
         
         subplot(2, 1, 1)
-        plotOneEye(data.timecourse, lX - rX, lY - rY, 'vergence', 'k', sv);
+        plotOneEye(data.timecourse, -(lX - rX), -(lY - rY), 'vergence', 'k', sv);
         
         subplot(2, 1, 2)
-        plotOneEye(data.timecourse, cat(2, lX, rX), cat(2, lY, rY), 'version', 'g', {});
+        plotOneEye(data.timecourse, -cat(2, lX, rX), -cat(2, lY, rY), 'version', 'g', {});
         
         saveas(ver_ver, fullfile(figurePath, ['Eyes Vergence_cnd' num2str(c)]), 'fig');
         close gcf;     
