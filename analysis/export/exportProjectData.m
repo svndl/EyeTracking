@@ -1,23 +1,15 @@
 function exportProjectData( varargin)
 %EXPORTDATA Summary of this function goes here
-%   Detailed explanation goes here
-
-    %loads session info, exports trial data
+% Detailed explanation goes here
+% Function loads session info, exports trial data
     myPath = setPath;
     if (~isempty(varargin))
-        projects = varargin;
+        pathToProject = varargin;
     else
-        projects = getProjectsList(myPath.data);
+        pathToProject = uigetdir('Select project directory', myPath.data);
     end
     
-    for np = 1: numel(projects)
-        pathToProject = fullfile(myPath.data, projects{np});
-        exportData(pathToProject);
-    end
-end
-
-function exportData(pathToProject)
-    exportDir = fullfile(pathToProject, '_export');
+    exportDir = fullfile(project, '_export');
     if (~exist(exportDir, 'dir'))
         mkdir(exportDir);
     end

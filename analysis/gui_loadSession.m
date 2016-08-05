@@ -4,8 +4,7 @@ function gui_loadSession(varargin)
     dataDir = dirData.data;
        
     if(~nargin)
-        dirname = uigetdir(dataDir);
-        sessionPath = dirname;        
+        sessionPath = uigetdir(dataDir);
     else
         sessionPath = varargin{1};
     end

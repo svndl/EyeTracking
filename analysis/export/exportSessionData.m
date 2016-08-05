@@ -1,4 +1,4 @@
-function exportSessionData(sessionData, exportDir)
+function exportSessionData(varargin)
 % Function takes a full path to session and exports raw and processed data
 % in matfile format 
 % export data structure: 
@@ -7,6 +7,15 @@ function exportSessionData(sessionData, exportDir)
 % raw_cndx_ty.mat -- raw data matrix (time, Lx,  Ly, Rx, Ry)
 % pos_cndx.mat -- processed position average data (L, R, vergence, version)
 % vel_cndx.mat -- processed velocity average data (L, R, vergence, version)
+    myPath = setPath;
+    
+    if (~isempty(varargin))
+        sessionData = varargin{1};
+        exportDir = varargin{2};
+    else
+        exportDir = uigetdir('Select session folder', myPath.data);
+        sessionData = loadSession(exportDir);
+    end
     
     nC = numel(sessionData);
     for c = 1:nC
@@ -14,22 +23,16 @@ function exportSessionData(sessionData, exportDir)
         cndInfo = condition.info;
         cndPos = condition.pos;
         cndVel = condition.vel;
+        cndTiming = condition.timing;
+        
         fileCndInfo = sprintf('cnd_%dInfo.mat', c);
         fileCndPos = sprintf('pos_cnd%d.mat', c);
         fileCndVelo = sprintf('vel_cnd%d.mat', c);
+        fileCndTiming = sprintf('vel_cnd%d.mat', c);        
         
         save(fullfile(exportDir, fileCndInfo), 'cndInfo');
         save(fullfile(exportDir, fileCndPos), 'cndPos');
         save(fullfile(exportDir, fileCndVelo), 'cndVel');
-        
-        %save raw trial data
-        nT = numel(condition.data);
-        
-        for t = 1:nT
-           trialData = condition.data{t};
-           fileCndTrial = sprintf('Raw_cnd%d_t%d.mat', c, t);
-           save(fullfile(exportDir, fileCndTrial), 'trialData');
-        end
-
+        save(fullfile(exportDir, fileCndTiming), 'cndTiming');
     end
 end

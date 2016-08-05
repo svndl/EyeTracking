@@ -22,12 +22,12 @@ function pos = calcStimsetTrajectory(stimsetInfo)
     isRamp = sum(ismember(stimsetInfo.dynamics, 'ramp'));
     
     %pre-calculate ramp motion (simple linspace)
-    ramp = linspace(0, stimsetInfo.rampSpeedDegSec, motionSamples);
+    ramp = linspace(0, stimsetInfo.cycleSec*stimsetInfo.rampSpeedDegSec, ...
+        motionSamples);
     
     %pre-calculate the step motion
-    %convert to degrees (divide by 60) and divide by 2 for each eye 
-    %(each eye gets 1/2 of the disparity)   
-    step = repmat(stimsetInfo.dispArcmin/120, [1 motionSamples]); 
+    %convert to degrees (divide by 60) 
+    step = repmat(stimsetInfo.dispArcmin/60, [1 motionSamples]); 
         
     % check if direction is the same or opposite
     sameDirection = 1;

@@ -2,11 +2,11 @@ function isTrialOK = rejectBadTrials(quality, timing, varargin)
     %function checks trial timing and sample quality and rejects/accepts trial
     
     % max bad samples 15 percent 
-    maxBadSamples = 0.15; 
+    maxBadSamples = 0.1; 
     sampleIsGood = (cellfun(@sum, quality)./cellfun(@length, quality)) ...
         > (1 - maxBadSamples);
     
-    maxMissedFrames = 2;
+    maxMissedFrames = 3;
    
     timingIsGood = (cellfun(@sum, timing)) <= maxMissedFrames;
     isTrialOK = boolean(sampleIsGood.*timingIsGood);

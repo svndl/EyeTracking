@@ -72,16 +72,16 @@ function [trials, isSampleOK] = processEyelinkData(eyelinkData, varargin)
             data = zeros(sum(validIDX), nCols - 1);
             % exclude lines with saccades and fixations
             data(:, 1) = cellfun(@str2double, timeSamples(validIDX));    
-    
+
+            % process sample quality            
+            qualSamples = eyelinkData(dataStarts(s):dataStops(s), nCols);
+            isSampleOK{s} = ismember(qualSamples(validIDX), '.....');
+            
             % process numeric samples
             for x = 2:nCols - 1             
                 samples = eyelinkData(dataStarts(s):dataStops(s), x);
-                %replace '.' with NaN
                 data(:, x) = str2num_Nan(samples(validIDX));
             end
-            % process sample quality
-            qualSamples = eyelinkData(dataStarts(s):dataStops(s), nCols);       
-            isSampleOK{s} = ismember(qualSamples(validIDX), '.....');        
             goodTrials = data; 
         catch err
             display(['processEyelinkFile Error trial #'  num2str(s)...
@@ -108,4 +108,6 @@ function numArray = str2num_Nan(cellArray)
            %leave the NaN out
        end
     end
+    % replace large values
+    numArray(numArray>1e+04) = NaN;
 end

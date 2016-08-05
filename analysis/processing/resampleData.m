@@ -8,13 +8,16 @@ function [xNew, yNew] = resampleData(xData, yData, trialDuration)
    
    xNew = linspace(1, maxPoints, maxPoints);
    nY = size(yData, 1);
-   
    %yNew = cellfun(@interp1, yData, xData, xNew);
    yNew = zeros(maxPoints, size(yData{1}, 2), nY);
    for y = 1:nY
        try
-           cleanedData = inpaint_nans(yData{y}, 3);
-           yNew(:, :, y) = interp1(1:xData(y), cleanedData, xNew, 'spline');
+           trialData = yData{y};
+           nVars = size(trialData, 2);
+           for v = 1:nVars
+               cleanedData = inpaint_nans(trialData(:, v), 3);
+               yNew(:, v, y) = interp1(1:xData(y), cleanedData, xNew, 'spline');
+           end
        catch
            % Nans catching, do nothing at this point
        end

@@ -1,62 +1,47 @@
-function sessionData = loadSession(pathToSession)
+function dataOut = loadSession(pathToSession)
     
     display(['Loading... ' pathToSession]);
     
-    sessionMatFile = [strtok(pathToSession, '.') '.mat'];
+    processedData = processRawData(pathToSession);
     
     
-    if (exist(sessionMatFile, 'file'))
-        load(sessionMatFile);
-    else
-        % load raw data
-        try
-            [missedFrames, response, eyetracking, eyetrackingQ, ...
-                trialIndex, sessionInfo] = loadRawData(pathToSession);
+    nCnd = numel(processedData);
+    dataOut = cell(nCnd, 1);
     
-            nCnd = numel(sessionInfo.conditions);
-            sessionData = cell(nCnd, 1);
-            % group data by condition number, run artifact rejection and
-            % convert good trials 
-            for c = 1:nCnd
-                cndInfo = sessionInfo.conditions{c}.info;
-                cndTrackingData = eyetracking(trialIndex == c);
-                cndTrackingQ = eyetrackingQ(trialIndex == c);
-                
-                cndTiming = missedFrames(trialIndex == c);
-                %trialDuration = cndInfo.cycleSec + cndInfo.preludeSec;
-                cndResponse = response(trialIndex == c);
-                
-                %% remove prelude data
-                nSamples = uint32(1000*cndInfo.cycleSec);
-                nFrames = uint32(cndInfo.cycleSec*cndInfo.dotUpdateHz);
-                tr = removePreludeData(cndTrackingData, nSamples);
-                q = removePreludeData(cndTrackingQ, nSamples);
-                timing = removePreludeData(cndTiming, nFrames);                
-                
-                isTrialOK = rejectBadTrials(q, timing); 
-                display(['Cnd ' num2str(c) ': Accepted trials ' num2str(sum(isTrialOK)) '/' num2str(cndInfo.nTrials)]);
-                [timecourse, pos, vel] =  ...
-                    convertEyelinkData(tr(isTrialOK), sessionInfo.subj.ipd, cndInfo.cycleSec);
+    for c = 1:nCnd;
+        cnd = processedData{c};
+        % remove prelude
+        nSamples = uint32(1000*cnd.info.cycleSec);
+        nFrames = uint32(cnd.info.cycleSec*cnd.info.dotUpdateHz);
+        % pos
+        L = startAtZero(takeLastN(cnd.pos.L, nSamples));
+        R = startAtZero(takeLastN(cnd.pos.R, nSamples));
+        % vel
+        Lv = startAtZero(takeLastN(cnd.vel.L, nSamples));
+        Rv = startAtZero(takeLastN(cnd.vel.R, nSamples));
 
-                % reject bad trials
-%                 isTrialOK = rejectBadTrials(cndTrackingQ, cndTiming); 
-%                 display(['Cnd ' num2str(c) ': Accepted trials ' num2str(sum(isTrialOK)) '/' num2str(cndInfo.nTrials)]);
-%                 [timecourse, pos, vel] =  ...
-%                     convertEyelinkData(cndTrackingData(isTrialOK), sessionInfo.subj.ipd, trialDuration);
-            
-                sessionData{c}.timecourse = timecourse;
-                sessionData{c}.pos = pos;
-                sessionData{c}.vel = vel;
-                sessionData{c}.response = cndResponse;
-                sessionData{c}.info = cndInfo;
-            end
-        save(sessionMatFile, 'sessionData');            
-        catch
-            sessionData = {};
-        end
+        timing = takeLastN(cnd.timing, nFrames);                
+        quality = removePreludeData(cnd.quality, nSamples);
+        
+        isTrialOK = rejectBadTrials(quality, timing); 
+        
+        dataOut{c}.pos.L = L(:, :, isTrialOK);
+        dataOut{c}.pos.R = R(:, :, isTrialOK);
+        
+        dataOut{c}.vel.L = Lv(:, :, isTrialOK);
+        dataOut{c}.vel.R = Rv(:, :, isTrialOK);
+        
+        dataOut{c}.timecourse = takeLastN(cnd.timecourse', nSamples);
+        
+        
+        dataOut{c}.info = cnd.info;
+        dataOut{c}.response = cnd.response(isTrialOK);
+       
+        display(['Cnd ' num2str(c) ': Trials ' num2str(sum(isTrialOK)) ...
+            '/' num2str(cnd.info.nTrials)]);
+        
     end
 end
-
 function t = removePreludeData(data, nSamples)
     t = cellfun(@(x) takeLastN(x, nSamples), data, 'UniformOutput', false);
 end

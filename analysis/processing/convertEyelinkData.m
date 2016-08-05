@@ -26,24 +26,17 @@ function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDurati
     [degL, degR] = href2angle(trials(:, 1:2, :), trials(:, 3:4, :), ipd_href);
     
     % shift all to (0, 0)
-    pos.L = degL - repmat(degL(1, :, :), [size(degL, 1) 1 1]);
-    pos.R = degR - repmat(degR(1, :, :), [size(degR, 1) 1 1]);
-    
-    % average
-    pos.Lavg = mean(pos.L, 3);
-    pos.Ravg = mean(pos.R, 3);
-    
-    pos.Vergence = pos.Lavg - pos.Ravg;
-    pos.Version = mean(cat(3, pos.Lavg, pos.Ravg), 3);
+    pos.L = startAtZero(degL);
+    pos.R = startAtZero(degR);
+        
+    pos.Vergence = mean(pos.L, 3) - mean(pos.R, 3);
+    pos.Version = mean(cat(3, pos.L, pos.R), 3);
     
     vel.L = trials(:, 5:6, :);     
     vel.R = trials(:, 7:8, :);
-    
-    vel.Lavg = mean(vel.L, 3);
-    vel.Ravg = mean(vel.R, 3);
-    
+        
     %binocular angular velocity
-    vel.Vergence = vel.Lavg - vel.Ravg;
-    vel.Version = mean(cat(3, vel.Lavg, vel.Ravg), 3);
+    vel.Vergence = mean(vel.L, 3) - mean(vel.R, 3);
+    vel.Version = mean(cat(3, vel.L, vel.R), 3);
     %generatePreditions(trialData);
 end

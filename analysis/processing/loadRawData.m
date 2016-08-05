@@ -3,9 +3,14 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
 % input: path to session folder
 % output: cell vectors with tracking and timing data
 
-    %% load the sessionInfo first
-    sessionInfoFile = [strtok(pathToSession, '.') filesep 'sessionInfo.mat'];    
     
+    % look for the raw data first
+     
+    
+    %% load the sessionInfo first
+    
+    
+    sessionInfoFile = [strtok(pathToSession, '.') filesep 'sessionInfo.mat'];    
     try
         load(sessionInfoFile);
     catch
