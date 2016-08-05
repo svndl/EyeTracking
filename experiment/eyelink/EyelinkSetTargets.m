@@ -6,8 +6,11 @@ function EyelinkSetTargets(scr)
     screenResStr = [ '0,0,' num2str(scr.width_pix) ',' num2str(scr.height_pix)];
     Eyelink('Command', ['screen_pixel_coords = ' screenResStr]);
 
-    %effective screen size is reduced for native resolution on planar
-    Eyelink('Command','screen_phys_coords = -229.2, 171.9, 229.2, -171.9');
+    %effective screen size in mm
+    screenDimStr = [num2str(-.5*10*scr.width_cm) ',' num2str(.5*10*scr.height_cm), ',' ...
+        num2str(.5*10*scr.width_cm) ',' num2str(-.5*10*scr.height_cm)];
+    
+    Eyelink('Command',['screen_phys_coords = ' screenDimStr])
 
     % 13 point calibration
     Eyelink('Command','calibration_type = HV13')
@@ -40,7 +43,4 @@ function EyelinkSetTargets(scr)
     Eyelink('Command', ['calibration_targets = ' calibrationCoordStr]);
     Eyelink('Command', ['validation_targets = ' calibrationCoordStr ' '...
         coordXStr{1} ',' coordYStr{1}]);
-
-    if ~strcmp(scr.name,'planar') || scr.width_pix ~= 1600 || scr.height_pix ~= 1200
-        warning('Current Eyelink calibration only works for planar in native resolution');
-    end
+end

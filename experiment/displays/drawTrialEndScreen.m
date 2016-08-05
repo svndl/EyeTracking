@@ -6,9 +6,13 @@ function drawTrialEndScreen(scr)
 	Screen('Flip', scr.wPtr);
 	WaitSecs(0.1);
 
-	% ask for response
-	%Screen('DrawText', w, 'Respond now', scr.x_center_pix_right - 25, scr.y_center_pix_right - 50, stm.REwhite);
-	% planar 
+    % left
+    Screen('SelectStereoDrawBuffer', scr.wPtr, 0);    
 	Screen('DrawText', scr.wPtr, 'Respond now', scr.xc_l - 25, scr.yc_l, scr.lwhite);
-	Screen('Flip', scr.wPtr);
+    
+    % right
+    Screen('SelectStereoDrawBuffer', scr.wPtr, 1);    
+	Screen('DrawText', scr.wPtr, 'Respond now', scr.xc_r - 25, scr.yc_r, scr.rwhite);
+
+    Screen('Flip', scr.wPtr);
 end

@@ -85,7 +85,7 @@ while stop==0 && bitand(Eyelink('CurrentMode'), el.IN_TARGET_MODE)
 	if targetvisible == 0 && result == 1
  		fprintf( 'Target drawn at: x=%d, y=%d\n', targetX, targetY );
 		
-		targetrect = EyelinkDrawCalTarget(el, targetX, targetY);
+		targetrect = EyelinkDrawTarget(el, targetX, targetY);
 		targetvisible = 1;
 		otx = targetX;		% record position for future tests
 		oty = targetY;

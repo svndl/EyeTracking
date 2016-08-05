@@ -1,4 +1,4 @@
-function msg = EyelinkRunCalibration(session)
+function EyelinkRunCalibration(session)
   
     EyelinkSetTargets(session.scr)                     % setup target locations on screen
     
@@ -11,7 +11,7 @@ function msg = EyelinkRunCalibration(session)
     %press esc when finished
     
     EyelinkCalibrationSteps(session.el, 'c');
-    EyelinkCalibrationSteps(session.el, 'v');
+    %EyelinkCalibrationSteps(session.el, 'v');
 
     % transfer file
     Eyelink('CloseFile');
