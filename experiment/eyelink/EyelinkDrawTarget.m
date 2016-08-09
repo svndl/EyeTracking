@@ -13,13 +13,13 @@ function [rectL, rectR] = EyelinkDrawTarget(el, x, y)
     rect = CenterRectOnPoint([0 0 size2 size2], x, y);
     
     % left screen
-    Screen('SelectStereoDrawBuffer', scr.wPtr, 0);    
-	Screen( 'FillOval', el.window, [0 el.foregroundcolour(1) el.foregroundcolour(1)],  rect );
-	Screen( 'FillOval', el.window, [el.foregroundcolour(1) 0 0],  rect );
+    Screen('SelectStereoDrawBuffer', el.window, 0);    
+	Screen( 'FillOval', el.window, el.foregroundcolor, rect );
+	Screen( 'FillOval', el.window, el.foregroundcolor, rect );
     %right screen
-    Screen('SelectStereoDrawBuffer', scr.wPtr, 1);    
-	Screen( 'FillOval', el.window, [0 el.foregroundcolour(1) el.foregroundcolour(1)],  rect );
-	Screen( 'FillOval', el.window, [el.foregroundcolour(1) 0 0],  rect );
+    Screen('SelectStereoDrawBuffer', el.window, 1);
+	Screen( 'FillOval', el.window, el.foregroundcolor, rect );
+	Screen( 'FillOval', el.window, el.foregroundcolor, rect );
     
     % do the flip
 	Screen( 'Flip',  el.window);
