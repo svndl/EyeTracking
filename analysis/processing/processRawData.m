@@ -10,12 +10,23 @@ function sessionData = processRawData(pathToSession)
         try
             [missedFrames, response, eyetracking, eyetrackingQ, ...
                 trialIndex, sessionInfo] = loadRawData(pathToSession);
-    
-            nCnd = numel(sessionInfo.conditions);
-            sessionData = cell(nCnd, 1);
-            % group data by condition number, run artifact rejection and
-            % convert good trials 
-            for c = 1:nCnd
+        catch err
+            display('Function processRawData error loading raw data:')
+            display(err.message);            
+            for e = 1: numel(err.stack)
+                display(err.stack(e).file);
+                display(err.stack(e).line);
+            end
+            sessionData = {};
+            return;
+        end
+        
+        nCnd = numel(sessionInfo.conditions);
+        sessionData = cell(nCnd, 1);
+        % group data by condition number, run artifact rejection and
+        % convert good trials 
+        for c = 1:nCnd
+            try    
                 cndInfo = sessionInfo.conditions{c}.info;
                 cndTrackingData = eyetracking(trialIndex == c);
                 cndTrackingQ = eyetrackingQ(trialIndex == c);
@@ -35,10 +46,16 @@ function sessionData = processRawData(pathToSession)
                 sessionData{c}.response = cndResponse;
                 sessionData{c}.info = cndInfo;
                 % store raw data
+            catch err
+                display(['Function processRawData error processing condition data c = ' num2str(c)]);
+                display(err.message);            
+                for e = 1: numel(err.stack)
+                    display(err.stack(e).file);
+                    display(err.stack(e).line);
+                end
+                sessionData{c} = {};
             end
-        save(sessionMatFile, 'sessionData');            
-        catch
-            sessionData = {};
         end
+        save(sessionMatFile, 'sessionData');            
     end
 end

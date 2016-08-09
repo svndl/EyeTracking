@@ -9,7 +9,12 @@ function gui_loadSession(varargin)
         sessionPath = varargin{1};
     end
     data = loadSession(sessionPath);
+    cndOKIdx = ~cellfun(@isempty, data);
+    data = data(cndOKIdx);
+    
     conditionsList = getConditionsList(sessionPath);
+    
+    conditionsList = conditionsList(cndOKIdx);
     conditionPos = 1;
     
     %make a gui
