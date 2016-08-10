@@ -139,7 +139,7 @@ function drawStimulus(scrPtr, xc, yc, eye, dots, dotSize, dotColor, scrCenter, n
     end
     Screen('SelectStereoDrawBuffer', scrPtr, stereoBufferID);
     Screen('DrawDots', scrPtr, dots, dotSize, dotColor, ...
-        scrCenter, 0);
+        scrCenter, 2);
     % nonius lines
     if (nonius.enable)
         if (nonius.fxDotRadius > 0)
