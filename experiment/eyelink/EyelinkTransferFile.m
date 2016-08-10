@@ -9,8 +9,8 @@ function EyelinkTransferFile(saveDirPath, fileName)
 		status = Eyelink('ReceiveFile', [fileName '.edf'], location);
         if(status > 0)
             fprintf('ReceiveFile status %d\n', status);
-            command = ['edf2asc -sh ' location];
-            [~, ~] = system(command);
+            %command = ['edf2asc -sh ' location];
+            %[~, ~] = system(command);
         end
     % ESC_KEY  = hex2dec('001B')
     % ENTER_KEY = hex2dec('000D')

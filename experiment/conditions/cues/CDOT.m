@@ -8,7 +8,7 @@ function dotFrames = CDOT(stmInfo)
     dotShift = mkDotShift(stmInfo);
     shift.x = repmat(dotShift', [1 size(dots.x, 2)]);    
     
-    zeroShift.x = zeros(size(shift.x));
-    dotFrames.L = genDotsForOneEye(dots, zeroShift, 'L', stmInfo);
+    %zeroShift.x = zeros(size(shift.x));
+    dotFrames.L = genDotsForOneEye(dots, shift, 'L', stmInfo);
     dotFrames.R = genDotsForOneEye(dots, shift, 'R', stmInfo);        
 end
