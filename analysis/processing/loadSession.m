@@ -27,11 +27,11 @@ function dataOut = loadSession(pathToSession)
         
             isTrialOK = rejectBadTrials(quality, timing); 
         
-            dataOut{c}.pos.L = L(:, :, isTrialOK);
-            dataOut{c}.pos.R = R(:, :, isTrialOK);
+            dataOut{c}.pos.L = filterData(L(:, :, isTrialOK));
+            dataOut{c}.pos.R = filterData(R(:, :, isTrialOK));
         
-            dataOut{c}.vel.L = Lv(:, :, isTrialOK);
-            dataOut{c}.vel.R = Rv(:, :, isTrialOK);
+            dataOut{c}.vel.L = filterData(Lv(:, :, isTrialOK));
+            dataOut{c}.vel.R = filterData(Rv(:, :, isTrialOK));
         
             dataOut{c}.timecourse = takeLastN(cnd.timecourse', nSamples);
         
