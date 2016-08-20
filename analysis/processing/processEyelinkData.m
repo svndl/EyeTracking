@@ -1,4 +1,4 @@
-function [trials, isSampleOK] = processEyelinkData(eyelinkData, varargin)
+function trials = processEyelinkData(eyelinkData, varargin)
 % function parses contents of *.asc eyelink file 
 % input arguments
 % eyelinkData: cell matrix with raw data
@@ -59,28 +59,38 @@ function [trials, isSampleOK] = processEyelinkData(eyelinkData, varargin)
    
     %% convert data from str to num and break it into trials
     trials = cell(numel(starts), 1);
-    isSampleOK = cell(numel(starts), 1);
     nCols = size(eyelinkData, 2);
+    
+    % Mark fixations and saccades for l/r eyes
+    % event start is in 1st column, event end in 2nd col,
+    % event duration in 3rd col;
+    [validLeft, validRight] = markArtifacts(eyelinkData(:, 1:2));
+    
+    lVars = [2, 3, 6, 7];
+    rVars = [4, 5, 8, 9];
     
     for s = 1:length(starts)
         try
+            %
+            trialData = eyelinkData(dataStarts(s):dataStops(s), :);  
             % find out indices of saccades and fixation   
-            dataEvents = '[A-Z]';
-            timeSamples = eyelinkData(dataStarts(s):dataStops(s), 1);
-            validIDX = cellfun(@isempty, regexp(timeSamples, dataEvents));
-    
-            data = zeros(sum(validIDX), nCols - 1);
-            % exclude lines with saccades and fixations
-            data(:, 1) = cellfun(@str2double, timeSamples(validIDX));    
+            %dataEvents = '[A-Z]';
+            %timeSamples = trialData(:, 1);
+            %validIDX = cellfun(@isempty, regexp(timeSamples, dataEvents));
 
             % process sample quality            
-            qualSamples = eyelinkData(dataStarts(s):dataStops(s), nCols);
-            isSampleOK{s} = ismember(qualSamples(validIDX), '.....');
-            
-            % process numeric samples
+            qualSamples = trialData(:, nCols);
+            lOK = ismember(qualSamples, '.....') & ...
+                boolean(validLeft(dataStarts(s):dataStops(s)));
+            rOK = ismember(qualSamples, '.....') & ...
+                boolean(validRight(dataStarts(s):dataStops(s)));
+                  
+            data = zeros(size(trialData));
+            data(1:end, 1) = 1:size(trialData, 1);
+            % process numeric samples for left and right eyes
             for x = 2:nCols - 1             
-                samples = eyelinkData(dataStarts(s):dataStops(s), x);
-                data(:, x) = str2num_Nan(samples(validIDX));
+                idxOK = lOK* sum(lVars == x ) + rOK* sum(rVars == x );
+                data(:, x) = str2num_Nan(trialData(:, x), idxOK);
             end
             goodTrials = data; 
         catch err
@@ -96,7 +106,7 @@ function [trials, isSampleOK] = processEyelinkData(eyelinkData, varargin)
     end
 end
 
-function numArray = str2num_Nan(cellArray)
+function numArray = str2num_Nan(cellArray, idxOK)
     nElems = numel(cellArray);
     numArray = NaN*ones(size(cellArray));
     
@@ -110,4 +120,5 @@ function numArray = str2num_Nan(cellArray)
     end
     % replace large values
     numArray(numArray>1e+04) = NaN;
+    numArray(~idxOK) = NaN;
 end

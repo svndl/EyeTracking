@@ -8,7 +8,7 @@ function sessionData = processRawData(pathToSession)
     else
         % load raw data
         try
-            [missedFrames, response, eyetracking, eyetrackingQ, ...
+            [missedFrames, response, eyetracking, ...
                 trialIndex, sessionInfo] = loadRawData(pathToSession);
         catch err
             display('Function processRawData error loading raw data:')
@@ -29,7 +29,6 @@ function sessionData = processRawData(pathToSession)
             try    
                 cndInfo = sessionInfo.conditions{c}.info;
                 cndTrackingData = eyetracking(trialIndex == c);
-                cndTrackingQ = eyetrackingQ(trialIndex == c);
                 
                 cndTiming = missedFrames(trialIndex == c);
                 trialDuration = cndInfo.cycleSec + cndInfo.preludeSec;
@@ -40,7 +39,6 @@ function sessionData = processRawData(pathToSession)
                 
                 sessionData{c}.timecourse = timecourse;
                 sessionData{c}.timing = cndTiming;
-                sessionData{c}.quality = cndTrackingQ;
                 sessionData{c}.pos = pos;
                 sessionData{c}.vel = vel;
                 sessionData{c}.response = cndResponse;

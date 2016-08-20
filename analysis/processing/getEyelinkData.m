@@ -1,4 +1,4 @@
-function [trialData, trialQ] = getEyelinkData(filePath, fileName, sessionInfo)
+function trialData = getEyelinkData(filePath, fileName, sessionInfo)
 % function getEyelinkData will extract and process 
 % data info from eyelink source file
 
@@ -31,7 +31,7 @@ function [trialData, trialQ] = getEyelinkData(filePath, fileName, sessionInfo)
     
     % process asc file, removes saccades/fixations, converts str values to
     % numbers and splits data into trials
-    [trialData, trialQ] = processEyelinkData(rawData, search_args);
+    trialData = processEyelinkData(rawData, search_args);
     
     % trialData structure:
     % 1 - timesamples; 2 - Lx, 3 - Ly; 4 - Rx, 5 - Ry; 6 - Lvx, 7 - Lvy; 8 - Rvx, 9 - Rvy.

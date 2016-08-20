@@ -23,10 +23,9 @@ function dataOut = loadSession(pathToSession)
             Rv = startAtZero(takeLastN(cnd.vel.R, nSamples));
 
             timing = removePreludeData(cnd.timing, nFrames);                
-            quality = removePreludeData(cnd.quality, nSamples);
         
-            isTrialOK = rejectBadTrials(quality, timing); 
-        
+            isTrialOK = rejectBadTrials(timing); 
+                        
             dataOut{c}.pos.L = filterData(L(:, :, isTrialOK));
             dataOut{c}.pos.R = filterData(R(:, :, isTrialOK));
         
@@ -39,8 +38,11 @@ function dataOut = loadSession(pathToSession)
             dataOut{c}.info = cnd.info;
             dataOut{c}.response = cnd.response(isTrialOK);
        
-            display(['Cnd ' num2str(c) ': Trials ' num2str(sum(isTrialOK)) ...
+            display(['Cnd ' num2str(c) ': Trials L' num2str(sum(isTrialOK)) ...
             '/' num2str(cnd.info.nTrials)]);
+            display(['Cnd ' num2str(c) ': Trials R' num2str(sum(isTrialOK)) ...
+            '/' num2str(cnd.info.nTrials)]);
+        
         catch err
             display(['Error processing the raw data cnd ' num2str(c)]);
             display(err.message);            

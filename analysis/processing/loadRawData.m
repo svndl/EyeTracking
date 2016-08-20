@@ -1,4 +1,4 @@
-function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, sessionInfo] = loadRawData(pathToSession)
+function [missedFrames, response, eyetracking, trialIndex, sessionInfo] = loadRawData(pathToSession)
 % function will load raw eyelink/ trials data 
 % input: path to session folder
 % output: cell vectors with tracking and timing data
@@ -45,7 +45,7 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
     missedFrames = cell(numel(sessionInfo.stimSequence), 1);
     response = cell(numel(sessionInfo.stimSequence), 1);
     eyetracking = cell(numel(sessionInfo.stimSequence), 1);
-    eyetrackingQ = cell(numel(sessionInfo.stimSequence), 1);
+    %eyetrackingQ = cell(numel(sessionInfo.stimSequence), 1);
     index = cell(sessionInfo.nBlocks, 1);
     
     %% Load raw data by trials
@@ -54,16 +54,15 @@ function [missedFrames, response, eyetracking, eyetrackingQ, trialIndex, session
         load(fullfile(pathToSession, matFiles{b}));
         index{b} = trialSequence;
         nT = numel(trialSequence);
-        [raw, rawQ] = getEyelinkData(pathToSession, eyelinkFiles{b}, sessionInfo);
+        raw = getEyelinkData(pathToSession, eyelinkFiles{b}, sessionInfo);
         
         for t = 1:nT
             idx = (b - 1) *nT + t;
             missedFrames{idx} = (trials.timing{t}.Missed > 0)';
             response{idx} = trials.response{t};
             eyetracking{idx} = raw{t};
-            eyetrackingQ{idx} = rawQ{t};
+            %eyetrackingQ{idx} = rawQ{t};
         end
-    end
-    
+    end    
     trialIndex = cell2mat(index);
 end
