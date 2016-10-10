@@ -14,7 +14,7 @@ function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDurati
     end;
     
     elInfo = loadEyelinkInfo;
-    timepoints = elInfo.sampleRate*trialDuration;
+    timepoints = elInfo.resampleRate*trialDuration;
     
     % resample each trial data to trialDuration 
     [timecourse, trials] = resampleData(xData, yData, timepoints);
