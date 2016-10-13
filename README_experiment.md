@@ -1,5 +1,11 @@
 ## This is a readme file describing the data structure and functions for running Eyetracking experiments.
 
+# Requirements
+
+* *Matlab*
+* *PsychToolBox*, http://psychtoolbox.org/, it will allow you to run the Eyelink-related code in Dummy mode.
+* *Eyelink Drivers* from SR Support forum (registration required) https://www.sr-support.com/forumdisplay.php?17-EyeLink-Display-Software for the eyetracking data acquisition.
+
 # Data organization
 
 * *analysis* -- scripts for loading and processing trial data
