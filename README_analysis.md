@@ -26,8 +26,8 @@ First, user will need to select the session location:
     else
         sessionPath = varargin{1};
     end
- 
 *
+
 Then, the experiment data will be processed OR loaded with *loadSession.m* script.
 Data processing pipeline:
 
