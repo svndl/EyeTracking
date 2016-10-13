@@ -16,7 +16,7 @@ To see multiple sessions within the same project,  run *gui_loadProject.m*.
 We'll break down the contents of *gui_loadSession.m* script to explain how raw Eyetracking data is being processed.
 First, user will need to select the session location:
 
-**
+*
     close all;
     dirData = setPath;
     dataDir = dirData.data;
@@ -27,7 +27,7 @@ First, user will need to select the session location:
         sessionPath = varargin{1};
     end
  
-**
+*
 Then, the experiment data will be processed OR loaded with *loadSession.m* script.
 Data processing pipeline:
 
