@@ -10,13 +10,15 @@ function [trialTiming, response] = runTrial(mySession, condition)
 	
     display(msgTrialDescription);
     
+    %% grab latest videoMode settings
+    conditionViewMode = condition.fparams{2};
+    
 	%% pre-generate stimulus frames
     [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
-    noniusLines = getNoniusLines(condition.info.nonius, mySession.scr);
+    noniusLines = getNoniusLines(condition.info.nonius, conditionViewMode);
     
     %% draw fixation
-	drawFixation_Stereo(mySession.scr);
-    
+	drawFixation_Stereo(conditionViewMode);
 	KeysWait(mySession.keys, mySession.recording);                                     
 
     dotUpdate = round(mySession.scr.frameRate/condition.info.dotUpdateHz);
@@ -25,7 +27,7 @@ function [trialTiming, response] = runTrial(mySession, condition)
   		Eyelink('StartRecording');  
     end
     % run trial
-	trialTiming = drawDots(dotFrames, dotColor, dotSize, mySession.scr,...
+	trialTiming = drawDots(dotFrames, dotColor, dotSize, conditionViewMode,...
         dotUpdate, noniusLines, msgTrialDescription);
     
     if (mySession.recording)
@@ -34,7 +36,7 @@ function [trialTiming, response] = runTrial(mySession, condition)
     end
     
 	% clear screen at end
-	drawTrialEndScreen(mySession.scr);
+	drawTrialEndScreen(conditionViewMode);
     
 	% get subject responses
 	response = 'Mis';
