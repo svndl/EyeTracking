@@ -1,13 +1,13 @@
 function el = loadEyelinkInfo
-% load eyelink tracker settings
+% load in importatn eyelink data info
 
+    %warning('Loading in Eyelink measurement info - make sure settings were not changed');
     % eyetracker sample rate in Hz
-    % el.sampleRate  = 1000;
-    % resampling rate (samples - > milliseconds)
-	
-    el.resampleRate  = 1000;                                  
+    el.sampleRate  = 1000;
     
-    % distance from camera to subject's head
+    % resampling rate (1000 ms) 
+    el.resampleRate = 1000;
+    % viewing distance in cm    
     el.href_dist   = 50;                   
     % conversion factor between HREF units and cm    
     el.href2cm = (el.href_dist/15000);

@@ -3,21 +3,21 @@ function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDurati
 %    vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'LVx', 'LVy', 'RVx', 'RVy'};
 %    data = { 1      2     3     4     5     6       7      8      9}
     nTrials = numel(trialData);
-    xData = zeros(nTrials, 1);
+    %xData = zeros(nTrials, 1);
     yData = cell(nTrials, 1);
     
     %resample trial data
     for nt = 1:nTrials
         % use duration for the X grid
-        xData(nt) = numel(trialData{nt}(:, 1));
+        %xData(nt) = numel(trialData{nt}(:, 1));
         yData{nt} = trialData{nt}(:, 2:end);
     end;
     
     elInfo = loadEyelinkInfo;
-    timepoints = elInfo.resampleRate*trialDuration;
-    
+    timepoints = elInfo.sampleRate*trialDuration;
+    upsampleRate = elInfo.resampleRate/elInfo.sampleRate;
     % resample each trial data to trialDuration 
-    [timecourse, trials] = resampleData(xData, yData, timepoints);
+    [timecourse, trials] = resampleData(yData, timepoints, upsampleRate);
     
     %trialsAvg = mean(trials, 3);
     %dataCm = trialsAvg.*elInfo.href2cm;
