@@ -43,6 +43,8 @@ function sessionData = processRawData(pathToSession)
                 sessionData{c}.vel = vel;
                 sessionData{c}.response = cndResponse;
                 sessionData{c}.info = cndInfo;
+                sessionData{c}.raw = cndTrackingData;
+                
                 % store raw data
             catch err
                 display(['Function processRawData error processing condition data c = ' num2str(c)]);

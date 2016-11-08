@@ -17,14 +17,20 @@ function [] = pbPlot_call(varargin)
     
     stimPos = calcStimsetTrajectory(data.info);
     nSamples = numel(data.timecourse);
-    sl.x = takeLastN(stimPos.l.x, nSamples);
-    sl.y = takeLastN(stimPos.l.y, nSamples);
-    sr.x = takeLastN(stimPos.r.x, nSamples);
-    sr.y = takeLastN(stimPos.r.y, nSamples);
+    sl = [];
+    sr = [];
+    sv = [];
     
-    sv.x =  sl.x - sr.x;
-    sv.y =  sl.y - sr.y;
+    displayTrajectory = get(S.chkBox, 'val');
+    if (displayTrajectory)
+        sl.x = takeLastN(stimPos.l.x, nSamples);
+        sl.y = takeLastN(stimPos.l.y, nSamples);
+        sr.x = takeLastN(stimPos.r.x, nSamples);
+        sr.y = takeLastN(stimPos.r.y, nSamples);
     
+        sv.x =  sl.x - sr.x;
+        sv.y =  sl.y - sr.y;
+    end
     set(0,'CurrentFigure', S.fh);
     
     %% position
