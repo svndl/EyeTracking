@@ -25,7 +25,10 @@ function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate)
                     yOld(:, v, y) = y_oldRate;
                 else
                     fprintf('Trial %d rejected, %d percent NaN\n', y, 100*pnan);
-                    yNew(:, v, y) = [];
+                    yNew(:, :, y) = [];
+                    %goto next trial
+                    v = 1;
+                    y = y+1;
                 end
             end
         catch
