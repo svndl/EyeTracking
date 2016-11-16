@@ -2,17 +2,17 @@ function [] = pbPlot_call(varargin)
     S = varargin{3};
         
     data = loadConditionData(S);
-    lX = -squeeze(data.pos.L(:, 1, :));
-    lY = -squeeze(data.pos.L(:, 2, :));
+    lX = squeeze(data.pos.L(:, 1, :));
+    lY = squeeze(data.pos.L(:, 2, :));
             
-    rX = -squeeze(data.pos.R(:, 1, :));
-    rY = -squeeze(data.pos.R(:, 2, :));
+    rX = squeeze(data.pos.R(:, 1, :));
+    rY = squeeze(data.pos.R(:, 2, :));
     
-    lvX = -squeeze(data.vel.L(:, 1, :));
-    lvY = -squeeze(data.vel.L(:, 2, :));
+    lvX = squeeze(data.vel.L(:, 1, :));
+    lvY = squeeze(data.vel.L(:, 2, :));
             
-    rvX = -squeeze(data.vel.R(:, 1, :));
-    rvY = -squeeze(data.vel.R(:, 2, :));
+    rvX = squeeze(data.vel.R(:, 1, :));
+    rvY = squeeze(data.vel.R(:, 2, :));
     
     
     stimPos = calcStimsetTrajectory(data.info);

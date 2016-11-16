@@ -46,8 +46,8 @@ function plotProjectSummary(varargin)
     
         sv.x =  sp.l.x - sp.r.x;
         sv.y =  sp.l.y - sp.r.y;
-        pos.L = -posL;
-        pos.R = -posR;
+        pos.L = posL;
+        pos.R = posR;
         vel.L = velL;
         vel.R = velR;
         

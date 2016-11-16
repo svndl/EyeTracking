@@ -24,14 +24,16 @@ function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDurati
     
     ipd_href = elInfo.href2cm*ipd; 
     [degL, degR] = href2angle(trials(:, 1:2, :), trials(:, 3:4, :), ipd_href);
-    [degL_orig, degR_orig] = href2angle(trialsOrig(:, 1:2, :), trialsOrig(:, 3:4, :), ipd_href);
     
-    % shift all to (0, 0)
-    pos.L = startAtZero(degL);
-    pos.R = startAtZero(degR);
+    % shift all to (0, 0) and flip the signs
+    pos.L = -startAtZero(degL);
+    pos.R = -startAtZero(degR);
            
-    vel.L = trials(:, 5:6, :);     
-    vel.R = trials(:, 7:8, :);
+    vel.L = -trials(:, 5:6, :);     
+    vel.R = -trials(:, 7:8, :);
     
     %% save original trials
+    %[degL_orig, degR_orig] = href2angle(trialsOrig(:, 1:2, :), trialsOrig(:, 3:4, :), ipd_href);
+    % pos.orig.L = -startAtZero(degL_orig);
+    % pos.orig.R = -startAtZero(degR_orig);
 end

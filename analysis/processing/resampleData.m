@@ -12,7 +12,8 @@ function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate)
     %yNew = cellfun(@interp1, yData, xData, xNew);
     yNew = zeros(maxPoints*upsampleRate, size(yData{1}, 2), nTrials);
     yOld = zeros(maxPoints, size(yData{1}, 2), nTrials);
-    for y = 1:nTrials
+    y = 1;
+    while y<= nTrials
         try
             trialData = yData{y};
             nVars = size(trialData, 2) - 1; % exclude quality column;
@@ -27,12 +28,12 @@ function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate)
                     fprintf('Trial %d rejected, %d percent NaN\n', y, 100*pnan);
                     yNew(:, :, y) = [];
                     %goto next trial
-                    v = 1;
-                    y = y+1;
+                    y = y + 1;
                 end
             end
         catch
-            % Nans catching, do nothing at this point
+            y = y + 1;
         end
+        y = y + 1;
     end
 end
