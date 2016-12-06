@@ -119,4 +119,3 @@ function gui = guiLayout(strName, conditionsList, conditionPos)
     gui.conditionList = conditionsList;
     gui.conditionPos = conditionPos;
 end
-
