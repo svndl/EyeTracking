@@ -10,8 +10,8 @@ function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate)
     xNew = linspace(1, maxPoints*upsampleRate, maxPoints*upsampleRate);
     nTrials = size(yData, 1);
     %yNew = cellfun(@interp1, yData, xData, xNew);
-    yNew = NaN*ones(maxPoints*upsampleRate, size(yData{1}, 2), nTrials);
-    yOld = NaN*zeros(maxPoints, size(yData{1}, 2), nTrials);
+    yNew = NaN*ones(maxPoints*upsampleRate, size(yData{1}, 2) - 1, nTrials);
+    yOld = NaN*ones(maxPoints, size(yData{1}, 2) - 1, nTrials);
     y = 1;
     while y<= nTrials
         try
