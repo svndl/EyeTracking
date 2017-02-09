@@ -24,7 +24,11 @@ function dataOut = loadSession(pathToSession)
 
             timing = removePreludeData(cnd.timing, nFrames);                
         
-            isTrialOK = rejectBadTrials(timing); 
+            trialTiming = rejectBadTrials(timing);
+            trialData = nanTrials(L) & nanTrials(R);
+            isTrialOK = trialTiming & trialData;
+            
+            
                         
             dataOut{c}.pos.L = filterData(L(:, :, isTrialOK));
             dataOut{c}.pos.R = filterData(R(:, :, isTrialOK));
@@ -56,4 +60,10 @@ function dataOut = loadSession(pathToSession)
 end
 function t = removePreludeData(data, nSamples)
     t = cellfun(@(x) takeLastN(x, nSamples), data, 'UniformOutput', false);
+end
+
+function nanIdx = nanTrials(dataMat)
+    nTrials = size(dataMat, 3);
+    nCols = size(dataMat, 2);
+    nanIdx = boolean(1 - (any(reshape(any(isnan(dataMat)), nCols, nTrials)) == 1))';
 end
