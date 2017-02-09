@@ -1,9 +1,9 @@
 function patch = plotOneEye(timecourse, eyeX, eyeY, legendName, color, stimsetPos)
-    muDatax = mean(eyeX, 2);
-    muDatay = mean(eyeY, 2);
+    muDatax = nanmean(eyeX, 2);
+    muDatay = nanmean(eyeY, 2);
 
-    semDatax = std(eyeX, [], 2)/sqrt(size(eyeX, 2));
-    semDatay = std(eyeY, [], 2)/sqrt(size(eyeY, 2));
+    semDatax = nanstd(eyeX, [], 2)/sqrt(size(eyeX, 2));
+    semDatay = nanstd(eyeY, [], 2)/sqrt(size(eyeY, 2));
     
     [xColor, yColor] = convertColor(color);
 

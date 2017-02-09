@@ -10,29 +10,34 @@ function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate)
     xNew = linspace(1, maxPoints*upsampleRate, maxPoints*upsampleRate);
     nTrials = size(yData, 1);
     %yNew = cellfun(@interp1, yData, xData, xNew);
-    yNew = zeros(maxPoints*upsampleRate, size(yData{1}, 2), nTrials);
-    yOld = zeros(maxPoints, size(yData{1}, 2), nTrials);
+    yNew = NaN*ones(maxPoints*upsampleRate, size(yData{1}, 2), nTrials);
+    yOld = NaN*zeros(maxPoints, size(yData{1}, 2), nTrials);
     y = 1;
     while y<= nTrials
         try
             trialData = yData{y};
             nVars = size(trialData, 2) - 1; % exclude quality column;
-            for v = 1:nVars
-                pnan = sum(isnan(trialData(:, v)))/numel(trialData(:, v));
-                if (pnan < nanThresh)
-                    cleanedData = inpaint_nans(trialData(:, v), 3);
+            nanPercent = sum(isnan(trialData))./size(trialData, 1);
+            if (any(nanPercent > nanThresh))
+                fprintf('Trial %d will be rejected, %d percent NaN\n', y, 100*max(nanPercent));
+            else
+                for v = 1:nVars
+                    cleanedData = trialData(:, v);
+                    if (nanPercent(v))
+                        cleanedData = inpaint_nans(trialData(:, v), 3);
+                    end
                     y_oldRate = interp1(cleanedData, x0);
                     yNew(:, v, y) = interp(y_oldRate, upsampleRate);
                     yOld(:, v, y) = y_oldRate;
-                else
-                    fprintf('Trial %d rejected, %d percent NaN\n', y, 100*pnan);
-                    yNew(:, :, y) = [];
-                    %goto next trial
-                    y = y + 1;
                 end
             end
-        catch
-            y = y + 1;
+        catch err
+            display(['Function resampleData error processing trial # = ' num2str(y)]);
+            display(err.message);
+            for e = 1: numel(err.stack)
+                display(err.stack(e).file);
+                display(err.stack(e).line);
+            end   
         end
         y = y + 1;
     end

@@ -15,7 +15,6 @@ function [] = pbPlot_call(varargin)
     rvY = squeeze(data.vel.R(:, 2, :));
     
     
-    stimPos = calcStimsetTrajectory(data.info);
     nSamples = numel(data.timecourse);
     sl = [];
     sr = [];
@@ -23,6 +22,7 @@ function [] = pbPlot_call(varargin)
     
     displayTrajectory = get(S.chkBox, 'val');
     if (displayTrajectory)
+        stimPos = calcStimsetTrajectory(data.info);
         sl.x = takeLastN(stimPos.l.x, nSamples);
         sl.y = takeLastN(stimPos.l.y, nSamples);
         sr.x = takeLastN(stimPos.r.x, nSamples);
