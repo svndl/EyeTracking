@@ -30,26 +30,39 @@ EyelinkMsg(['StartTrial:' msg]);
 while idxUpdate <= nframe
     for d = 1:barUpdate
         frameLoop = tic;
+        
+        %% NONIUS LINES
+        if (noniusLines.enable)
+            %% left/right dots
+            if (noniusLines.fxDotRadius > 0)
+                Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
+                Screen('FillRect', scr.wPtr, noniusLines.color, ...
+                    [scr.xc_r - noniusLines.fxDotRadius scr.yc_r + noniusLines.fxDotRadius ...
+                    scr.xc_r + noniusLines.fxDotRadius scr.yc_r + noniusLines.fxDotRadius] );
+                Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
+                Screen('FillRect', scr.wPtr, noniusLines.color, ...
+                    [scr.xc_r - noniusLines.fxDotRadius scr.yc_r + noniusLines.fxDotRadius ...
+                    scr.xc_r + noniusLines.fxDotRadius scr.yc_r + noniusLines.fxDotRadius] );
+                
+            end
+            %% left/right lines, right line is flipped (negative sign)
+            Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
+            Screen('DrawLine', scr.wPtr, noniusLines.color, scr.xc_l, ...
+                scr.yc_l + noniusLines.vertS, ...
+                scr.xc_l, scr.yc_l + noniusLines.vertH + noniusLines.vertS, noniusLines.vertW);
+            
+            Screen('SelectStereoDrawBuffer', scr.wPtr, 1);            
+            Screen('DrawLine', scr.wPtr, noniusLines.color, scr.xc_r, ...
+                scr.yc_r - noniusLines.vertS, ...
+                scr.xc_r, scr.yc_r - (noniusLines.vertH + noniusLines.vertS), noniusLines.vertW);            
+        end
+
         %Left display
         
         Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
         lbarTexture = Screen('MakeTexture',scr.wPtr,255*lbarFrame(:,:,idxUpdate));
         Screen('FillRect', scr.wPtr, scr.background, InsetRect(Screen('Rect', scr.wPtr), -1, -1));
-        Screen('DrawTexture',scr.wPtr,lbarTexture);
-        
-        %% TODO NONIUS LINES
-        %             if (noniusLines.enable)
-        %                 if (noniusLines.fxDotRadius > 0)
-        %                     Screen('FillRect', scrPtr, noniusLines.color, ...
-        %                         [xc - noniusLines.fxDotRadius yc + noniusLines.fxDotRadius ...
-        %                         xc + noniusLines.fxDotRadius yc + noniusLines.fxDotRadius] );
-        %                 end
-        %                 Screen('DrawLine', scr.wPtr, nonius.color, xc, ...
-        %                     yc + signShift*noniusLines.vertS, ...
-        %                     xc, yc + signShift*(nonius.vertH + nonius.vertS), nonius.vertW);
-        %             end
-        %
-        
+        Screen('DrawTexture',scr.wPtr,lbarTexture);        
         
         %Right Display
         
