@@ -31,7 +31,23 @@ while idxUpdate <= nframe
     for d = 1:barUpdate
         frameLoop = tic;
         
-        %% NONIUS LINES
+        %% Display textures first
+        %Left display
+        
+        Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
+        lbarTexture = Screen('MakeTexture',scr.wPtr,255*lbarFrame(:,:,idxUpdate));
+        Screen('FillRect', scr.wPtr, scr.background, InsetRect(Screen('Rect', scr.wPtr), -1, -1));
+        Screen('DrawTexture',scr.wPtr,lbarTexture);        
+        
+        %Right Display
+        
+        Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
+        rbarTexture = Screen('MakeTexture',scr.wPtr,255*rbarFrame(:,:,idxUpdate));
+        Screen('FillRect', scr.wPtr, scr.background, InsetRect(Screen('Rect', scr.wPtr), -1, -1));
+        Screen('DrawTexture',scr.wPtr,rbarTexture);        
+        
+        %% NONIUS LINES go on top of the textures
+        
         if (noniusLines.enable)
             %% left/right dots
             if (noniusLines.fxDotRadius > 0)
@@ -55,26 +71,7 @@ while idxUpdate <= nframe
             Screen('DrawLine', scr.wPtr, noniusLines.color, scr.xc_r, ...
                 scr.yc_r - noniusLines.vertS, ...
                 scr.xc_r, scr.yc_r - (noniusLines.vertH + noniusLines.vertS), noniusLines.vertW);            
-        end
-
-        %Left display
-        
-        Screen('SelectStereoDrawBuffer', scr.wPtr, 0);
-        lbarTexture = Screen('MakeTexture',scr.wPtr,255*lbarFrame(:,:,idxUpdate));
-        Screen('FillRect', scr.wPtr, scr.background, InsetRect(Screen('Rect', scr.wPtr), -1, -1));
-        Screen('DrawTexture',scr.wPtr,lbarTexture);        
-        
-        %Right Display
-        
-        Screen('SelectStereoDrawBuffer', scr.wPtr, 1);
-        rbarTexture = Screen('MakeTexture',scr.wPtr,255*rbarFrame(:,:,idxUpdate));
-        Screen('FillRect', scr.wPtr, scr.background, InsetRect(Screen('Rect', scr.wPtr), -1, -1));
-        Screen('DrawTexture',scr.wPtr,rbarTexture);
-        
-        
-        %Screen('FillRect', scr.wPtr, [255 0 0], [20 20 200 200] );
-        
-        
+        end            
         %flip on screen
         [vbl, onsetTime, flipTimeStamp, missed, ~] = Screen('Flip',scr.wPtr,vbl+(waitframes*ifi));
         timing.VBLTimestamp(idxFrame) = vbl;
