@@ -34,8 +34,11 @@ function [trialTiming, response] = runTrial(mySession, condition)
         display('Eyelink Recording Started');
   		Eyelink('StartRecording');  
     end
+    % generate prelude fix
+    
+    allFrames = generatePrelude(drawingParams{1}, condition.info);
     % run trial
-	trialTiming = drawFun(drawingParams{:}, conditionViewMode,...
+	trialTiming = drawFun(allFrames, drawingParams{2:end}, conditionViewMode,...
         frameUpdate, noniusLines, msgTrialDescription);
     
     if (mySession.recording)
