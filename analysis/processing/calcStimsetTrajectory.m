@@ -9,9 +9,12 @@ function pos = calcStimsetTrajectory(stimsetInfo)
 % vel -- structure with left and right stimulus velocity
 %  vel.l, vel.r are vectors, identical for 2D motion, different for 3D
 %  motion
-
+    waitSec = 0;
     % number of points for prelude/motion
-    preludeSamples = uint32(1e+03*stimsetInfo.preludeSec);
+    if (isfield(stimsetInfo, 'waitAfterPrelude'))
+        waitSec = stimsetInfo.waitAfterPrelude;
+    end
+    preludeSamples = uint32(1e+03*(stimsetInfo.preludeSec + waitSec));
     motionSamples = uint32(1e+03*stimsetInfo.cycleSec); 
 
     % pre-allocate vectors for trajectory

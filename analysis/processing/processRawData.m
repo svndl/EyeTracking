@@ -31,7 +31,12 @@ function sessionData = processRawData(pathToSession)
                 cndTrackingData = eyetracking(trialIndex == c);
                 
                 cndTiming = missedFrames(trialIndex == c);
-                trialDuration = cndInfo.cycleSec + cndInfo.preludeSec;
+                waitSec = 0;
+                if (isfield(cndInfo, 'waitAfterPrelude'))
+                    waitSec = stimsetInfo.waitAfterPrelude;
+                end
+
+                trialDuration = cndInfo.cycleSec + cndInfo.preludeSec + waitSec;
                 cndResponse = response(trialIndex == c);
                 
                 [timecourse, pos, vel] =  ...
