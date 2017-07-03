@@ -24,9 +24,9 @@ function [trialTiming, response] = runTrial(mySession, condition)
 	KeysWait(mySession.keys, mySession.recording);                                     
     
     if (~isfield(condition.info, 'drawHandle'))
-        drawFun = @drawDots;
+        drawFun = str2func(drawDots);
     else
-        drawFun = @condition.info.drawHandle;
+        drawFun = str2func(condition.info.drawHandle);
     end
         
     frameUpdate = round(mySession.scr.frameRate/condition.info.dotUpdateHz);
