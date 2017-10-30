@@ -2,8 +2,8 @@ function dotFrames = CDOT(stmInfo)
     % full cue has same dots for each eye
 	maxVal = min(stmInfo.xmax, stmInfo.ymax);
     %each frame has rand dot positions
-    dots.x = mkRandDots(maxVal, stmInfo.numDots, stmInfo.nFrames + numel(stmInfo.prelude));
-    dots.y = mkRandDots(maxVal, stmInfo.numDots, stmInfo.nFrames + numel(stmInfo.prelude));
+    dots.x = mkRandDots(maxVal, stmInfo.numDots, stmInfo.nFrames);
+    dots.y = mkRandDots(maxVal, stmInfo.numDots, stmInfo.nFrames);
 
     dotShift = mkDotShift(stmInfo);
     shift.x = repmat(dotShift', [1 size(dots.x, 2)]);    

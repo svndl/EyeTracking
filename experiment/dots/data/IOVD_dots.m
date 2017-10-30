@@ -15,9 +15,9 @@ function iovd = IOVD_dots
 	iovd.dotDensity      = .2;     % dots per degree2
 
 	% timing
-	iovd.preludeSec      = 0.5;   % delay before motion onset
-	iovd.cycleSec        = 2;      % duration of stimulus after prelude
-	iovd.nTrials         = 5;      % number of repeats per condition
+	iovd.prelude.durationSec = 0.5;   % delay before motion onset
+	iovd.cycleSec            = 2;      % duration of stimulus after prelude
+	iovd.nTrials             = 5;      % number of repeats per condition
 	
 	% dot update params
 	iovd.dotUpdateHz     = 60;        

@@ -5,7 +5,7 @@ function testStimset
     % Folder where you'll be saving the experiment data:
     % data/myStimset/subjName+date/
     
-    myStimset = 'TowardsAwayAllCues';
+    myStimset = 'SingleDotSteps';
     
     %% Setup session
     displayParams = eval(displayName);	
@@ -27,7 +27,7 @@ function testStimset
     
             %% pre-generate stimulus frames
             [dotFrames, dotColor, dotSize] = feval(condition.fhandle, condition.fparams{:});
-            noniusLines = getNoniusLines(condition.info.nonius, myScr);
+            noniusLines = getNoniusLines(condition.info, myScr);
     
             %% pre-generate stimulus frames
     

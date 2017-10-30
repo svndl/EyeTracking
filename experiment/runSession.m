@@ -62,5 +62,5 @@ function runSession
         if (strcmp(str, 'y') || strcmp(str, 'Y'))
             gui_loadSession(mySession.saveDir);
         end
-    end;
+    end
 end

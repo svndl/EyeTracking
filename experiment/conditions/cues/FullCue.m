@@ -3,8 +3,8 @@ function dotFrames = FullCue(stmInfo)
 	maxVal = min(stmInfo.xmax, stmInfo.ymax);
     %each frame has rand dot positions
     
-    dots.x = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames + numel(stmInfo.prelude) 1]);
-    dots.y = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames + numel(stmInfo.prelude) 1]);
+    dots.x = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames 1]);
+    dots.y = repmat(mkRandDots(maxVal, stmInfo.numDots), [stmInfo.nFrames 1]);
 
     dotShift = mkDotShift(stmInfo);
     shift.x = repmat(dotShift', [1 size(dots.x, 2)]);

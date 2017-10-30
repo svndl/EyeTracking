@@ -1,5 +1,5 @@
 function dots = genDotsForOneEye(startPos, shift, eye, stm)
-    dots.x = startPos.x + directionSigns(stm.direction, eye)*shift.x;	
+    dots.x = startPos.x + directionSigns(stm.direction{1}, eye)*shift.x;	
 	dots.y = startPos.y;
     
     %limit dot motion to circle

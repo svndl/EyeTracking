@@ -1,7 +1,7 @@
 function dot = SingleDot_dots
     
     dot.cues = 'SingleDot';                 
-    dot.dynamics = {'step'};
+    dot.dynamics = {'step', 'ramp'};
 	dot.isPeriodic = 0;
 
 	% set up properties
@@ -15,7 +15,7 @@ function dot = SingleDot_dots
 	dot.dotDensity      = .2;     % dots per degree2
 
 	% timing
-	dot.preludeSec      = 0.25;   % delay before motion onset
+	dot.prelude.durationSec      = 0.25;   % delay before motion onset
 	dot.cycleSec        = 2;      % duration of stimulus after prelude
 	dot.nTrials         = 5;      % number of repeats per condition
 	

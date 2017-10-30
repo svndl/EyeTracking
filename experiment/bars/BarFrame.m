@@ -2,7 +2,7 @@
 function [lbarFrame, rbarFrame] = BarFrame(barParams, videoMode)
 % number of frames for prelude
 framesPerUpdate = round(videoMode.frameRate/barParams.dotUpdateHz);
-nPreludeFrames = round(barParams.preludeSec*videoMode.frameRate/framesPerUpdate);
+nPreludeFrames = round(barParams.prelude.durationSec*videoMode.frameRate/framesPerUpdate);
 
 % calculate stimset params, get rid of struct data type
 barParams = bar_calcStimsetParams(barParams, videoMode);

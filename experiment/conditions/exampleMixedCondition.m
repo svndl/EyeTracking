@@ -62,7 +62,7 @@ function varargout = exampleMixedCondition(varargin)
     dots.dotDensity = 2;      
     dots.dotUpdateHz = 60;
     %timing
-    dots.preludeSec = 0.25;   
+    dots.prelude.durationSec = 0.25;   
     dots.cycleSec = 2;        
             
     %condition is the same    

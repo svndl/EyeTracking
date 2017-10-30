@@ -15,7 +15,7 @@ function mixed = Mixed_dots
 	mixed.dotDensity      = .2;     % dots per degree2
 
 	% timing
-	mixed.preludeSec      = 0.25;   % delay before motion onset
+	mixed.prelude.durationSec      = 0.25;   % delay before motion onset
 	mixed.cycleSec        = 2;      % duration of stimulus after prelude
 	mixed.nTrials         = 1;      % number of repeats per condition
 	

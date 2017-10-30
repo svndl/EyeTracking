@@ -1,4 +1,4 @@
-function nonius = getNoniusLines(noniusInfo, scr)
+function nonius = getNoniusLines(cndInfo, scr)
 % Function converts nonius lines's params from degrees to pixels
 % or calculates default values for nonius lines.
 
@@ -25,7 +25,11 @@ function nonius = getNoniusLines(noniusInfo, scr)
 %   nonius.vertW [0..] -- line width, pixels;
 %   nonius.vertH [0..] -- line height, pixels;
 %   nonius.vertS [0-..] -- vertical shift from 0, pixels.
-
+    try 
+        noniusInfo = cndInfo.nonius;
+    catch
+        noniusInfo = 0;
+    end
     if (isstruct(noniusInfo))
         enable = noniusInfo.enable;
         vert_W = (60*noniusInfo.widthDeg)/scr.pix2arcmin;

@@ -86,7 +86,7 @@ function bars = barProp(correlation,videoMode)
     bars.width = 0.5*videoMode.width_pix;
     bars.height = 0.5*videoMode.height_pix;
 	% timing
-	bars.preludeSec      = 0.8;    % delay before motion onset
+	bars.prelude.durationSec     = 0.8;    % delay before motion onset
 	bars.cycleSec        = .4;      % duration of stimulus after prelude
 	bars.nTrials         = 20;      % number of repeats per condition
 	
