@@ -1,11 +1,10 @@
-function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate)
+function [xNew, yNew, yOld] = resampleData(yData, trialSamples, upsampleRate, nanThresh)
 % data is a cell aray of vectors of different lengths
 % xData is a cell array storing xPoints, 
 % yData is a cell array that stores yPoints
 % Agorithm: take maximum duration of xData and resample yData
 %      
     maxPoints = trialSamples;
-    nanThresh = 0.15;
     x0 = linspace(1, maxPoints, maxPoints);
     xNew = linspace(1, maxPoints*upsampleRate, maxPoints*upsampleRate);
     nTrials = size(yData, 1);

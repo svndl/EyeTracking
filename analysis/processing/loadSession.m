@@ -2,7 +2,7 @@ function dataOut = loadSession(pathToSession)
     
     display(['Loading... ' pathToSession]);
     
-    processedData = processRawData(pathToSession);
+    processedData = processRawData(pathToSession, nanThresh);
     
     
     nCnd = numel(processedData);
@@ -57,6 +57,7 @@ function dataOut = loadSession(pathToSession)
             dataOut{c} = {};
         end
     end
+    % add
 end
 function t = removePreludeData(data, nSamples)
     t = cellfun(@(x) takeLastN(x, nSamples), data, 'UniformOutput', false);

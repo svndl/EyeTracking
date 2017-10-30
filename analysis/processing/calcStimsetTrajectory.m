@@ -11,10 +11,10 @@ function pos = calcStimsetTrajectory(stimsetInfo)
 %  motion
     waitSec = 0;
     % number of points for prelude/motion
-    if (isfield(stimsetInfo, 'waitAfterPrelude'))
-        waitSec = stimsetInfo.waitAfterPrelude;
+    if (isfield(stimsetInfo.prelude, 'waitAfter'))
+        waitSec = stimsetInfo.prelude.waitAfter;
     end
-    preludeSamples = uint32(1e+03*(stimsetInfo.preludeSec + waitSec));
+    preludeSamples = uint32(1e+03*(stimsetInfo.prelude.durationSec + waitSec));
     motionSamples = uint32(1e+03*stimsetInfo.cycleSec); 
 
     % pre-allocate vectors for trajectory

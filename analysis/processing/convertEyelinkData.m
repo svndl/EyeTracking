@@ -1,4 +1,4 @@
-function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDuration)
+function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDuration, nanThresh)
 
 %    vals = {'time', 'Lx', 'Ly', 'Rx', 'Ry', 'LVx', 'LVy', 'RVx', 'RVy'};
 %    data = { 1      2     3     4     5     6       7      8      9}
@@ -17,7 +17,7 @@ function [timecourse, pos, vel] = convertEyelinkData(trialData, ipd, trialDurati
     timepoints = elInfo.sampleRate*trialDuration;
     upsampleRate = elInfo.resampleRate/elInfo.sampleRate;
     % resample each trial data to trialDuration 
-    [timecourse, trials, trialsOrig] = resampleData(yData, timepoints, upsampleRate);
+    [timecourse, trials, trialsOrig] = resampleData(yData, timepoints, upsampleRate, nanThresh);
     
     %trialsAvg = mean(trials, 3);
     %dataCm = trialsAvg.*elInfo.href2cm;

@@ -1,4 +1,4 @@
-function sessionData = processRawData(pathToSession)
+function sessionData = processRawData(pathToSession, nanThresh)
 % cleaning the data
 
     sessionMatFile = [strtok(pathToSession, '.') '.mat'];
@@ -40,7 +40,7 @@ function sessionData = processRawData(pathToSession)
                 cndResponse = response(trialIndex == c);
                 
                 [timecourse, pos, vel] =  ...
-                    convertEyelinkData(cndTrackingData, sessionInfo.subj.ipd, trialDuration);
+                    convertEyelinkData(cndTrackingData, sessionInfo.subj.ipd, trialDuration, nanThresh);
                 
                 sessionData{c}.timecourse = timecourse;
                 sessionData{c}.timing = cndTiming;
